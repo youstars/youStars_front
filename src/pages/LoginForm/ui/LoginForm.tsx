@@ -2,7 +2,7 @@ import { useState } from "react";
 import classes from "./LoginForm.module.scss";
 import blackApple from "shared/images/blackApple.svg";
 import whiteApple from "shared/images/whiteApple.svg";
-import { useTheme } from "app/provider/lib/useTheme";
+import { useTheme } from "app/provider/lib_lib/useTheme";
 import { useMemo } from "react";
 import { Button, Input } from "shared/index";
 import google from "shared/images/google.svg";

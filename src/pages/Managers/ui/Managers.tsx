@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import classes from './Managers.module.scss';
 import whiteLogo from "shared/images/whiteLogo.svg";
-import {useTheme} from "app/provider/lib/useTheme";
+import {useTheme} from "app/provider/lib_lib/useTheme";
 import lightIcon from "shared/images/light.svg";
 import blackLogo from "shared/images/blackLogo.svg";
 import darkIcon from "shared/images/dark.svg";
