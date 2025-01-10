@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "noImplicitAny": true,
+    "module": "ESNext",
+    "target": "ESNext",
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "baseUrl": "./src", // Это устанавливает корневую директорию для абсолютных импортов
+    "paths": {
+      "shared/*": ["shared/*"], // Абсолютный импорт для shared
+      "app/*": ["app/*"],       // Абсолютный импорт для app
+      "images/*": ["shared/images/*"] // Абсолютный импорт для изображений
+    }
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  }
+}

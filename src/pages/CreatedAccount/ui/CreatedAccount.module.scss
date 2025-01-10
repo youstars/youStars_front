@@ -1,0 +1,255 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  gap: 20px;
+  align-items: center;
+}
+
+.blockForm {
+  background: var(--bg-login-form);
+  width: 450px;
+  border-radius: 40px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.back {
+  position: absolute;
+  top: 20px;
+  left: 120px;
+  font-size: 50px;
+  color: #ffc4004d;
+  font-weight: bold;
+  transform: scaleY(2);
+}
+
+.backText {
+  position: absolute;
+  left: 120px;
+  font-size: 20px;
+  color: #ffc4004d;
+  padding-top: 20px;
+  padding-left: 40px;
+}
+
+h2 {
+  display: flex;
+  justify-content: center;
+  font-size: 20px;
+  padding-top: 35px;
+  margin-bottom: 23px;
+  color: var(--primery-color);
+}
+
+.hrSubTitle {
+  width: 360.96px;
+  border: 1px solid #dfdfdf;
+  margin: 0 auto;
+}
+
+.blockInputs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 25px;
+}
+
+.input {
+  width: 323.66px;
+  height: 45px;
+  top: 300px;
+  left: 473.96px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  padding-left: 15px;
+  font-size: 17px;
+  background: var(--bg-input-color);
+  color: var(--text-input-color);
+}
+
+.fieldName {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.fieldLastName {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.fieldEmail {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+
+}
+
+
+fieldset {
+  border: none;
+}
+
+.fieldCheckbox {
+  display: flex;
+  justify-content: center;
+  width: 270px;
+  margin-top: 13px;
+  margin-left: -50px;
+}
+
+.fieldPassword {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+
+}
+.fieldContainer {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.error {
+  position: absolute;
+  bottom: -18px;
+  color: red;
+  font-size: 12px;
+}
+
+.checkbox {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  background: var(--bg-checkbox-color);
+  border-radius: 2px;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin-top: 2px;
+}
+
+.checkboxContent {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 12.1px;
+  text-align: left;
+  color: var(--primery-color);
+  padding-left: 12px;
+}
+
+.checkbox:checked {
+  background: #4caf50;
+  border-color: #4caf50;
+}
+
+.checkbox:focus {
+  outline: none;
+  box-shadow: 0 0 3px 2px rgba(100, 150, 250, 0.5);
+}
+
+.label {
+  margin-bottom: 9px;
+  color: #888888;
+}
+
+.buttonContinue {
+  background: var(--bg-button-color);
+  width: 323.66px;
+  height: 45px;
+  top: 450px;
+  left: 473.96px;
+  border-radius: 12px;
+  border: none;
+  margin-top: 25px;
+  cursor: pointer;
+}
+
+.horizont {
+  display: flex;
+  justify-content: center; /* Центрируем элементы по горизонтали */
+  align-items: center; /* Центрируем по вертикали */
+  //gap: 12px;
+  margin-top: 23px;
+  width: 100%;
+}
+
+.horizont_hr {
+  width: 160.03px;
+  border: none;
+  border-top: 1px solid #dfdfdf;
+}
+
+.horizont_p {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 13.31px;
+  color: #888888;
+  text-align: center;
+  padding: 0 10px;
+}
+
+
+
+.continue {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 23px;
+  gap: 18px;
+}
+
+.withGoogle, .withApple {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-login-form);
+  color: var(--text-input-color);
+  width: 323.66px;
+  height: 45px;
+  border-radius: 12px;
+  border: 1px solid #d9d9d9;
+  position: relative;
+  cursor: pointer;
+}
+
+.google, .apple {
+  position: absolute;
+  left: 16px;
+  height: 20px;
+}
+
+.paragraph {
+  margin: 0;
+  text-align: center;
+}
+
+.createAccount {
+  background: none;
+  border: none;
+  color: var(--bg-button-color);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 16.94px;
+  text-align: center;
+}
+
+.accountLogin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+

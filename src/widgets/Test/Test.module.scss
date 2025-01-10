@@ -1,0 +1,58 @@
+.blockTest {
+  background: var(--bg-login-form);
+  width: 900px;
+  height: 573px;
+  margin: 0 auto;
+  border-radius: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+h2 {
+  font-size: 20px;
+  text-align: center;
+  padding-top: 35px;
+  margin-bottom: 23px;
+}
+
+.span {
+  display: flex;
+  margin: 0 auto;
+  width: 721.93px;
+  height: 0;
+  top: 233px;
+  left: 277.04px;
+  text-align: center;
+  border: 1px solid #dfdfdf;
+}
+
+.contentBlock {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  flex-grow: 1;
+  padding-top: 25px;
+}
+p{
+  font: inherit;
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.link {
+  margin-top: auto;
+}
+
+.contentBlock  Button {
+  margin-bottom: 61px;
+  background: var(--bg-button-color);
+  width: 323.66px;
+  height: 45px;
+  top: 450px;
+  left: 473.96px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+}
+

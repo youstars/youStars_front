@@ -1,0 +1,31 @@
+{
+  "For specialists": "Для специалиста",
+  "Email or phone number": "Электронная почта или номер телефона",
+  "Password": "Пароль",
+  "For customers": "Для клиентов",
+  "Log in your account": "Войдите в свой аккаунт",
+  "Log in": "Авторизция",
+  "Continue with Google": "Продолжить с Google",
+  "Continue with Apple": "Продолжить с Apple",
+  "Create an account": "Создать учетную запись",
+  "Translate": "Перевод",
+  "Or": "Или",
+  "Last name": "Фамилия",
+  "Name": "Имя",
+  "Create your account": "Создайте свою учетную запись",
+  "Continue": "Продолжать",
+  "By creating an account, I agree to the YouStar Terms of Use and Privacy Policy": {
+    "": "Создавая учетную запись, я соглашаюсь с Условиями использования и Политикой конфиденциальности YouStar."
+  },
+  "Do you already have an account?": "У вас уже есть аккаунт?",
+  "Password confirmation": "Подтверждение пароля",
+  "Back": "Назад",
+  "Test task": "Тестовое задание",
+  "Take a small test task to assess the level of your knowledge": "Выполните небольшое тестовое задание, чтобы оценить уровень своих знаний.",
+  "Next": "Следующий",
+  "First steps": "Первые шаги",
+  "Do you want to set up basic profile data now or later?": "Хотите настроить основные данные профиля сейчас или позже?",
+  "Fill out a profile": "Заполнить профиль",
+  "Later": "Позже",
+  "User name":"Имя пользователя"
+}

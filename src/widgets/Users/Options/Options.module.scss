@@ -1,0 +1,94 @@
+.block {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-left:7px;
+  width: 100%;
+}
+
+.profileManagers {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.profileImages {
+  width: 50px;
+  height: 50px;
+  border-radius: 20px;
+  background: var(--bg-toggle-color);
+  cursor: pointer;
+}
+
+.f {
+  padding-top: 30px;
+  margin-left: 52px;
+}
+
+.btn {
+  width: 120px;
+  height: 50px;
+  border-radius: 20px;
+  border: none;
+  background: #fff7dc;
+  color: #ffc400;
+  cursor: pointer;
+
+}
+
+.title {
+  font-family: Inter;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.logo {
+  margin-bottom: 20px;
+  display: flex;
+}
+
+.dashboardContainer {
+  display: flex;
+  position: relative;
+  margin-top: -30px;
+}
+
+.dashboard {
+  cursor: pointer;
+}
+
+
+.leftBoard {
+  position: absolute;
+  left: -30px;
+  margin-top: -5px;
+  width: 3px;
+  height: 34px;
+  background: #ffc400;
+  transition: top 0.3s ease;
+}
+
+.options {
+  display: flex;
+  gap: 25px;
+  flex-direction: column;
+  margin-left: 10px;
+  position: absolute;;
+
+
+  p {
+    cursor: pointer;
+    color: #888888;
+
+    &:hover {
+      color: #ffc400;
+    }
+  }
+
+  .active {
+    color: #ffc400;
+  }
+}
+
+
+

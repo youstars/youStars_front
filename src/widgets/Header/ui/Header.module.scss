@@ -1,0 +1,62 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 140px;
+  margin-bottom: 50px;
+}
+
+.images {
+  cursor: pointer;
+  display: flex;
+}
+
+.images, p {
+  padding-left: 20px;
+  color: var(--secondary-color);
+  cursor: pointer;
+}
+
+
+.logo {
+  cursor: pointer;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 100px;
+}
+
+.btns {
+  display: flex;
+  gap: 20px;
+}
+
+.btn {
+  background: #ebebeb;
+  width: 162px;
+  height: 45px;
+  top: 17px;
+  left: 721px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.selected {
+  background: var(--bg-toggle-color);
+  color: var(--primery-color);
+}
+
+.transparent {
+  background-color: transparent;
+  color: var(--primery-color);
+}

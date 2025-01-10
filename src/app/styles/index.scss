@@ -1,0 +1,21 @@
+@import "themes/dark";
+@import "themes/light";
+@import "variables/global";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+.app {
+  font: var(--font-m);
+  color: var(--primery-color);
+  background: var(--bg-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
