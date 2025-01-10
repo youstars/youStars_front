@@ -4,7 +4,7 @@ import whiteApple from "shared/images/whiteApple.svg";
 import { useTranslation } from "react-i18next";
 import classes from "./CreatedAccount.module.scss";
 import { Link } from "react-router-dom";
-import { useTheme } from "app/provider/lib/useTheme";
+import { useTheme } from "app/provider/lib_lib/useTheme";
 import google from "shared/images/google.svg";
 import { Button, Input } from "shared/index";
 import { useDispatch, useSelector } from "react-redux";

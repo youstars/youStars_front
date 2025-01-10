@@ -1,6 +1,5 @@
 import './styles/index.scss'
-import {className} from "./provider/lib/classNames/classNames";
-import {useTheme} from "app/provider/lib/useTheme";
+import {useTheme} from "app/provider/lib_lib/useTheme";
 import React, {Suspense} from "react";
 import {BrowserRouter} from "react-router-dom";
 import {Routes, Route} from "react-router-dom";
@@ -10,6 +9,7 @@ import {StepsAsync} from "../pages/Steps";
 import Managers from "../pages/Managers/ui/Managers";
 import Test from "../widgets/Test/Test";
 import {Header} from "../widgets/Header";
+import { className } from './provider/lib_lib/classNames/classNames';
 
 function App() {
     const {theme} = useTheme()

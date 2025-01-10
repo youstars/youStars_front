@@ -1,7 +1,7 @@
 import classes from "./Header.module.scss";
 import whiteLogo from "shared/images/whiteLogo.svg";
 import blackLogo from "shared/images/blackLogo.svg";
-import {useTheme} from "app/provider/lib/useTheme";
+import {useTheme} from "app/provider/lib_lib/useTheme";
 import React, {useState, useEffect} from "react";
 import darkIcon from "shared/images/dark.svg";
 import lightIcon from "shared/images/light.svg";
