@@ -23,7 +23,7 @@ function App() {
                         <Route path="/create-account/:role" element={<CreateAccountAsync />} />
                         <Route path={'/test'} element={<Test/>}/>
                         <Route path={'/steps'} element={<StepsAsync/>}/>
-                        <Route path={'/projects'} element={<Managers/>}/>
+                        <Route path={'/projects_user'} element={<Managers/>}/>
                     </Routes>
             </BrowserRouter>
             </Suspense>
