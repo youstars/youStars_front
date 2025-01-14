@@ -1,8 +1,8 @@
-import React from 'react';
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import styles from './TaskPage.module.scss';
-import {getTasks} from "shared/store/slices/tasksSlice";
+import { getTasks } from "shared/store/slices/tasksSlice";
+import { AppDispatch } from "shared/store";
+import classes from './TaskPage.module.scss';
 
 interface Task {
     id: string;
@@ -26,11 +26,11 @@ const statusTitles: { [key: string]: string } = {
 };
 
 const TaskCard = ({ task }: { task: Task }) => (
-    <div className={styles.taskCard}>
-        <div className={styles.taskContent}>
-            <p className={styles.material}>{task.material}</p>
-            <p className={styles.notice}>{task.notice}</p>
-            <div className={styles.dates}>
+    <div className={classes.taskCard}>
+        <div className={classes.taskContent}>
+            <p className={classes.material}>{task.material}</p>
+            <p className={classes.notice}>{task.notice}</p>
+            <div className={classes.dates}>
                 <p>Начало: {task.start_date}</p>
                 <p>Конец: {task.end_date}</p>
             </div>
@@ -39,13 +39,12 @@ const TaskCard = ({ task }: { task: Task }) => (
 );
 
 const TaskPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const getData = useSelector((state: any) => state.tasks.tasks);
 
     useEffect(() => {
         const fetchTasks = async () => {
             try {
-                // @ts-ignore
                 const result = await dispatch(getTasks()).unwrap();
                 console.log("Tasks data:", result);
             } catch (error) {
@@ -64,24 +63,26 @@ const TaskPage = () => {
     }, {}) || {};
 
     return (
-        <div className={styles.container}>
+        <div className={classes.container}>
             {getData.results && getData.results.length > 0 ? (
-                <div className={styles.statusColumns}>
+                <div className={classes.statusColumns}>
                     {Object.entries(groupedTasks).map(([status, tasks]) => (
-                        <div key={status} className={styles.statusColumn}>
-                            <div className={styles.statusHeader}>
+                        <div key={status} className={classes.statusColumn}>
+                            <div className={classes.statusHeader}>
                                 <h3>{statusTitles[status]}</h3>
                             </div>
-                            <div className={styles.tasksList}>
+                            <div className={classes.taskBlock}>
+                            <div className={classes.tasksList}>
                                 {tasks.map((task: Task) => (
                                     <TaskCard key={task.id} task={task} />
                                 ))}
+                            </div>
                             </div>
                         </div>
                     ))}
                 </div>
             ) : (
-                <p className={styles.notFound}>Задачи не найдены</p>
+                <p className={classes.notFound}>Задачи не найдены</p>
             )}
         </div>
     );
