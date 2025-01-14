@@ -1,0 +1,96 @@
+.blockSkils {
+  margin-left: 113px;
+}
+
+.title {
+  margin-top: 25px;
+  margin-left: 213px;
+}
+
+.formName {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.name, .lastName {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.name Input, .lastName Input {
+  width: 323.66px;
+  height: 45px;
+  border-radius: 12px;
+  padding-left: 15px;
+  border: none;
+  outline: none;
+  font-size: 17px;
+  background: var(--bg-input-color);
+  color: var(--text-input-color);
+  margin-top: 9px;
+}
+
+.paragraph {
+  padding-left: 0;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16.94px;
+  text-align: left;
+  color: #888888;
+  margin-left: 0;
+}
+
+.addPlaceWork {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  outline: none;
+  border: none;
+  background: var(--bg-input-color);
+  justify-content: center;
+  font-size: 60px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  font-weight: 50;
+  font-family: "Roboto", sans-serif;
+  padding: 0;
+  cursor: pointer;
+  color: #888888;
+}
+
+.addAnotherPlace {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 36px;
+}
+
+.addPlaceWork {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  outline: none;
+  border: none;
+  margin-top: 9px;
+  background: var(--bg-input-color);
+  justify-content: center;
+  font-size: 60px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  font-weight: 100;
+  font-family: "Roboto", sans-serif;
+  padding: 0;
+  cursor: pointer;
+  color: #888888;
+}
+
+.addPlaceWork {
+  margin-top: 9px;
+}/*# sourceMappingURL=Skils.module.css.map */
