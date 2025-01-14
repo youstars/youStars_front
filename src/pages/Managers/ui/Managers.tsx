@@ -10,18 +10,13 @@ import {Button, Input} from "shared/index";
 import {useTranslation} from "react-i18next";
 import LanguageSwitcher from "../../../widgets/LanguageSwitcher/LanguageSwitcher";
 import Options from "../../../widgets/Users/Options/Options";
-import taskPage from "../../TaskPage/TaskPage";
 import TaskPage from "../../TaskPage/TaskPage";
-
 
 const Managers: React.FC = () => {
     const {theme, toggleTheme} = useTheme();
     const [logo, setLogo] = useState<string>(whiteLogo);
     const [icon, setIcon] = useState<string>(lightIcon);
     const {t} = useTranslation();
-
-
-
 
     useEffect(() => {
         if (theme === 'dark') {
@@ -31,7 +26,6 @@ const Managers: React.FC = () => {
             setIcon(darkIcon);
             setLogo(whiteLogo);
         }
-
     }, [theme])
 
 
@@ -64,10 +58,6 @@ const Managers: React.FC = () => {
                     </div>
                 </div>
 
-
-
-<TaskPage/>
-
                 <div className={classes.images}>
                     <span className={classes.titleForm}>{t('Search')}</span>
                     <div className={classes.forms}>
@@ -81,6 +71,7 @@ const Managers: React.FC = () => {
                 <LanguageSwitcher/>
             </div>
             <Options/>
+            <TaskPage/>
         </div>
     );
 };

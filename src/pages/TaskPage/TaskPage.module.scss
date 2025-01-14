@@ -1,4 +1,92 @@
-h2{
-  //font-size: 30px;
-  color:red;
+.container {
+  min-height: 100vh;
+  padding: 2rem;
+  margin: 0 auto;
+}
+
+.statusColumns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #2a2b2e;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #4a4b4e;
+    border-radius: 4px;
+  }
+}
+
+.statusColumn {
+  flex: none;
+  width: 15rem;
+}
+
+.statusHeader {
+  background-color: #2a2b2e;
+  border-radius: 1.5rem 1.5rem 0 0;
+  padding: 0.75rem 2rem;
+  margin-bottom: 0.5rem;
+
+  h3 {
+    color: white;
+    text-align: center;
+    font-weight: 500;
+    font-size: 1rem;
+  }
+}
+
+.tasksList {
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px 20px;
+}
+
+.taskBlock {
+  background-color: #2a2b2e;
+  border-radius: 0 0 20px 20px;
+}
+
+.taskCard {
+  padding: 1rem;
+}
+
+.taskContent {
+  border: 1px solid #4a4b4e;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+}
+
+.material {
+  color: #ffff;
+  margin-bottom: 0.5rem;
+}
+
+.notice {
+  color: #ffff;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.dates {
+  color: #ffff;
+
+  p {
+    margin-bottom: 0.25rem;
+  }
+}
+
+.notFound {
+  color: white;
+  text-align: center;
+  font-size: 1.125rem;
 }
