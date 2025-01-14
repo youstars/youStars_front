@@ -1,0 +1,11 @@
+.block {
+  height: 35px;
+  background-color: var(--bg-color);
+  padding: 10px 20px;
+  display: flex;
+  width: -moz-fit-content;
+  width: fit-content;
+  align-items: center;
+  gap: 10px;
+  border-radius: 10px;
+}/*# sourceMappingURL=Tab.module.css.map */

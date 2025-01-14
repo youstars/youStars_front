@@ -1,0 +1,71 @@
+.title {
+  text-align: center;
+  margin-top: 25px;
+}
+
+.mainBlock {
+  display: flex;
+  margin-left: 113px;
+  margin-top: 25px;
+}
+
+.blockNotifications {
+  display: flex;
+  flex-direction: column;
+}
+
+.blockTelegram {
+  display: flex;
+  flex-direction: column;
+  margin-left: 25px;
+}
+
+.input {
+  width: 323.66px;
+  height: 45px;
+  border-radius: 12px;
+  padding-left: 15px;
+  border: none;
+  outline: none;
+  font-size: 17px;
+  background: var(--bg-input-color);
+  color: var(--text-input-color);
+  margin-top: 9px;
+}
+
+.titleNotifications {
+  font-family: Inter;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16.94px;
+  text-align: left;
+  color: #888888;
+}
+
+.titleTelegram {
+  font-family: Inter;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16.94px;
+  text-align: left;
+  color: #888888;
+}
+
+.blockButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 68px;
+}
+
+.saveButton {
+  background: var(--bg-button-color);
+  width: 323.66px;
+  height: 45px;
+  top: 450px;
+  left: 473.96px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  margin: 0 auto;
+}/*# sourceMappingURL=NotificationsSettings.module.css.map */

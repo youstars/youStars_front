@@ -1,0 +1,11 @@
+.app.light {
+  --bg-color: #fff;
+  --primery-color:#000000;
+  --secondary-color: #000000;
+  --bg-toggle-color: #EBEBEB;
+  --bg-login-form:#F6F6F6;
+  --bg-input-color: #EBEBEB;
+  --text-input-color:#2D3134;
+  --bg-button-color: #FFC400;
+  --bg-checkbox-color: #EBEBEB;
+}/*# sourceMappingURL=light.css.map */

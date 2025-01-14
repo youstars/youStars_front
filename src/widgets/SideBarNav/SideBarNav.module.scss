@@ -1,0 +1,37 @@
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 22px;
+    color: var(--secondary-font-color); 
+    text-decoration: none; 
+    font-size: 14px; 
+    transition: color 0.3s; 
+  }
+  
+  .navItem:hover {
+    color: var(--bg-button-color);
+  }
+  
+  .active {
+    color: var(--bg-button-color);
+    font-weight: 800;
+  }
+
+  a {
+    text-decoration: underline; /* Может переопределять ваши стили */
+    color: inherit;
+    color: var(--secondary-font-color); /* Установите ваш цвет текста */
+
+  }
+
+  .leftBoard {
+    position: absolute;
+    left: -30px;
+    margin-top: -5px;
+    width: 3px;
+    height: 34px;
+    background: #ffc400;
+    transition: top 0.3s ease;
+  }
+  

@@ -1,0 +1,102 @@
+@charset "UTF-8";
+aside {
+  min-width: 250px;
+  height: 100%;
+  background-color: var(--bg-toggle-color);
+  border: 1px solid #272A2D;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.proj_block {
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  align-items: center;
+  border-bottom: 1px solid #272A2D;
+  padding: 0 13px;
+}
+
+.navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.proj_block_elements {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.proj_avatar {
+  width: 30px;
+  height: 30px;
+  background-color: var(--bg-color);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.proj_avatar p {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--secondary-font-color);
+}
+
+.block_name {
+  font-size: 9px;
+  color: var(--secondary-font-color);
+  line-height: 1.35;
+}
+
+.input {
+  width: 90%;
+  height: 30px;
+  border-radius: 10px;
+  border: none;
+  background: var(--bg-color);
+  outline: none;
+  color: var(--text-input-color);
+  margin: 0 12px;
+  padding-left: 40px;
+}
+
+.search_icon {
+  position: absolute;
+  left: 25px;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.input_wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.arrow {
+  all: unset;
+}
+
+.navItem {
+  display: block;
+  padding: 10px;
+  text-decoration: none;
+  color: var(--text-color);
+  transition: background-color 0.3s;
+}
+
+.navItem:hover {
+  background-color: var(--hover-color);
+}
+
+.active {
+  background-color: yellow; /* Подсветка активной ссылки */
+  font-weight: bold;
+}/*# sourceMappingURL=SideBar.module.css.map */

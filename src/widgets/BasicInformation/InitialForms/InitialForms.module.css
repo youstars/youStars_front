@@ -1,0 +1,55 @@
+.formName {
+  display: flex;
+  justify-content: center;
+  gap: 26.34px;
+  align-items: flex-start;
+}
+
+.name, .lastName {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.name input, .lastName input {
+  width: 323.66px;
+  height: 45px;
+  border-radius: 12px;
+  padding-left: 15px;
+  border: none;
+  outline: none;
+  font-size: 17px;
+  background: var(--bg-input-color);
+  color: var(--text-input-color);
+  margin-top: 9px;
+}
+
+.paragraph {
+  padding-left: 0;
+  width: 184.09px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16.94px;
+  text-align: left;
+  color: #888888;
+  margin-left: 0;
+}
+
+.middleName {
+  margin-left: 113px;
+  margin-top: 25px;
+}
+
+.middleName Input {
+  width: 323.66px;
+  height: 45px;
+  border-radius: 12px;
+  padding-left: 15px;
+  border: none;
+  outline: none;
+  font-size: 17px;
+  background: var(--bg-input-color);
+  color: var(--text-input-color);
+  margin-top: 9px;
+}/*# sourceMappingURL=InitialForms.module.css.map */
