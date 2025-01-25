@@ -61,6 +61,7 @@ const TaskPage = () => {
         acc[task.status].push(task);
         return acc;
     }, {}) || {};
+     
 
     return (
         <div className={classes.container}>
