@@ -50,14 +50,18 @@
 }
 
 .time {
+    //width: 50px;
+    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 0;
-    // gap: -10px;
+
 }
 
 .time p {
+    //width: 35px;
+    text-align: center;
     margin: 0;
     line-height: 1.35; /* Уменьшаем высоту строки для сжатия текста */
 }
@@ -68,6 +72,5 @@
     background-color: var(--bg-color);
     padding: 8px;
     border-radius: 10px;
-
 
 }

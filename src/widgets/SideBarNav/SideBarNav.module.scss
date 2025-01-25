@@ -3,16 +3,16 @@
     align-items: center;
     gap: 8px;
     margin-left: 22px;
-    color: var(--secondary-font-color); 
-    text-decoration: none; 
-    font-size: 14px; 
-    transition: color 0.3s; 
+    color: var(--secondary-font-color);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
   }
-  
+
   .navItem:hover {
     color: var(--bg-button-color);
   }
-  
+
   .active {
     color: var(--bg-button-color);
     font-weight: 800;
@@ -34,4 +34,3 @@
     background: #ffc400;
     transition: top 0.3s ease;
   }
-  

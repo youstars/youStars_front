@@ -1,0 +1,174 @@
+.main {
+  width: 100%;
+  background: #272a2d;
+  height: 100vh;
+}
+
+p {
+  font-family: "Myriad Pro";
+}
+
+.status p {
+  font-family: "Myriad Pro", sans-serif;
+}
+
+.search_an_filter {
+  width: 100%;
+  height: 50px;
+  background: #353a3d;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+}
+
+
+.filter {
+  display: flex;
+  gap: 10px;
+}
+
+.filter > p {
+  font-size: 14px;
+  width: 11vw;
+  height: 40px;
+  background: #272a2d;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+}
+
+.filter p:nth-child(2) {
+  font-size: 14px;
+  width: 13vw;
+  height: 40px;
+  background: #272a2d;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+}
+
+
+.input {
+  width: 205px;
+  height: 32px;
+  list-style: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  background: #272a2d;
+  border-radius: 10px;
+  color: white;
+  padding-left: 50px;
+}
+
+
+.input_wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse
+}
+
+.search_icon {
+  position: absolute;
+  left: 15px;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+//options
+
+.options {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: space-around;
+  margin-left: 10px;
+  //gap:90px;
+  //background: #888888;
+}
+
+.status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  //padding-left: 40px;
+}
+
+.status > img {
+  width: 15px;
+  height: 15px;
+}
+
+
+//project card
+
+
+.project_card {
+  display: flex;
+  align-items: center; /* Выравнивание элементов по вертикали */
+  justify-content: space-around; /* Равномерное распределение между элементами */
+  border: 0.5px solid black;
+  background: #353a3d;
+  height: 41px;
+}
+
+.project_name,
+.project_captain,
+.project_end_date,
+.project_students,
+.project_duration,
+.project_chat {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  padding-left: 12px;
+  height: 100%;
+  font-family: "Myriad Pro", sans-serif;
+}
+
+.project_name {
+  width: 18vw;
+  border-right: 1px solid black;
+}
+
+.project_captain {
+  flex: 1.3;
+}
+
+.project_students {
+  flex: 1.3;
+}
+
+.project_end_date {
+  flex: 1.4;
+}
+
+
+.project_duration {
+  flex: 1;
+}
+
+.project_chat {
+  flex: 0.8;
+}
+
+.project_captain p,
+.project_end_date p,
+.project_students p,
+.project_duration p,
+.project_chat p,
+.project_name p {
+  font-size: 14px;
+  font-family: "Myriad Pro", sans-serif;
+  margin: 0;
+  padding: 0;
+}

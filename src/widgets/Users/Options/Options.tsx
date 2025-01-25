@@ -28,7 +28,6 @@ const Options = () => {
 
     return (
         <div className={classes.block}>
-
             <div className={classes.dashboardContainer}>
                 {isOptionsVisible && (
                     <div className={classes.leftBoard} style={{top: `${leftBoardPosition}px`}}></div>

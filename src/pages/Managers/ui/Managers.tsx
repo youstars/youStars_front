@@ -10,7 +10,7 @@ import {Button, Input} from "shared/index";
 import {useTranslation} from "react-i18next";
 import LanguageSwitcher from "../../../widgets/LanguageSwitcher/LanguageSwitcher";
 import Options from "../../../widgets/Users/Options/Options";
-import TaskPage from "../../TaskPage/TaskPage";
+
 
 const Managers: React.FC = () => {
     const {theme, toggleTheme} = useTheme();
@@ -30,6 +30,7 @@ const Managers: React.FC = () => {
 
 
 
+    // @ts-ignore
     return (
         <div className={classes.block}>
             <div className={classes.logo}>
@@ -71,7 +72,6 @@ const Managers: React.FC = () => {
                 <LanguageSwitcher/>
             </div>
             <Options/>
-            <TaskPage/>
         </div>
     );
 };
