@@ -11,30 +11,28 @@
 
 /* Заголовок с переключением месяцев */
 .gantt-header {
-
-  /* flex-direction: column; */
+  display: flex;
   align-items: center;
+  justify-content: center;
   padding: 8px;
   background-color: var(--bg-toggle-color);
   color: white;
   border-radius: 6px;
   position: relative;
-  
 }
 
 .gantt-title {
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 16px;
+  font-weight: normal;
   color: white;
-  margin-bottom: 10px; /* Отступ между заголовком и навигацией */
   position: absolute;
+  left: 90px;
 }
 
 .gantt-month-navigation {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px; /* Расстояние между стрелками и месяцем */
+  gap: 10px;
 }
 
 .gantt-arrow {
@@ -57,8 +55,6 @@
   color: white;
 }
 
-
-
 /* Контент */
 .gantt-content {
   display: grid;
@@ -69,38 +65,88 @@
 /* Таблица статусов */
 .gantt-status-table {
   display: grid;
-  grid-template-rows: repeat(auto-fill, 50px); /* Автоматическое заполнение строк */
-  background-color: var(--bg-toggle-color);
-  padding: 16px;
+  grid-auto-rows: 40px; /* Уменьшенная высота строки */
+  gap: 15px;
+  padding: 20px;
   border-radius: 8px;
   color: white;
+  position: relative;
+}
+.gantt-status-table p {
+  font-size: 16px;
+  text-align: center;
+  color: white;
+  
+}
+
+.gantt-status-table .specialists {
+  font-size: 9px;
+  text-align: center;
+  color: #888888;
+  position: absolute;
+  top: 50px; /* Располагаем в верхней части контейнера */
+  left: 50%; /* Смещаем элемент на центр по горизонтали */
+  transform: translateX(-50%); /* Центрируем по горизонтали */
+  background-color: var(--bg-toggle-color);
+  width: 80%;
+  border-radius: 6px;
+  line-height: 1.5;
 }
 
 .gantt-status-row {
   display: flex;
+  line-height: 2.1;
+  flex-direction: column;
   align-items: center;
-  border-bottom: 1px solid #555;
-  padding: 8px;
+  justify-content: center;
+  padding: 6px; /* Уменьшенный padding */
+  /* border: 1px solid #444; */
+  border-radius: 8px;
+  background-color: var(--bg-toggle-color);
+  height: 40px; /* Уменьшенная высота строки */
+}
+
+.gantt-status-row span:first-child {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px; /* Уменьшенный круг */
+  height: 12px;
+  background-color: #6E8AE6; /* Синий фон */
+  color: black;
+  font-weight: bold;
+  border-radius: 5px; /* Круглый значок */
+  
+  font-size: 8px; /* Размер текста в значке */
+}
+
+.gantt-day.today {
+  background-color:  #68577f !important; /* Синий полупрозрачный фон */
+  color: white;
+  font-weight: bold;
+
 }
 
 .gantt-status-row span {
   flex: 1;
   text-align: center;
+  font-size: 8px; /* Уменьшенный шрифт */
 }
 
 /* Календарь и задачи */
 .gantt-calendar-container {
   display: grid;
-  grid-template-rows: auto auto; /* Сначала календарь, потом задачи */
+  grid-template-rows: auto auto;
   gap: 8px;
 }
 
 .gantt-calendar {
   display: grid;
-  grid-template-columns: repeat(31, 1fr); /* 31 день */
+  grid-template-columns: repeat(31, 1fr);
   background: var(--bg-toggle-color);
   padding: 8px;
   border-radius: 6px;
+  height: 50px;
 }
 
 .gantt-day {
@@ -110,6 +156,7 @@
   border-left: 1px solid #555;
   border-right: 1px solid #555;
   font-size: 8px;
+  height: 30px;
 }
 
 .gantt-day.weekend {
@@ -119,62 +166,21 @@
 
 /* Секция задач */
 .gantt-tasks {
-  margin: 8px;
   display: grid;
+  margin: 10px;
   grid-template-columns: repeat(31, 1fr); /* 31 день */
-  grid-auto-rows: 50px; /* Автоматическое добавление строк высотой 50px */
+  grid-auto-rows: 50px; /* Высота строки 50px */
   position: relative;
   border-radius: 6px;
   align-items: center;
-  overflow: visible;
   background-color: var(--bg-toggle-color);
 }
 
-/* Красные ячейки выходных в задачах */
-.gantt-tasks .gantt-day-task.weekend {
+.gantt-task-column {
   background: rgba(255, 0, 0, 0.2);
-  color: white;
+  grid-row: 1 / -1;
 }
 
-/* Горизонтальные линии */
-.gantt-tasks::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent 49px, /* Высота строки */
-    white 49px,        /* Горизонтальная линия */
-    transparent 50px
-  );
-  z-index: 0;
-  pointer-events: none; /* Чтобы линии не мешали кликам */
-}
-
-/* Вертикальные линии для разделения дней */
-.gantt-tasks::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: repeating-linear-gradient(
-    to right,
-    transparent,
-    transparent calc(100% / 31 - 3px), /* Ширина одного дня */
-    #2A2B2E calc(100% / 31 - 1px),        /* Линия между днями */
-    transparent calc(100% / 31)
-  );
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* Задачи */
 .gantt-task {
   background: rgba(255, 255, 255, 0.1);
   padding: 4px;
@@ -195,3 +201,40 @@
   cursor: pointer;
 }
 
+/* Горизонтальные линии */
+.gantt-tasks::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 49px,
+    white 49px,
+    transparent 50px
+  );
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Вертикальные линии для разделения дней */
+.gantt-tasks::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    to right,
+    transparent,
+    transparent calc(100% / 31 - 2px),
+    #555 calc(100% / 31 - 1px),
+    transparent calc(100% / 31)
+  );
+  z-index: 0;
+  pointer-events: none;
+}

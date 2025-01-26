@@ -71,6 +71,15 @@ const Gantt: React.FC = () => {
     return dayOfWeek === 0 || dayOfWeek === 6;
   };
 
+  const isToday = (day: number): boolean => {
+    const today = new Date();
+    return (
+      today.getDate() === day &&
+      today.getMonth() === currentDate.getMonth() &&
+      today.getFullYear() === currentDate.getFullYear()
+    );
+  };
+
   const filteredTasks = tasks.filter((task) => {
     const taskStartMonth = task.start.getMonth();
     const taskEndMonth = task.end.getMonth();
@@ -115,27 +124,29 @@ const Gantt: React.FC = () => {
 
   return (
     <div className="gantt-container">
-   <div className="gantt-header">
-  <h1 className="gantt-title">График времени</h1>
-  <div className="gantt-month-navigation">
-    <button onClick={handlePreviousMonth} className="gantt-arrow">
-      {"<"}
-    </button>
-    <span className="gantt-month">
-      {currentDate.toLocaleString("default", {
-        month: "long",
-      })}{" "}
-      {currentDate.getFullYear()}
-    </span>
-    <button onClick={handleNextMonth} className="gantt-arrow">
-      {">"}
-    </button>
-  </div>
-</div>
+      <div className="gantt-header">
+        <div className="gantt-month-navigation">
+          <button onClick={handlePreviousMonth} className="gantt-arrow">
+            {"<"}
+          </button>
+          <span className="gantt-month">
+            {currentDate.toLocaleString("default", {
+              month: "long",
+            })}{" "}
+            {currentDate.getFullYear()}
+          </span>
+          <button onClick={handleNextMonth} className="gantt-arrow">
+            {">"}
+          </button>
+        </div>
+      </div>
 
       <div className="gantt-content">
         <div className="gantt-status-table">
-          <h3>Статусы задач</h3>
+          <p className="graph">График времени</p>
+          {/* <p>Специалисты / работы</p> */}
+
+          <p className="specialists">Специалисты / работы</p>
           {adjustedTasks.map((task) => (
             <div key={task.id} className="gantt-status-row">
               <span>{task.specialist}</span>
@@ -150,7 +161,9 @@ const Gantt: React.FC = () => {
               return (
                 <div
                   key={i}
-                  className={`gantt-day ${isWeekend(day) ? "weekend" : ""}`}
+                  className={`gantt-day ${
+                    isWeekend(day) ? "weekend" : ""
+                  } ${isToday(day) ? "today" : ""}`}
                 >
                   {day}
                 </div>
