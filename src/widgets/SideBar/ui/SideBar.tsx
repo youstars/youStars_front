@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import classes from "./SideBar.module.scss";
 import SideBarNav from "widgets/SideBarNav/SideBarNav";
 import round from "shared/images/sideBarImgs/round.svg";
@@ -12,6 +12,8 @@ import arrow from "shared/images/sideBarImgs/arrow.svg";
 import search from "shared/images/sideBarImgs/search.svg";
 
 export default function SideBar() {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   const navItems = [
     { text: "Сводка", image: round, to: 'overview' },
     { text: "Проекты", image: projs, to: 'user_projects' },
@@ -22,35 +24,37 @@ export default function SideBar() {
     { text: "Настройки", image: settings, to: 'settings' },
   ];
 
-  
-
   return (
-    <aside>
+    <aside className={`${classes.sidebar} ${isCollapsed ? classes.collapsed : ""}`}>
       <div className={classes.upper_block}>
         <div className={classes.proj_block}>
           <div className={classes.proj_block_elements}>
             <div className={classes.proj_avatar}>
               <p>Y</p>
             </div>
-            <div className={classes.description}>
-              <p className={classes.block_name}>Рабочее пространоство</p>
-              <p className={classes.proj_name}>YouStars</p>
-            </div>
+            {!isCollapsed && (
+              <div className={classes.description}>
+                <p className={classes.block_name}>Рабочее пространство</p>
+                <p className={classes.proj_name}>YouStars</p>
+              </div>
+            )}
           </div>
-          <button className={classes.arrow}>
-            <img src={arrow} alt="" />
+          <button className={classes.arrow} onClick={() => setIsCollapsed(!isCollapsed)}>
+            <img src={arrow} alt="Toggle Sidebar" />
           </button>
         </div>
       </div>
-      <div className={classes.search}>
-        <div className={classes.input_wrapper}>
-          <input className={classes.input} type="text" placeholder="Поиск..." />
-          <img src={search} alt="Search Icon" className={classes.search_icon} />
+      {!isCollapsed && (
+        <div className={classes.search}>
+          <div className={classes.input_wrapper}>
+            <input className={classes.input} type="text" placeholder="Поиск..." />
+            <img src={search} alt="Search Icon" className={classes.search_icon} />
+          </div>
         </div>
-      </div>
+      )}
       <div className={classes.navigation}>
         {navItems.map((item, index) => (
-          <SideBarNav key={index} text={item.text} image={item.image}  to={item.to} />
+          <SideBarNav key={index} text={item.text} image={item.image} to={item.to} />
         ))}
       </div>
     </aside>

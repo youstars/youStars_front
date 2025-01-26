@@ -11,29 +11,29 @@
 .main {
   display: flex;
   width: 100%;
-  height: 100vh
-}
-
-.content {
-  width: 100%;
-}
-
-
-// height: 100vh;
-// overflow: hidden;
-// background-color: var(--bg-toggle-color);
+//   height: 100vh
 // }
 
 // .content {
-// flex: 1;
-// display: flex;
-// flex-direction: column;
-// min-width: 0; /* Critical for flex child to prevent overflow */
-// overflow: hidden;
+//   width: 100%;
 // }
 
-// .changed_part {
-// flex: 1;
-// overflow: hidden;
-// position: relative;
-// }
+
+height: 100vh;
+overflow: hidden;
+background-color: var(--bg-toggle-color);
+}
+
+.content {
+flex: 1;
+display: flex;
+flex-direction: column;
+min-width: 0; /* Critical for flex child to prevent overflow */
+overflow: hidden;
+}
+
+.changed_part {
+flex: 1;
+overflow: hidden;
+position: relative;
+}

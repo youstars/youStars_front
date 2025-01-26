@@ -144,12 +144,11 @@ const Gantt: React.FC = () => {
       <div className="gantt-content">
         <div className="gantt-status-table">
           <p className="graph">График времени</p>
-          {/* <p>Специалисты / работы</p> */}
 
           <p className="specialists">Специалисты / работы</p>
           {adjustedTasks.map((task) => (
             <div key={task.id} className="gantt-status-row">
-              <span>{task.specialist}</span>
+              <span>{task.specialist?.[0]}</span>
               <span>{getStatusLabel(task.status)}</span>
             </div>
           ))}
@@ -161,9 +160,9 @@ const Gantt: React.FC = () => {
               return (
                 <div
                   key={i}
-                  className={`gantt-day ${
-                    isWeekend(day) ? "weekend" : ""
-                  } ${isToday(day) ? "today" : ""}`}
+                  className={`gantt-day ${isWeekend(day) ? "weekend" : ""} ${
+                    isToday(day) ? "today" : ""
+                  }`}
                 >
                   {day}
                 </div>
