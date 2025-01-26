@@ -11,28 +11,53 @@
 
 /* Заголовок с переключением месяцев */
 .gantt-header {
-  display: flex;
-  justify-content: space-between;
+
+  /* flex-direction: column; */
   align-items: center;
   padding: 8px;
   background-color: var(--bg-toggle-color);
   color: white;
   border-radius: 6px;
+  position: relative;
+  
 }
 
-.gantt-header button {
-  background: none;
-  border: 1px solid #555;
+.gantt-title {
+  font-size: 24px;
+  font-weight: bold;
   color: white;
-  padding: 5px 10px;
-  cursor: pointer;
-  font-size: 16px;
-  border-radius: 6px;
+  margin-bottom: 10px; /* Отступ между заголовком и навигацией */
+  position: absolute;
 }
 
-.gantt-header button:hover {
-  background-color: #555;
+.gantt-month-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Расстояние между стрелками и месяцем */
 }
+
+.gantt-arrow {
+  background: none;
+  border: none;
+  color: #ffd700; /* Золотой цвет стрелок */
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+.gantt-arrow:hover {
+  transform: scale(1.1); /* Увеличение при наведении */
+}
+
+.gantt-month {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+}
+
+
 
 /* Контент */
 .gantt-content {
@@ -169,3 +194,4 @@
   background: rgba(255, 255, 255, 0.2);
   cursor: pointer;
 }
+

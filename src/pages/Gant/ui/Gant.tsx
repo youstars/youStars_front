@@ -10,7 +10,7 @@ type Task = {
   start: Date;
   end: Date;
   status: string;
-  specialist: string
+  specialist: string;
 };
 
 const Gantt: React.FC = () => {
@@ -19,7 +19,6 @@ const Gantt: React.FC = () => {
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-console.log(tasks);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -30,8 +29,8 @@ console.log(tasks);
           name: task.title,
           start: new Date(task.start_date),
           end: new Date(task.end_date),
-          status: task.status, // Добавляем статус задачи
-          specialist: task.assigned_specialist
+          status: task.status,
+          specialist: task.assigned_specialist,
         }));
         setTasks(mappedTasks);
       } catch (error) {
@@ -63,9 +62,13 @@ console.log(tasks);
   };
 
   const isWeekend = (day: number): boolean => {
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    const date = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      day
+    );
     const dayOfWeek = date.getDay();
-    return dayOfWeek === 0 || dayOfWeek === 6; // Воскресенье или суббота
+    return dayOfWeek === 0 || dayOfWeek === 6;
   };
 
   const filteredTasks = tasks.filter((task) => {
@@ -84,12 +87,14 @@ console.log(tasks);
   });
 
   const adjustedTasks = filteredTasks.map((task) => {
-    const taskStart = task.start.getMonth() === currentDate.getMonth()
-      ? task.start.getDate()
-      : 1; // Если задача началась в прошлом месяце, начало с 1
-    const taskEnd = task.end.getMonth() === currentDate.getMonth()
-      ? task.end.getDate()
-      : daysInMonth; // Если задача закончится в будущем месяце, конец — последний день месяца
+    const taskStart =
+      task.start.getMonth() === currentDate.getMonth()
+        ? task.start.getDate()
+        : 1;
+    const taskEnd =
+      task.end.getMonth() === currentDate.getMonth()
+        ? task.end.getDate()
+        : daysInMonth;
 
     return {
       ...task,
@@ -108,24 +113,28 @@ console.log(tasks);
     return "Неизвестный статус";
   };
 
-
   return (
     <div className="gantt-container">
-      
-      <div className="gantt-header">
-        
-        <button onClick={handlePreviousMonth}>{"<"}</button>
-        <span>
-          {currentDate.toLocaleString("default", {
-            month: "long",
-          })}{" "}
-          {currentDate.getFullYear()}
-        </span>
-        <button onClick={handleNextMonth}>{">"}</button>
-      </div>
+   <div className="gantt-header">
+  <h1 className="gantt-title">График времени</h1>
+  <div className="gantt-month-navigation">
+    <button onClick={handlePreviousMonth} className="gantt-arrow">
+      {"<"}
+    </button>
+    <span className="gantt-month">
+      {currentDate.toLocaleString("default", {
+        month: "long",
+      })}{" "}
+      {currentDate.getFullYear()}
+    </span>
+    <button onClick={handleNextMonth} className="gantt-arrow">
+      {">"}
+    </button>
+  </div>
+</div>
 
       <div className="gantt-content">
-      <div className="gantt-status-table">
+        <div className="gantt-status-table">
           <h3>Статусы задач</h3>
           {adjustedTasks.map((task) => (
             <div key={task.id} className="gantt-status-row">
@@ -165,8 +174,6 @@ console.log(tasks);
             ))}
           </div>
         </div>
-
-       
       </div>
     </div>
   );
