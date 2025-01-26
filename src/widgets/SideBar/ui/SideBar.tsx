@@ -22,10 +22,10 @@ export default function SideBar() {
     { text: "Настройки", image: settings, to: 'settings' },
   ];
 
-  
+
 
   return (
-    <aside>
+    <aside className={classes.aside}>
       <div className={classes.upper_block}>
         <div className={classes.proj_block}>
           <div className={classes.proj_block_elements}>
