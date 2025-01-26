@@ -108,3 +108,42 @@
   background-color: yellow;
   font-weight: bold;
 }
+
+aside {
+  width: 250px;
+  transition: width 0.3s;
+
+  &.collapsed {
+    width: 70px;
+
+    .proj_avatar {
+      margin: 0 auto;
+    }
+
+    .description {
+      display: none;
+    }
+
+    .input_wrapper {
+      display: none;
+    }
+
+    .navigation {
+      gap: 10px;
+
+      .navItem {
+        justify-content: center;
+        text-align: center;
+
+        img {
+          margin: 0 auto;
+        }
+
+        span {
+          display: none;
+        }
+      }
+    }
+  }
+}
+

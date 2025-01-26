@@ -67,6 +67,7 @@ const TaskPage = () => {
         acc[statusTitle].push(task);
         return acc;
     }, {}) || {};
+     
 
 
 
