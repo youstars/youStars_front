@@ -176,11 +176,9 @@
   background-color: var(--bg-toggle-color);
 }
 
-.gantt-task-column {
-  background: rgba(255, 0, 0, 0.2);
-  grid-row: 1 / -1;
+.gantt-task-column.weekend {
+  background-color: rgba(255, 0, 0, 0.2); /* Красный фон для выходных */
 }
-
 .gantt-task {
   background: rgba(255, 255, 255, 0.1);
   padding: 4px;
@@ -238,3 +236,5 @@
   z-index: 0;
   pointer-events: none;
 }
+
+
