@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getTasks } from "shared/store/slices/tasksSlice";
-import { AppDispatch } from "shared/store";
+import {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {getTasks} from "shared/store/slices/tasksSlice";
+import {AppDispatch} from "shared/store";
 import classes from "./TaskPage.module.scss";
 
 interface Task {
@@ -13,6 +13,7 @@ interface Task {
     notice: string;
     start_date: string;
     end_date: string;
+
     [key: string]: any;
 }
 
@@ -27,7 +28,7 @@ const statusTitles: { [key: number]: string } = {
     3: "Провалено",
 };
 
-const TaskCard = ({ task }: { task: Task }) => (
+const TaskCard = ({task}: { task: Task }) => (
     <div className={classes.taskCard}>
         <div className={classes.taskContent}>
             <p className={classes.description}>{task.description || task.title}</p>
@@ -67,19 +68,49 @@ const TaskPage = () => {
         return acc;
     }, {}) || {};
 
+
+
+    const [currentView, setCurrentView] = useState<"gant" | "kanban">("gant");
+
+    const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setCurrentView(event.target.value as "gant" | "kanban");
+    };
+
     return (
         <div className={classes.container}>
+            <div className={classes.viewSwitcher}>
+                <select
+                    id="viewSwitcher"
+                    value={currentView}
+                    onChange={handleChange}
+                    className={classes.select}
+                >
+                    <option value="gant">Гант</option>
+                    <option value="kanban">Канбан</option>
+
+                </select>
+
+
+                <select
+                    id="viewSwitcher"
+                    value={currentView}
+                    onChange={handleChange}
+                    className={classes.select}
+                >
+                    <option value="gant">Проект 1</option>
+                </select>
+            </div>
             {tasksData.results && tasksData.results.length > 0 ? (
                 <div className={classes.statusColumns}>
                     {Object.entries(groupedTasks).map(([status, tasks]) => (
                         <div key={status} className={classes.statusColumn}>
                             <div className={classes.statusHeader}>
-                                <h3>{status}</h3>
+                            <h3>{status}</h3>
                             </div>
                             <div className={classes.taskBlock}>
                                 <div className={classes.tasksList}>
                                     {tasks.map((task: Task) => (
-                                        <TaskCard key={task.id} task={task} />
+                                        <TaskCard key={task.id} task={task}/>
                                     ))}
                                 </div>
                             </div>
