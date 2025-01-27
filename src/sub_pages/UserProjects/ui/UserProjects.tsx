@@ -1,12 +1,12 @@
 import classes from './UserProjects.module.scss';
-import { Input } from 'shared/index';
-import { Button } from 'shared/index';
+import {Input} from 'shared/index';
+import {Button} from 'shared/index';
 import search from 'shared/images/sideBarImgs/search.svg';
 import status from 'shared/images/status.svg';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from 'shared/store';
-import { useEffect, useState } from 'react';
-import { getProjects } from 'shared/store/slices/projectsSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch} from 'shared/store';
+import {useEffect, useState} from 'react';
+import {getProjects} from 'shared/store/slices/projectsSlice';
 import ModalsProjects from "../../../widgets/Modals/ModalsProjects/ModalsProjects";
 
 export default function UserProjects() {
@@ -56,7 +56,7 @@ export default function UserProjects() {
                             value={searchTerm}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                         />
-                        <img src={search} alt="Search Icon" className={classes.search_icon} />
+                        <img src={search} alt="Search Icon" className={classes.search_icon}/>
                     </div>
                 </div>
                 <div className={classes.filter}>
