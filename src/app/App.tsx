@@ -14,8 +14,8 @@ import Specialists from "sub_pages/Specialists/ui/Specialists";
 import Funnel from "sub_pages/Funnel/ui/Funnel";
 import Library from "sub_pages/Library/ui/Library";
 import Settings from "sub_pages/Settings/ui/Settings";
-import NewPage from "pages/NewPage/ui/NewPage";
 import Gantt from "sub_pages/Gantt/ui/Gantt";
+import ManagerPage from "pages/ManagerPage/ui/ManagerPage";
 
 
 
@@ -35,7 +35,7 @@ function App() {
               <Route path={"/test"} element={<Test />} />
               <Route path={"/steps"} element={<StepsAsync />} />
               <Route path={"/projects_user"} element={<Managers />} />
-              <Route path={"/new"} element={<NewPage />}>
+              <Route path={"/manager"} element={<ManagerPage />}>
                 <Route path="user_projects" element={<UserProjects/>} />
                 <Route path="tasks" element={<Tasks />} />
                 <Route path="specialists" element={<Specialists />} />

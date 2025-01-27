@@ -1,12 +1,12 @@
 import React, {useState} from "react";
 import Header2 from "widgets/Header2/ui/Header2";
-import classes from "./NewPage.module.scss";
+import classes from "./ManagerPage.module.scss";
 import SideBar from "widgets/SideBar/ui/SideBar";
 import {Outlet, useNavigate} from "react-router-dom";
 
 
 
-export default function NewPage() {
+export default function ManagerPage() {
   const [currentView, setCurrentView] = useState<"gantt" | "overview">("overview");
   const navigate = useNavigate();
 
