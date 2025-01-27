@@ -3,6 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {getTasks} from "shared/store/slices/tasksSlice";
 import {AppDispatch} from "shared/store";
 import classes from "./TaskPage.module.scss";
+import {Link, NavLink} from "react-router-dom";
 
 interface Task {
     id: string | number;
@@ -67,39 +68,13 @@ const TaskPage = () => {
         acc[statusTitle].push(task);
         return acc;
     }, {}) || {};
-     
 
 
 
-    const [currentView, setCurrentView] = useState<"gant" | "kanban">("gant");
-
-    const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setCurrentView(event.target.value as "gant" | "kanban");
-    };
 
     return (
         <div className={classes.container}>
             <div className={classes.viewSwitcher}>
-                <select
-                    id="viewSwitcher"
-                    value={currentView}
-                    onChange={handleChange}
-                    className={classes.select}
-                >
-                    <option value="gant">Гант</option>
-                    <option value="kanban">Канбан</option>
-
-                </select>
-
-
-                <select
-                    id="viewSwitcher"
-                    value={currentView}
-                    onChange={handleChange}
-                    className={classes.select}
-                >
-                    <option value="gant">Проект 1</option>
-                </select>
             </div>
             {tasksData.results && tasksData.results.length > 0 ? (
                 <div className={classes.statusColumns}>

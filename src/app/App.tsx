@@ -16,14 +16,12 @@ import Library from "sub_pages/Library/ui/Library";
 import Settings from "sub_pages/Settings/ui/Settings";
 import NewPage from "pages/NewPage/ui/NewPage";
 import Gant from "pages/Gant/ui/Gant";
-import { Theme, presetGpnDefault } from "@consta/uikit/Theme";
 
 
 function App() {
   const { theme } = useTheme();
 
   return (
-    <Theme preset={presetGpnDefault}>
       <div className={`app ${theme}`}>
         <Suspense fallback={""}>
           <BrowserRouter>
@@ -37,19 +35,19 @@ function App() {
               <Route path={"/steps"} element={<StepsAsync />} />
               <Route path={"/projects_user"} element={<Managers />} />
               <Route path={"/new"} element={<NewPage />}>
-                <Route path="overview" element={<TaskPage />} />
-                <Route path="user_projects" element={<Gant/>} />
+                <Route path="user_projects" element={<UserProjects/>} />
                 <Route path="tasks" element={<Tasks />} />
                 <Route path="specialists" element={<Specialists />} />
                 <Route path="funnel" element={<Funnel />} />
                 <Route path="library" element={<Library />} />
                 <Route path="settings" element={<Settings />} />
+                <Route path="gantt" element={<Gant/>} />
+                <Route path="overview" element={<TaskPage />} />
               </Route>
             </Routes>
           </BrowserRouter>
         </Suspense>
       </div>
-    </Theme>
   );
 }
 
