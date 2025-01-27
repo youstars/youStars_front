@@ -1,11 +1,14 @@
 @import "themes/dark";
 @import "themes/light";
+@import "./fonts.scss";
 @import "variables/global";
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
+  
   // border: 1px solid red;
   
 }
