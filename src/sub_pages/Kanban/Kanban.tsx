@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {getTasks} from "shared/store/slices/tasksSlice";
 import {AppDispatch} from "shared/store";
-import classes from "./TaskPage.module.scss";
+import classes from "./Kanban.module.scss";
 import {Link, NavLink} from "react-router-dom";
 
 interface Task {

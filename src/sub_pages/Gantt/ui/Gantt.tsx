@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./Gant.css";
+import "./Gantt.css";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "shared/store";
 import { getTasks } from "shared/store/slices/tasksSlice";

@@ -14,7 +14,7 @@
   
   @font-face {
     font-family: 'Myriad Pro';
-    src: url('../../shared/fonts/MYRIADPRO-LIGHT.OTF') format('opentype');
+    src: url('../../shared/fonts/MyriadPro-Light.otf') format('opentype');
     font-weight: 300; /* Light */
     font-style: normal;
   }
@@ -33,12 +33,7 @@
     font-style: italic;
   }
   
-  @font-face {
-    font-family: 'Myriad Pro';
-    src: url('../../shared/fonts/MYRIADPRO-ITALIC.OTF') format('opentype');
-    font-weight: 400; /* Normal */
-    font-style: italic;
-  }
+
   
   @font-face {
     font-family: 'Myriad Pro';
@@ -47,12 +42,12 @@
     font-style: italic;
   }
   
-  @font-face {
-    font-family: 'Myriad Pro';
-    src: url('../../shared/fonts/MYRIADPRO-COND.OTF') format('opentype');
-    font-weight: 400; /* Condensed */
-    font-style: normal;
-  }
+  // @font-face {
+  //   font-family: 'Myriad Pro';
+  //   src: url('../../shared/fonts/MYRIADPRO-COND.OTF') format('opentype');
+  //   font-weight: 400; /* Condensed */
+  //   font-style: normal;
+  // }
   
   @font-face {
     font-family: 'Myriad Pro';
