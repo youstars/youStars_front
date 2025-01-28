@@ -20,6 +20,9 @@ const Gantt: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
+
+  
+
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -43,7 +46,20 @@ const Gantt: React.FC = () => {
   const getDaysInMonth = (year: number, month: number): number => {
     return new Date(year, month + 1, 0).getDate();
   };
+   
 
+    const isWeekend = (day: number): boolean => {
+    const date = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      day
+    );
+    const dayOfWeek = date.getDay();
+    return dayOfWeek === 0 || dayOfWeek === 6;
+  };
+
+
+  
   const daysInMonth = getDaysInMonth(
     currentDate.getFullYear(),
     currentDate.getMonth()
@@ -61,15 +77,6 @@ const Gantt: React.FC = () => {
     );
   };
 
-  const isWeekend = (day: number): boolean => {
-    const date = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      day
-    );
-    const dayOfWeek = date.getDay();
-    return dayOfWeek === 0 || dayOfWeek === 6;
-  };
 
   const isToday = (day: number): boolean => {
     const today = new Date();
@@ -171,19 +178,50 @@ const Gantt: React.FC = () => {
           </div>
 
           <div className="gantt-tasks">
-            {adjustedTasks.map((task, index) => (
-              <div
-                key={task.id}
-                className="gantt-task"
-                style={{
-                  gridColumnStart: task.start,
-                  gridColumnEnd: task.end + 1,
-                  gridRowStart: index + 1,
-                }}
-              >
-                {task.name}
-              </div>
-            ))}
+  {/* Сначала рендерим фон выходных */}
+  {Array.from({ length: daysInMonth }, (_, i) => {
+    const day = i + 1;
+    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+
+    return (
+      <div
+        key={`bg-${i}`}
+        className={`gantt-task-background ${isWeekend ? "weekend" : ""}`}
+        style={{
+          gridColumnStart: day,
+          gridColumnEnd: day + 1,
+          gridRowStart: 1,
+          gridRowEnd: adjustedTasks.length + 2, // Растягиваем фон на все ряды
+        }}
+      ></div>
+    );
+  })}
+
+  {/* Затем рендерим задачи поверх фона */}
+  {adjustedTasks.map((task, index) => (
+    <div
+      key={task.id}
+      className="gantt-task"
+      style={{
+        gridColumnStart: task.start,
+        gridColumnEnd: task.end + 1,
+        gridRowStart: index + 1,
+      }}
+    >
+      {task.name}
+    </div>
+  ))}
+
+
+  <div
+    className="gantt-empty-row"
+    style={{
+      gridColumnStart: 1,
+      gridColumnEnd: 32, // 31 день + 1
+      gridRowStart: adjustedTasks.length + 1, // Новый ряд после всех задач
+    }}
+  ></div>
           </div>
         </div>
       </div>
