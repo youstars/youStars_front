@@ -7,21 +7,33 @@
     text-decoration: none;
     font-size: 14px;
     transition: color 0.3s;
+
+    &.active {
+      color: var(--bg-button-color);
+      font-weight: 800;
+    }
+
+    &.collapsed  {
+      gap: 50px;
+
+    }
+
+  }
+
+  .navItem:last-child {
+    margin-top: 30px; 
   }
 
   .navItem:hover {
     color: var(--bg-button-color);
   }
 
-  .active {
-    color: var(--bg-button-color);
-    font-weight: 800;
-  }
+
 
   a {
-    text-decoration: underline; /* Может переопределять ваши стили */
+    text-decoration: underline; 
     color: inherit;
-    color: var(--secondary-font-color); /* Установите ваш цвет текста */
+    color: var(--secondary-font-color); 
 
   }
 
@@ -34,3 +46,5 @@
     background: #ffc400;
     transition: top 0.3s ease;
   }
+
+
