@@ -1,0 +1,202 @@
+// // Variables
+// $bg-color: #2A2B2E;
+// $bg-toggle-color: #1a1b1e;
+// $border-color: #555;
+// $text-color: white;
+// $accent-color: #6E8AE6;
+// $weekend-bg: rgba(255, 0, 0, 0.2);
+// $task-bg: rgba(255, 255, 255, 0.1);
+// $task-hover-bg: rgba(255, 255, 255, 0.2);
+// $today-bg: #68577f;
+
+// .gantt {
+//   &-container {
+//     display: grid;
+//     gap: 8px;
+//     padding: 9px 34px 14px 34px;
+//     margin: 40px 20px;
+//     background-color: $bg-color;
+//     color: $text-color;
+//     border-radius: 20px;
+//   }
+
+//   &-header {
+//     display: flex;
+//     align-items: center;
+//     justify-content: space-between;
+//     padding: 8px;
+//     background-color: $bg-toggle-color;
+//     color: $text-color;
+//     border-radius: 6px;
+//     position: relative;
+//   }
+
+//   &-title {
+//     font-size: 16px;
+//     font-weight: normal;
+//     color: $text-color;
+//   }
+
+//   &-month-navigation {
+//     display: flex;
+//     align-items: center;
+//     gap: 10px;
+//   }
+
+//   &-month {
+//     font-size: 18px;
+//     font-weight: bold;
+//     color: $text-color;
+//   }
+
+//   &-content {
+//     display: grid;
+//     grid-template-columns: 200px 1fr;
+//     gap: 16px;
+//   }
+
+//   &-status-table {
+//     display: grid;
+//     grid-auto-rows: 40px;
+//     gap: 15px;
+//     padding: 20px;
+//     border-radius: 8px;
+//     color: $text-color;
+//     position: relative;
+//     background-color: $bg-toggle-color;
+
+//     p {
+//       font-size: 16px;
+//       text-align: center;
+//       color: $text-color;
+//     }
+
+//     .specialists {
+//       font-size: 12px;
+//       text-align: center;
+//       color: #888888;
+//       margin-bottom: 16px;
+//     }
+//   }
+
+//   &-status-row {
+//     display: flex;
+//     align-items: center;
+//     justify-content: space-between;
+//     padding: 8px;
+//     border-radius: 8px;
+//     background-color: rgba($bg-toggle-color, 0.5);
+//     height: 40px;
+
+//     span {
+//       font-size: 12px;
+
+//       &:first-child {
+//         background-color: $accent-color;
+//         color: black;
+//         font-weight: bold;
+//         padding: 2px 6px;
+//         border-radius: 4px;
+//       }
+//     }
+//   }
+
+//   &-calendar-container {
+//     overflow-x: auto;
+//     background-color: $bg-toggle-color;
+//     border-radius: 8px;
+//     padding: 16px;
+//   }
+
+//   &-timeline {
+//     min-width: max-content;
+//   }
+
+//   &-calendar {
+//     display: grid;
+//     grid-auto-flow: column;
+//     grid-auto-columns: 30px;
+//     background: $bg-toggle-color;
+//     padding: 8px;
+//     border-radius: 6px;
+//     position: sticky;
+//     top: 0;
+//     z-index: 2;
+//   }
+
+//   &-day {
+//     text-align: center;
+//     padding: 4px;
+//     border-left: 1px solid rgba($border-color, 0.3);
+//     font-size: 12px;
+//     position: relative;
+
+//     &.weekend {
+//       background: $weekend-bg;
+//       color: $text-color;
+//     }
+
+//     &.today {
+//       background-color: $today-bg;
+//       color: $text-color;
+//       font-weight: bold;
+//     }
+
+//     &.first-of-month {
+//       border-left: 2px solid $border-color;
+
+//       .month-label {
+//         position: absolute;
+//         top: -20px;
+//         left: 0;
+//         font-weight: bold;
+//         color: $accent-color;
+//       }
+//     }
+//   }
+
+//   &-tasks {
+//     display: grid;
+//     grid-auto-flow: column;
+//     grid-auto-columns: 30px;
+//     grid-template-rows: repeat(auto-fill, 40px);
+//     position: relative;
+//     gap: 1px;
+//     padding: 8px;
+//     margin-top: 8px;
+//   }
+
+//   &-task-background {
+//     position: absolute;
+//     width: 100%;
+//     height: 100%;
+//     z-index: 0;
+
+//     &.weekend {
+//       background-color: $weekend-bg;
+//     }
+//   }
+
+//   &-task {
+//     background: $task-bg;
+//     padding: 4px;
+//     height: 32px;
+//     color: $text-color;
+//     position: relative;
+//     z-index: 1;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     text-align: center;
+//     border-radius: 4px;
+//     font-size: 12px;
+//     white-space: nowrap;
+//     overflow: hidden;
+//     text-overflow: ellipsis;
+
+//     &:hover {
+//       background: $task-hover-bg;
+//       cursor: pointer;
+//     }
+//   }
+// }
