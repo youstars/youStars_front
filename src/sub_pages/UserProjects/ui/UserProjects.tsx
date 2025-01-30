@@ -8,6 +8,8 @@ import {AppDispatch} from 'shared/store';
 import {useEffect, useState} from 'react';
 import {getProjects} from 'shared/store/slices/projectsSlice';
 import ModalsProjects from "../../../widgets/Modals/ModalsProjects/ModalsProjects";
+import message from 'shared/images/Vector.svg';
+
 
 export default function UserProjects() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,7 +19,7 @@ export default function UserProjects() {
     const dispatch = useDispatch<AppDispatch>();
 
     const getData = useSelector((state: any) => state.tasks.tasks);
-
+    console.log('projects', getData)
     useEffect(() => {
         const fetchTasks = async () => {
             try {
@@ -38,6 +40,8 @@ export default function UserProjects() {
             setFilteredProjects(filtered);
         }
     }, [searchTerm, getData]);
+
+
 
     const handleOpenModal = (columnName: string) => {
         setActiveModalColumn(columnName);
@@ -131,7 +135,7 @@ export default function UserProjects() {
                                 <p>{project.duration || 'Не указана'}</p>
                             </div>
                             <div className={classes.project_chat}>
-                                <p>Чат</p>
+                                <img src={message}/>
                             </div>
                         </div>
                     ))

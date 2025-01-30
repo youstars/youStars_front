@@ -114,9 +114,9 @@ p {
 
 .project_card {
   display: flex;
-  align-items: center; /* Выравнивание элементов по вертикали */
-  justify-content: space-around; /* Равномерное распределение между элементами */
-  border: 0.5px solid black;
+  align-items: center;
+  justify-content: space-around;
+  border: 0.5px solid  #272a2d;
   background: #353a3d;
   height: 41px;
 }
@@ -138,7 +138,7 @@ p {
 
 .project_name {
   width: 18vw;
-  border-right: 1px solid black;
+  border-right: 1px solid  #272a2d;
 }
 
 .project_captain {

@@ -7,13 +7,7 @@ import {Outlet, useNavigate} from "react-router-dom";
 
 
 export default function ManagerPage() {
-  const [currentView, setCurrentView] = useState<"gantt" | "overview">("overview");
-  const navigate = useNavigate();
 
-  const handleViewChange = (event:any) => {
-    navigate(event.target.value);
-    setCurrentView(event.target.value as "gantt" | "overview");
-  };
 
 
   return (
@@ -21,30 +15,6 @@ export default function ManagerPage() {
         <SideBar/>
         <div className={classes.content}>
           <Header2/>
-          <select
-              id="viewSwitcher"
-              value={currentView}
-              onChange={handleViewChange}
-              className={classes.select}
-          >
-
-            <option value="gantt">
-              Гант
-            </option>
-            <option value="overview">
-              Канбан
-            </option>
-          </select>
-
-
-          <select
-              id="viewSwitcher"
-              value={currentView}
-              onChange={handleViewChange}
-              className={classes.select}
-          >
-            <option value="gant">Проект 1</option>
-          </select>
           <div className={classes.changed_part}>
             <Outlet/>
           </div>

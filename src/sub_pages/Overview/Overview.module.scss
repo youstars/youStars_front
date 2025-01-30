@@ -1,0 +1,40 @@
+
+.viewSwitcher {
+  display: flex;
+  width: 97.5%;
+  gap: 186px;
+  background-color: #353a3d;
+  border-radius: 20px;
+  height: 50px;
+  align-items: center;
+  padding: 20px;
+  margin: 0 auto;
+  margin-top: 10px;
+}
+
+.select {
+  height: 30px;
+  padding-left: 10px;
+  width: 200px;
+  padding: 8px 2px;
+  padding-right: 50px;
+  font-size: 14px;
+  border: none;
+  border-radius: 15px;
+  background: #272a2d;
+  color: #ffffff;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, #fff 50%),
+  linear-gradient(135deg, #fff 50%, transparent 50%),
+  linear-gradient(to right, #272a2d, #272a2d);
+  background-position: calc(100% - 40px) calc(1em + 2px), calc(100% - 35.2px) calc(1em + 2px),
+  100% 0;
+  background-size: 5px 5px, 5px 5px, 100%;
+  background-repeat: no-repeat;
+  appearance: none;
+  text-indent: 30px;
+}
+
+.select:focus {
+  outline: none;
+}

@@ -7,7 +7,6 @@ import { LoginFormAsync } from "../pages/LoginForm";
 import { StepsAsync } from "../pages/Steps";
 import Managers from "../pages/Managers/ui/Managers";
 import Test from "../widgets/Test/Test";
-import TaskPage from "sub_pages/Kanban/Kanban";
 import UserProjects from "sub_pages/UserProjects/ui/UserProjects";
 import Tasks from "sub_pages/Tasks/ui/Tasks";
 import Specialists from "sub_pages/Specialists/ui/Specialists";
@@ -16,8 +15,8 @@ import Library from "sub_pages/Library/ui/Library";
 import Settings from "sub_pages/Settings/ui/Settings";
 import Gantt from "sub_pages/Gantt/ui/Gantt";
 import ManagerPage from "pages/ManagerPage/ui/ManagerPage";
-
-
+import Kanban from "sub_pages/Kanban/Kanban";
+import Overview from "../sub_pages/Overview/Overview";
 
 function App() {
   const { theme } = useTheme();
@@ -42,8 +41,10 @@ function App() {
                 <Route path="funnel" element={<Funnel />} />
                 <Route path="library" element={<Library />} />
                 <Route path="settings" element={<Settings />} />
-                <Route path="gantt" element={<Gantt/>} />
-                <Route path="overview" element={<TaskPage />} />
+                <Route path="overview" element={<Overview/>}>
+                  <Route path="gantt" element={<Gantt/>} />
+                  <Route path="kanban" element={<Kanban/>} />
+                </Route>
               </Route>
             </Routes>
           </BrowserRouter>
