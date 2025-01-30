@@ -1,24 +1,34 @@
-import React, { useEffect, useState } from "react";
-import "./Gantt.css";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import { AppDispatch } from "shared/store";
 import { getTasks } from "shared/store/slices/tasksSlice";
+import { Task } from "./types";
+import "./Gantt.scss";
 
-type Task = {
-  id: number;
-  name: string;
-  start: Date;
-  end: Date;
-  status: string;
-  specialist: string;
-};
+const MONTHS = [
+  "Январь",
+  "Февраль",
+  "Март",
+  "Апрель",
+  "Май",
+  "Июнь",
+  "Июль",
+  "Август",
+  "Сентябрь",
+  "Октябрь",
+  "Ноябрь",
+  "Декабрь",
+];
 
 const Gantt: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const tasksData = useSelector((state: any) => state.tasks.tasks);
-
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [visibleMonth, setVisibleMonth] = useState<number>(
+    currentDate.getMonth()
+  );
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch<AppDispatch>();
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [scrolling, setScrolling] = useState(false);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -40,77 +50,82 @@ const Gantt: React.FC = () => {
     fetchTasks();
   }, [dispatch]);
 
-  const getDaysInMonth = (year: number, month: number): number => {
-    return new Date(year, month + 1, 0).getDate();
+  const handleScroll = () => {
+    if (scrollContainerRef.current && !scrolling) {
+      const scrollLeft = scrollContainerRef.current.scrollLeft;
+      const dayWidth = 30;
+      const daysScrolled = Math.floor(scrollLeft / dayWidth);
+      const currentMonthIndex = new Date(
+        currentDate.getFullYear(),
+        0,
+        daysScrolled + 1
+      ).getMonth();
+      setVisibleMonth(currentMonthIndex);
+    }
   };
 
-  const daysInMonth = getDaysInMonth(
-    currentDate.getFullYear(),
-    currentDate.getMonth()
-  );
+  const scrollToMonth = (direction: "next" | "prev") => {
+    if (scrollContainerRef.current) {
+      setScrolling(true);
+      const dayWidth = 30;
+      const currentScroll = scrollContainerRef.current.scrollLeft;
+      const daysInCurrentMonth = new Date(
+        currentDate.getFullYear(),
+        visibleMonth + 1,
+        0
+      ).getDate();
 
-  const handleNextMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
-    );
+      const targetScroll =
+        direction === "next"
+          ? currentScroll + daysInCurrentMonth * dayWidth
+          : currentScroll - daysInCurrentMonth * dayWidth;
+
+      scrollContainerRef.current.scrollTo({
+        left: targetScroll,
+        behavior: "smooth",
+      });
+
+      setTimeout(() => {
+        setScrolling(false);
+        const newMonth =
+          direction === "next"
+            ? (visibleMonth + 1) % 12
+            : (visibleMonth - 1 + 12) % 12;
+        setVisibleMonth(newMonth);
+      }, 300);
+    }
   };
 
-  const handlePreviousMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
-    );
-  };
+  const handleNextMonth = () => scrollToMonth("next");
+  const handlePreviousMonth = () => scrollToMonth("prev");
 
-  const isWeekend = (day: number): boolean => {
-    const date = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      day
-    );
+  const isWeekend = (date: Date): boolean => {
     const dayOfWeek = date.getDay();
     return dayOfWeek === 0 || dayOfWeek === 6;
   };
 
-  const isToday = (day: number): boolean => {
+  const isToday = (date: Date): boolean => {
     const today = new Date();
     return (
-      today.getDate() === day &&
-      today.getMonth() === currentDate.getMonth() &&
-      today.getFullYear() === currentDate.getFullYear()
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
     );
   };
 
-  const filteredTasks = tasks.filter((task) => {
-    const taskStartMonth = task.start.getMonth();
-    const taskEndMonth = task.end.getMonth();
-    const currentMonth = currentDate.getMonth();
+  const getDaysArray = () => {
+    const startDate = new Date(currentDate.getFullYear(), 0, 1);
+    const endDate = new Date(currentDate.getFullYear(), 11, 31);
+    const days: Date[] = [];
+    let currentDay = new Date(startDate);
 
-    const taskStartYear = task.start.getFullYear();
-    const taskEndYear = task.end.getFullYear();
-    const currentYear = currentDate.getFullYear();
+    while (currentDay <= endDate) {
+      days.push(new Date(currentDay));
+      currentDay.setDate(currentDay.getDate() + 1);
+    }
 
-    return (
-      (taskStartYear === currentYear && taskStartMonth === currentMonth) ||
-      (taskEndYear === currentYear && taskEndMonth === currentMonth)
-    );
-  });
-
-  const adjustedTasks = filteredTasks.map((task) => {
-    const taskStart =
-      task.start.getMonth() === currentDate.getMonth()
-        ? task.start.getDate()
-        : 1;
-    const taskEnd =
-      task.end.getMonth() === currentDate.getMonth()
-        ? task.end.getDate()
-        : daysInMonth;
-
-    return {
-      ...task,
-      start: taskStart,
-      end: taskEnd,
-    };
-  });
+    return days;
+  };
 
   const getStatusLabel = (status: string): string => {
     const openStatuses = ["Нужно выполнить", "in_progress"];
@@ -122,6 +137,23 @@ const Gantt: React.FC = () => {
     return "Неизвестный статус";
   };
 
+  const calculateTaskPosition = (task: Task, days: Date[]) => {
+    const startIndex = days.findIndex(
+      (day) => day.getTime() >= task.start.getTime()
+    );
+
+    const endIndex =
+      days.findIndex((day) => day.getTime() > task.end.getTime()) - 1;
+
+    return {
+      start: startIndex + 1,
+      end: endIndex > 0 ? endIndex + 1 : days.length,
+      visible: true,
+    };
+  };
+
+  const days = getDaysArray();
+
   return (
     <div className="gantt-container">
       <div className="gantt-header">
@@ -130,10 +162,7 @@ const Gantt: React.FC = () => {
             {"<"}
           </button>
           <span className="gantt-month">
-            {currentDate.toLocaleString("default", {
-              month: "long",
-            })}{" "}
-            {currentDate.getFullYear()}
+            {MONTHS[visibleMonth]} {currentDate.getFullYear()}
           </span>
           <button onClick={handleNextMonth} className="gantt-arrow">
             {">"}
@@ -145,45 +174,97 @@ const Gantt: React.FC = () => {
         <div className="gantt-status-table">
           <p className="graph">График времени</p>
 
-          <p className="specialists">Специалисты / работы</p>
-          {adjustedTasks.map((task) => (
+          {tasks.map((task) => (
             <div key={task.id} className="gantt-status-row">
-              <span>{task.specialist?.[0]}</span>
+              <span>{task.specialist[0]}</span>
               <span>{getStatusLabel(task.status)}</span>
             </div>
           ))}
         </div>
-        <div className="gantt-calendar-container">
-          <div className="gantt-calendar">
-            {Array.from({ length: daysInMonth }, (_, i) => {
-              const day = i + 1;
-              return (
+
+        <div
+          ref={scrollContainerRef}
+          className="gantt-calendar-container"
+          onScroll={handleScroll}
+        >
+          <div className="gantt-timeline">
+            <div className="gantt-calendar">
+              {days.map((day, index) => (
                 <div
-                  key={i}
+                  key={index}
                   className={`gantt-day ${isWeekend(day) ? "weekend" : ""} ${
                     isToday(day) ? "today" : ""
                   }`}
                 >
-                  {day}
+                  <div className="gantt-day-header">
+                    {day.getDate() === 1 && (
+                      <div className="gantt-month-label">
+                        {MONTHS[day.getMonth()]}
+                      </div>
+                    )}
+                    {day.getDate()}
+                  </div>
+                  {isToday(day) && (
+                    <>
+                      <div className="gantt-today-label">Сегодня</div>
+                      <div className="gantt-today-line"></div>
+                    </>
+                  )}
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
 
-          <div className="gantt-tasks">
-            {adjustedTasks.map((task, index) => (
+            <div className="gantt-tasks">
+              {days.map((day, index) => (
+                <div
+                  key={`bg-${index}`}
+                  className={`gantt-task-background ${
+                    isWeekend(day) ? "weekend" : ""
+                  }`}
+                  style={{
+                    gridColumnStart: index + 1,
+                    gridColumnEnd: index + 2,
+                    gridRowStart: 1,
+                    gridRowEnd: tasks.length + 2,
+                  }}
+                />
+              ))}
+
+              {tasks.map((task, taskIndex) => {
+                const position = calculateTaskPosition(task, days);
+
+                if (!position.visible) {
+                  return null;
+                }
+
+                return (
+                  <div
+                    key={task.id}
+                    className="gantt-task"
+                    style={{
+                      gridColumnStart: position.start,
+                      gridColumnEnd: position.end + 1,
+                      gridRowStart: taskIndex + 1,
+                      gridRowEnd: taskIndex + 2,
+                    }}
+                    title={`${
+                      task.name
+                    } (${task.start.toLocaleDateString()} - ${task.end.toLocaleDateString()})`}
+                  >
+                    {task.name}
+                  </div>
+                );
+              })}
+
               <div
-                key={task.id}
-                className="gantt-task"
+                className="gantt-empty-row"
                 style={{
-                  gridColumnStart: task.start,
-                  gridColumnEnd: task.end + 1,
-                  gridRowStart: index + 1,
+                  gridColumnStart: 1,
+                  gridColumnEnd: days.length + 1,
+                  gridRowStart: tasks.length + 1,
                 }}
-              >
-                {task.name}
-              </div>
-            ))}
+              />
+            </div>
           </div>
         </div>
       </div>
