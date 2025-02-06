@@ -1,25 +1,33 @@
-import classes from './UserProjects.module.scss';
-import {Input} from 'shared/index';
-import {Button} from 'shared/index';
-import search from 'shared/images/sideBarImgs/search.svg';
-import status from 'shared/images/status.svg';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch} from 'shared/store';
-import {useEffect, useState} from 'react';
-import {getProjects} from 'shared/store/slices/projectsSlice';
-import ModalsProjects from "../../../widgets/Modals/ModalsProjects/ModalsProjects";
-import message from 'shared/images/Vector.svg';
-
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "shared/store";
+import { getProjects } from "shared/store/slices/projectsSlice";
+import classes from "./UserProjects.module.scss";
+import { Input, Button } from "shared/index";
+import search from "shared/images/sideBarImgs/search.svg";
+import status from "shared/images/status.svg";
+import message from "shared/images/Vector.svg";
+import ModalsProjects from "widgets/Modals/ModalsProjects/ModalsProjects"
+import ModalCalendar from "widgets/Modals/ModalCalendar/ModalCalendar";
+import StatusModal from "widgets/Modals/StatusModal/StatusModal";
+import ModalSpecialist from "widgets/Modals/ModalSpecialist/ModalSpecialist";
+import CustomerModal from "widgets/Modals/CustomerModal/CustomerModal";  // ✅ Импорт `CustomerModal`
 
 export default function UserProjects() {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+    const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+    const [isModalSpecialistOpen, setIsModalSpecialistOpen] = useState(false);
+    const [isModalCustomerOpen, setIsModalCustomerOpen] = useState(false);  // ✅ Добавлено состояние для модалки заказчиков
     const [activeModalColumn, setActiveModalColumn] = useState<string>('');
+    const [selectedTaskId, setSelectedTaskId] = useState<string | number | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
     const dispatch = useDispatch<AppDispatch>();
 
     const getData = useSelector((state: any) => state.tasks.tasks);
-    console.log('projects', getData)
+    console.log('projects', getData);
+
     useEffect(() => {
         const fetchTasks = async () => {
             try {
@@ -41,11 +49,21 @@ export default function UserProjects() {
         }
     }, [searchTerm, getData]);
 
-
-
-    const handleOpenModal = (columnName: string) => {
+    const handleOpenModal = (columnName: string, taskId: string | number) => {
         setActiveModalColumn(columnName);
-        setIsModalOpen(true);
+        setSelectedTaskId(taskId);
+
+        if (columnName === "end_date") {
+            setIsCalendarOpen(true);
+        } else if (columnName === "status") {
+            setIsStatusModalOpen(true);
+        } else if (columnName === "specialists") {
+            setIsModalSpecialistOpen(true);
+        } else if (columnName === "client") {  // ✅ Добавлено открытие `CustomerModal`
+            setIsModalCustomerOpen(true);
+        } else {
+            setIsModalOpen(true);
+        }
     };
 
     return (
@@ -72,43 +90,23 @@ export default function UserProjects() {
             <section className={classes.options}>
                 <div className={classes.status}>
                     <p>Название проекта</p>
-                    <img
-                        onClick={() => handleOpenModal('project_name')}
-                        src={status}
-                        alt="Статус"
-                    />
+                    <img onClick={() => handleOpenModal('project_name', 0)} src={status} alt="Статус"/>
                 </div>
                 <div className={classes.status}>
                     <p>Статус</p>
-                    <img
-                        onClick={() => handleOpenModal('status')}
-                        src={status}
-                        alt="Статус"
-                    />
+                    <img onClick={() => handleOpenModal('status', 0)} src={status} alt="Статус"/>
                 </div>
                 <div className={classes.status}>
                     <p>Дата окончания</p>
-                    <img
-                        onClick={() => handleOpenModal('end_date')}
-                        src={status}
-                        alt="Статус"
-                    />
+                    <img onClick={() => handleOpenModal('end_date', 0)} src={status} alt="Статус"/>
                 </div>
                 <div className={classes.status}>
                     <p>Специалисты</p>
-                    <img
-                        onClick={() => handleOpenModal('specialists')}
-                        src={status}
-                        alt="Статус"
-                    />
+                    <img onClick={() => handleOpenModal('specialists', 0)} src={status} alt="Статус"/>
                 </div>
                 <div className={classes.status}>
                     <p>Заказчик</p>
-                    <img
-                        onClick={() => handleOpenModal('client')}
-                        src={status}
-                        alt="Статус"
-                    />
+                    <img onClick={() => handleOpenModal('client', 0)} src={status} alt="Заказчик"/>  {/* ✅ Добавлен вызов */}
                 </div>
                 <div className={classes.status}>
                     <p>Чаты проектов</p>
@@ -132,7 +130,7 @@ export default function UserProjects() {
                                 <p>{project.students || 'Нет студентов'}</p>
                             </div>
                             <div className={classes.project_duration}>
-                                <p>{project.duration || 'Не указана'}</p>
+                                <p>{project.intricacy_coefficient || 'Не указана'}</p>
                             </div>
                             <div className={classes.project_chat}>
                                 <img src={message}/>
@@ -149,6 +147,39 @@ export default function UserProjects() {
             {isModalOpen && (
                 <ModalsProjects
                     onClose={() => setIsModalOpen(false)}
+                    Input={Input}
+                    Button={Button}
+                />
+            )}
+
+            {isModalSpecialistOpen && (
+                <ModalSpecialist
+                    onClose={() => setIsModalSpecialistOpen(false)}
+                    Input={Input}
+                    Button={Button}
+                />
+            )}
+
+            {isStatusModalOpen && (
+                <StatusModal onClose={() => setIsStatusModalOpen(false)} />
+            )}
+
+            {isCalendarOpen && selectedTaskId !== null && (
+                <ModalCalendar
+                    isOpen={isCalendarOpen}
+                    onClose={() => setIsCalendarOpen(false)}
+                    onApply={(start, end) => {
+                        console.log("Выбраны даты:", start, end);
+                        setIsCalendarOpen(false);
+                    }}
+                    tasks={filteredProjects}
+                    selectedTaskId={selectedTaskId}
+                />
+            )}
+
+            {isModalCustomerOpen && (
+                <CustomerModal
+                    onClose={() => setIsModalCustomerOpen(false)}
                     Input={Input}
                     Button={Button}
                 />

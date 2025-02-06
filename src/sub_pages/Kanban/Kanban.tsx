@@ -67,7 +67,7 @@ const Kanban = () => {
         return acc;
     }, {}) || {};
 
-
+    console.log('hello')
 
     return (
         <div className={classes.container}>
