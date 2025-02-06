@@ -1,35 +1,44 @@
 import { useState, useEffect, useRef } from "react";
-import classes from "./ModalsProjects.module.scss";
+import classes from "./CustomerModal.module.scss";
 import search from "shared/images/sideBarImgs/search.svg";
 import { useSelector } from "react-redux";
 
-interface ModalsProjectsProps {
+interface CustomerModalProps {
     onClose: () => void;
     Input: React.ComponentType<any>;
     Button: React.ComponentType<any>;
 }
 
-const ModalsProjects: React.FC<ModalsProjectsProps> = ({ onClose, Input, Button }) => {
+const CustomerModal: React.FC<CustomerModalProps> = ({ onClose, Input, Button }) => {
     const getData = useSelector((state: any) => state.tasks.tasks);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [selectedItems, setSelectedItems] = useState<boolean[]>([]);
-    const [filteredDescriptions, setFilteredDescriptions] = useState<string[]>([]);
+    const [filteredClients, setFilteredClients] = useState<{ client: string; coefficient: string }[]>([]);
     const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (getData?.results) {
-            const names = getData.results.map((item: any) => item.name || "Без названия");
-            setFilteredDescriptions(names);
-            setSelectedItems(new Array(names.length).fill(false));
+            const clients = getData.results.map((item: any) => ({
+                client: item.client || "Не указан",
+                coefficient: item.intricacy_coefficient ? `Коэф: ${item.intricacy_coefficient}` : "Коэф: Не указан",
+            }));
+            setFilteredClients(clients);
+            setSelectedItems(new Array(clients.length).fill(false));
         }
     }, [getData]);
 
     useEffect(() => {
         if (getData?.results) {
             const filtered = getData.results
-                .map((item: any) => item.name || "Без названия")
-                .filter((name: string) => name.toLowerCase().includes(searchTerm.toLowerCase()));
-            setFilteredDescriptions(filtered);
+                .map((item: any) => ({
+                    client: item.client || "Не указан",
+                    coefficient: item.intricacy_coefficient ? `Коэф: ${item.intricacy_coefficient}` : "Коэф: Не указан",
+                }))
+                .filter((item: any) =>
+                    item.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    item.coefficient.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            setFilteredClients(filtered);
         }
     }, [searchTerm, getData]);
 
@@ -47,11 +56,11 @@ const ModalsProjects: React.FC<ModalsProjectsProps> = ({ onClose, Input, Button 
     }, []);
 
     const handleSelectAll = () => {
-        setSelectedItems(new Array(filteredDescriptions.length).fill(true));
+        setSelectedItems(new Array(filteredClients.length).fill(true));
     };
 
     const handleReset = () => {
-        setSelectedItems(new Array(filteredDescriptions.length).fill(false));
+        setSelectedItems(new Array(filteredClients.length).fill(false));
     };
 
     const handleCheckboxChange = (index: number) => {
@@ -64,8 +73,8 @@ const ModalsProjects: React.FC<ModalsProjectsProps> = ({ onClose, Input, Button 
         <div className={classes.modalOverlay}>
             <div className={classes.modalContent} ref={modalRef}>
                 <div className={classes.topButtons}>
-                    <Button onClick={handleSelectAll}>Select All</Button>
-                    <Button onClick={handleReset}>Reset</Button>
+                    <Button onClick={handleSelectAll}>Выбрать всех</Button>
+                    <Button onClick={handleReset}>Сбросить</Button>
                 </div>
                 <div className={classes.searchImg}>
                     <Input
@@ -74,37 +83,32 @@ const ModalsProjects: React.FC<ModalsProjectsProps> = ({ onClose, Input, Button 
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             setSearchTerm(e.target.value)
                         }
-                        placeholder="Поиск"
+                        placeholder="Поиск по заказчикам и коэффициенту"
                     />
                     <img src={search} alt="search"/>
                 </div>
 
                 <div className={classes.checkboxGroup}>
-                    {filteredDescriptions.map((description, index) => (
+                    {filteredClients.map((item, index) => (
                         <label key={index} className={classes.checkbox}>
                             <input
                                 type="checkbox"
                                 checked={selectedItems[index]}
                                 onChange={() => handleCheckboxChange(index)}
                             />
-                            {description}
+                            <span>{item.coefficient}</span>
                         </label>
                     ))}
                 </div>
-                <div className={classes.divider}/>
+
+                <div className={classes.divider} />
                 <div className={classes.bottomButtons}>
-                    <Button onClick={onClose}>Cancel</Button>
-                    <Button
-                        onClick={() => {
-                            onClose();
-                        }}
-                    >
-                        OK
-                    </Button>
+                    <Button onClick={onClose}>Отмена</Button>
+                    <Button onClick={onClose}>ОК</Button>
                 </div>
             </div>
         </div>
     );
 };
 
-export default ModalsProjects;
+export default CustomerModal;

@@ -38,7 +38,7 @@ function App() {
                 <Route path="user_projects" element={<UserProjects/>} />
                 <Route path="tasks" element={<Tasks />} />
                 <Route path="specialists" element={<Specialists />} />
-                <Route path="funnel" element={<Funnel />} />
+                <Route path="funnel" element={<Funnel/>} />
                 <Route path="library" element={<Library />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="overview" element={<Overview/>}>
