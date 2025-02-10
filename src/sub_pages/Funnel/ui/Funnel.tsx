@@ -1,29 +1,25 @@
-import React, {useEffect, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {getTasks} from "shared/store/slices/tasksSlice";
-import {AppDispatch} from "shared/store";
-import classes from "./Funnel.module.scss";
-import {Input} from "shared/index";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getOrders, selectFunnel } from "shared/store/slices/funnelSlice";
+import { AppDispatch } from "shared/store";
+import styles from "./Funnel.module.scss";
 import search from "shared/images/sideBarImgs/search.svg";
-import settingsIcon from "shared/images/setingsIcon.svg"
-import addIcon from "shared/images/addIcon.svg"
-import correctIcon from "shared/images/corectIcon.svg"
+import settingsIcon from "shared/images/setingsIcon.svg";
+import addIcon from "shared/images/addIcon.svg";
+import correctIcon from "shared/images/corectIcon.svg";
+import kubikIcon from "shared/images/kubikIcon.svg";
+import saveIcon from "shared/images/saveIcon.svg";
+import chatIcon from "shared/images/chatIcon.svg";
 
-interface Task {
-    id: string | number;
+
+interface Funnel {
+    amount: string;
+    creation_date: string;
     description: string;
-    title: string;
+    id: number;
+    payment_status: boolean;
+    student: number;
     status: number;
-    material: string;
-    notice: string;
-    start_date: string;
-    end_date: string;
-
-    [key: string]: any;
-}
-
-interface TaskGroup {
-    [key: string]: Task[];
 }
 
 const statusTitles: { [key: number]: string } = {
@@ -33,106 +29,160 @@ const statusTitles: { [key: number]: string } = {
     3: "Оплачено",
 };
 
-const TaskCard = ({task}: { task: Task }) => (
-    <div className={classes.taskCard}>
-        <div className={classes.taskContent}>
-            <p className={classes.description}>{task.description || task.title}</p>
-            <p className={classes.material}>{task.material}</p>
-            <p className={classes.notice}>{task.notice}</p>
-            <div className={classes.dates}>
-                <p>Начало: {task.start_date}</p>
-                <p>Конец: {task.end_date}</p>
-            </div>
+const borderColors = ["#FF4E4E", "#FFC400", "#3AFAE5"];
+
+const getRandomBorderColor = () => {
+    return borderColors[Math.floor(Math.random() * borderColors.length)];
+};
+
+const formatDate = (dateString: string) => {
+    if (!dateString) return "Не указана";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Не указана";
+    return date.toLocaleDateString("ru-RU");
+};
+
+const OrderCard = React.memo(({ order }: { order: Funnel }) => (
+    <div className={styles.taskCard}>
+        <div
+            className={styles.taskContent}
+            style={{
+                borderLeft: `2px solid ${getRandomBorderColor()}`,
+            }}
+        >
+            <p className={styles.description}>{order.description || "Без описания"}</p>
+            <p className={styles.amount}>
+                {order.amount ? `${Math.round(parseFloat(order.amount))} ₽` : "Не указано"}
+            </p>
+            <p className={styles.date}>{formatDate(order.creation_date)}</p>
+            <p className={styles.student}>Студент: {order.student || "Не назначен"}</p>
+            <p className={styles.payment}>
+                {order.payment_status ? "Оплачено" : "Не оплачено"}
+            </p>
+        </div>
+        <div className={styles.content_icons}>
+            <img src={kubikIcon} alt=""/>
+            <img src={saveIcon} alt=""/>
+            <img src={chatIcon} alt=""/>
         </div>
     </div>
-);
+));
 
 const Funnel = () => {
-    const [searchTerm, setSearchTerm] = useState<string>('');
-
-
+    const [searchTerm, setSearchTerm] = useState<string>("");
     const dispatch = useDispatch<AppDispatch>();
-    const tasksData = useSelector((state: any) => state.tasks.tasks);
+    const funnelData = useSelector(selectFunnel);
+    const [selected, setSelected] = useState<number>(0);
+    const [selectedSubOption, setSelectedSubOption] = useState<number>(0);
+
+    const subHandleSelect = useCallback((index: number) => {
+        setSelectedSubOption(index);
+    }, []);
 
     useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                const result = await dispatch(getTasks()).unwrap();
-                console.log("Tasks data:", result);
-            } catch (error) {
-                console.error("Error fetching tasks:", error);
-            }
-        };
-        fetchTasks();
+        dispatch(getOrders());
     }, [dispatch]);
 
-    const groupedTasks: TaskGroup = tasksData.results?.reduce((acc: TaskGroup, task: Task) => {
-        const statusTitle = statusTitles[task.status] || "Неизвестный статус";
-        if (!acc[statusTitle]) {
-            acc[statusTitle] = [];
-        }
-        acc[statusTitle].push(task);
-        return acc;
-    }, {}) || {};
+    const filteredData = useMemo(() => {
+        return funnelData?.filter((order: Funnel) =>
+            order.description.toLowerCase().includes(searchTerm.toLowerCase())
+        ) || [];
+    }, [funnelData, searchTerm]);
+
+    const ordersByStatus = useMemo(() => {
+        const groupedOrders: { [key: number]: Funnel[] } = { 0: [], 1: [], 2: [], 3: [] };
+
+        let index = 0;
+        filteredData.forEach((order) => {
+            const status = index % 4;
+            groupedOrders[status].push(order);
+            index++;
+        });
+
+        return groupedOrders;
+    }, [filteredData]);
+
+    const handleSelect = useCallback((index: number) => {
+            setSelected(index);
+    }, [selected]);
 
     return (
-        <div className={classes.container}>
-
-            <div className={classes.search}>
-                <div className={classes.input_wrapper}>
-                    <Input
-                        className={classes.input}
+        <div className={styles.container}>
+            <div className={styles.search}>
+                <div className={styles.input_wrapper}>
+                    <input
+                        className={styles.input}
                         type="text"
                         placeholder="Поиск"
                         value={searchTerm}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <img src={search} alt="Search Icon" className={classes.search_icon}/>
+                    <img src={search} alt=""/>
                 </div>
 
-                <div className={classes.icons}>
+                <div className={styles.icons}>
                     <img src={settingsIcon} alt=""/>
                     <img src={addIcon} alt=""/>
                     <img src={correctIcon} alt=""/>
                 </div>
             </div>
 
-            <div className={classes.options}>
-                <div className={classes.options_items}>
-                    <p>Все</p>
-                    <p>Новые</p>
-                    <p>По сроку</p>
-                    <p>По каличеству задач</p>
-                    <p>По бюджету</p>
+            <div className={styles.options}>
+                <div className={styles.options_items}>
+                    {["Все", "Новые", "По сроку", "По количеству задач", "По бюджету"].map((item, index) => (
+                        <p
+                            key={index}
+                            className={selected === index ? styles.selected : ""}
+                            onClick={() => handleSelect(index)}
+                        >
+                            {item}
+                        </p>
+                    ))}
                 </div>
                 <div>
-                    <img src={settingsIcon} alt=""/>
+                    <img src={settingsIcon} alt="Настройки"/>
                 </div>
             </div>
 
-
-            {tasksData.results && tasksData.results.length > 0 ? (
-                <div className={classes.statusColumns}>
-                    {Object.entries(groupedTasks).map(([status, tasks]) => (
-                        <div key={status} className={classes.statusColumn}>
-                            <div className={classes.statusHeader}>
-                                <h3>{status}</h3>
-                            </div>
-                            <div className={classes.taskBlock}>
-                                <div className={classes.tasksList}>
-                                    {tasks.map((task: Task) => (
-                                        <TaskCard key={task.id} task={task}/>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
+            <div className={styles.sub_options}>
+                <div className={styles.sub_options_items}>
+                    {["Канбан", "Список", "Таймлайн", "Отчеты"].map((item, index) => (
+                        <p
+                            key={index}
+                            className={`${styles.sub_option} ${selectedSubOption === index ? styles.selected_sub_option : ""}`}
+                            onClick={() => subHandleSelect(index)}
+                        >
+                            {item}
+                        </p>
                     ))}
                 </div>
-            ) : (
-                <p className={classes.notFound}>Задачи не найдены</p>
-            )}
+            </div>
+
+            <div className={styles.statusColumns}>
+                {Object.keys(statusTitles).map((statusKey) => {
+                    const status = parseInt(statusKey);
+                    const statusOrders = ordersByStatus[status];
+
+                    return (
+                        <div key={status} className={styles.statusColumn}>
+                            <div className={styles.statusHeader}>
+                                <h3>{statusTitles[status]}</h3>
+                            </div>
+                            <div className={styles.tasksList}>
+                                {statusOrders.length > 0 ? (
+                                    statusOrders.map((order) => (
+                                        <OrderCard key={order.id} order={order}/>
+                                    ))
+                                ) : (
+                                    <p className={styles.noOrders}>Нет заявок</p>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 };
 
-export default Funnel;
+export default React.memo(Funnel);

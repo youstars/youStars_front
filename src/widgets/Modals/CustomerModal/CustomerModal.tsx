@@ -32,7 +32,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({ onClose, Input, Button })
             const filtered = getData.results
                 .map((item: any) => ({
                     client: item.client || "Не указан",
-                    coefficient: item.intricacy_coefficient ? `Коэф: ${item.intricacy_coefficient}` : "Коэф: Не указан",
+                    coefficient: item.intricacy_coefficient ? `${item.intricacy_coefficient}` : "Коэф: Не указан",
                 }))
                 .filter((item: any) =>
                     item.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
