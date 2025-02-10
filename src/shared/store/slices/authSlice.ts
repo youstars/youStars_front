@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "shared/api/api";
 import Cookies from "js-cookie";
 
+// const API_BASE_URL = "https://consult-fozz.onrender.com/";
 const API_BASE_URL = "http://127.0.0.1:8000/";
 
 export const register = createAsyncThunk(

@@ -1,7 +1,10 @@
 import React from 'react'
+import UserTable from 'widgets/Table/Table'
 
 export default function Specialists() {
   return (
-    <div>Specialists</div>
+    <div>
+       <UserTable />
+    </div>
   )
 }
