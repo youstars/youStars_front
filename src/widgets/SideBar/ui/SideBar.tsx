@@ -22,6 +22,8 @@ export default function SideBar() {
     { text: "Специалисты", image: specialists, to: "specialists" },
     { text: "Воронка", image: funnel, to: "funnel" },
     { text: "Библиотека знаний", image: bibl, to: "library" },
+    { text: "Чаты", image: bibl, to: "chats" },
+
     { text: "Настройки", image: settings, to: "settings" },
   ];
 

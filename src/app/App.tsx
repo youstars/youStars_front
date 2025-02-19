@@ -17,6 +17,8 @@ import Gantt from "sub_pages/Gantt/ui/Gantt";
 import ManagerPage from "pages/ManagerPage/ui/ManagerPage";
 import Kanban from "sub_pages/Kanban/Kanban";
 import Overview from "../sub_pages/Overview/Overview";
+import Chats from "sub_pages/Chats/ui/Chats";
+import { Header } from "widgets/Header";
 
 function App() {
   const { theme } = useTheme();
@@ -25,7 +27,9 @@ function App() {
       <div className={`app ${theme}`}>
         <Suspense fallback={""}>
           <BrowserRouter>
+          {/* <Header /> */}
             <Routes>
+              
               <Route path={"/"} element={<LoginFormAsync />} />
               <Route
                 path="/create-account/:role"
@@ -41,6 +45,7 @@ function App() {
                 <Route path="funnel" element={<Funnel/>} />
                 <Route path="library" element={<Library />} />
                 <Route path="settings" element={<Settings />} />
+                <Route path="chats" element={<Chats/>} />
                 <Route path="overview" element={<Overview/>}>
                   <Route path="gantt" element={<Gantt/>} />
                   <Route path="kanban" element={<Kanban/>} />

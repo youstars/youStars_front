@@ -28,6 +28,9 @@ const LoginForm = () => {
     password: "",
   });
 
+
+  console.log(formData);
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
