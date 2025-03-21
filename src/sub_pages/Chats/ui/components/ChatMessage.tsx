@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Message } from "../types/chat";
+import React from 'react';
+import { Message } from '../types/chat';
 
 interface ChatMessageProps {
   message: Message;
@@ -7,83 +7,36 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onReply }) => {
-  const [showMenu, setShowMenu] = useState(false);
-  const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
-  const menuRef = useRef<HTMLDivElement | null>(null);
-
-
-  const handleContextMenu = (event: React.MouseEvent) => {
-    event.preventDefault();
-
-    const menuWidth = 120; 
-    const menuHeight = 40; 
-    const screenWidth = window.innerWidth; 
-    const screenHeight = window.innerHeight; 
-
-    let x = event.clientX;
-    let y = event.clientY;
-
- 
-    if (x + menuWidth > screenWidth) {
-      x -= menuWidth;
-    }
-    if (y + menuHeight > screenHeight) {
-      y -= menuHeight;
-    }
-
-    setMenuPosition({ x, y });
-    setShowMenu(true);
+  const handleReply = () => {
+    onReply(message);
   };
 
- 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-      setShowMenu(false);
-    }
-  };
-
-  useEffect(() => {
-    if (showMenu) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showMenu]);
+  const formattedTime = new Date(message.timestamp).toLocaleTimeString([], { 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  });
 
   return (
-    <div 
-      className={`message ${message.userId === "1" ? "message--own" : "message--other"}`} 
-      onContextMenu={handleContextMenu} 
-    >
-
-      {showMenu && menuPosition && (
-        <div 
-          className="message__context-menu" 
-          style={{ top: `${menuPosition.y}px`, left: `${menuPosition.x}px` }} 
-          onClick={() => { onReply(message); setShowMenu(false); }}
-          ref={menuRef}
+    <div className={`message ${message.isOwn ? 'message--own' : 'message--other'}`}>
+      <div className="message__bubble">
+        {!message.isOwn && <div className="message__name">{message.userName}</div>}
+        <div className="message__text">{message.text}</div>
+        <div className="message__time">{formattedTime}</div>
+      </div>
+      <div className="message__actions">
+        <button 
+          onClick={handleReply} 
+          style={{ 
+            background: 'none', 
+            border: 'none', 
+            fontSize: '12px', 
+            color: '#1890ff', 
+            cursor: 'pointer',
+            marginTop: '5px'
+          }}
         >
-          Ответить
-        </div>
-      )}
-
-      <div className="message__content">
-        <div className="message__header">
-          <span className="message__name">{message.userName}</span>
-          <span className="message__time">{message.timestamp}</span>
-        </div>
-
-        {message.replyTo && (
-          <div className="message__reply">
-            <span className="message__reply-name">{message.replyTo.userName}</span>
-            <p className="message__reply-text">{message.replyTo.text}</p>
-          </div>
-        )}
-
-        <p className="message__text">{message.text}</p>
+          Reply
+        </button>
       </div>
     </div>
   );

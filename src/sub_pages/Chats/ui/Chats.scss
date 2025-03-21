@@ -223,10 +223,10 @@ $yellow: #fbbf24;
     display: flex;
     align-items: center;
    
-    gap: 12px; // 🔥 Отступ между аватаркой и текстом
+    gap: 12px; 
   }
   
-  // Аватарка собеседника (🔥 Добавлено)
+
   .chat-header__avatar {
     width: 40px;
     height: 40px;
@@ -241,20 +241,20 @@ $yellow: #fbbf24;
     }
   }
   
-  // Контейнер имени и статуса
+
   .chat-header__text {
     display: flex;
     flex-direction: column;
   }
   
-  // Имя собеседника
+
   .chat-header__text h2 {
     margin: 0;
     font-size: 16px;
     font-weight: 500;
   }
   
-  // 🔥 Статус теперь под именем
+
   .chat-header__status {
     font-size: 13px;
     color: $text-muted;
@@ -276,14 +276,14 @@ $yellow: #fbbf24;
     color: $text-light;
   }
 }
-// Сообщение
+
 .message {
   display: flex;
   gap: 12px;
   max-width: 80%;
 }
 
-// Аватар сообщения
+
 .message__avatar {
   width: 32px;
   height: 32px;
@@ -298,46 +298,46 @@ $yellow: #fbbf24;
   }
 }
 
-// Контент сообщения
+
 .message__content {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-// Заголовок (имя + время)
+
 .message__header {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-// Имя отправителя (меняем цвет)
+
 .message__name {
   font-weight: 500;
 }
 
-// Если сообщение отправил ты (жёлтый)
+
 .message--own .message__name {
-  color: #fbbf24; // Жёлтый цвет имени
+  color: #fbbf24; 
 }
 
-// Если сообщение отправил другой человек (красный)
+
 .message--other .message__name {
-  color: #ff4d4d; // Красный цвет имени
+  color: #ff4d4d; 
 }
 
-// Время сообщения
+
 .message__time {
   font-size: 12px;
   color: $text-muted;
 }
 
-// Текст сообщения
+
 .message__text {
-    padding: 0; // 🔥 УБРАНЫ ОТСТУПЫ ВНУТРИ СООБЩЕНИЯ
-    background: none; // 🔥 ФОН УБРАН
-    border-radius: 0; // 🔥 СКРУГЛЕНИЯ БОЛЬШЕ НЕТ
+    padding: 0; 
+    background: none; 
+    border-radius: 0; 
   color: $text-light;
   font-size: 14px;
   line-height: 1.4;
@@ -590,3 +590,5 @@ $yellow: #fbbf24;
     }
   }
   
+
+

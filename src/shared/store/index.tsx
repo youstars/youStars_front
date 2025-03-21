@@ -3,13 +3,14 @@ import authReducer from "./slices/authSlice";
 import tasksSlice from "shared/store/slices/tasksSlice";
 import projectsSlice from "shared/store/slices/projectsSlice";
 import funnelSlice from "shared/store/slices/funnelSlice";
-
+import specialistsReducer from "shared/store/slices/specialistsSlice";
 const store = configureStore({
   reducer: {
     auth: authReducer,
     tasks: tasksSlice,
     projects:projectsSlice,
-    funnel:funnelSlice
+    funnel:funnelSlice,
+    specialists: specialistsReducer,
   },
 });
 

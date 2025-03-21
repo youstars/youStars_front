@@ -1,9 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "shared/api/api";
 import Cookies from "js-cookie";
+import { getUserIdFromToken } from "app/utils/cookies";
 
-// const API_BASE_URL = "https://consult-fozz.onrender.com/";
-const API_BASE_URL = "http://127.0.0.1:8000/";
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
 
 export const register = createAsyncThunk(
   "auth/register",
@@ -15,13 +17,13 @@ export const register = createAsyncThunk(
       const endpoint =
         role === "specialists"
           ? "ru/auth/users/student/registration/"
-          : "ru/auth/users/business/";
+          : "ru/auth/users/business/registration/";
 
       const response = await axiosInstance.post(
         `${API_BASE_URL}${endpoint}`,
         formData
       );
-      // const response = await axiosInstance.post(endpoint, formData);
+
 
       return response.data;
     } catch (error: any) {
@@ -39,7 +41,6 @@ interface ErrorType {
 
 //Login
 
-
 export const login = createAsyncThunk(
   "auth/login",
   async (
@@ -47,28 +48,35 @@ export const login = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await axiosInstance.post("ru/auth/token/login/", {
+      const response = await axiosInstance.post("ru/auth/token/create", {
         username,
         password,
       });
 
-      const token = response.data.auth_token;
+      const token = response.data.access;
 
-      Cookies.set("auth_token", token, {
+
+      Cookies.set("access_token", token, {
         expires: 7,
         secure: true,
-        sameSite: "Strict",
+        sameSite: "None",
       });
 
-      console.log("Token saved in cookies:", Cookies.get("auth_token")); // Проверка
+
+      const userId = getUserIdFromToken();
+      if (userId) {
+        Cookies.set("user_id", userId.toString(), { expires: 7, secure: true, sameSite: "None" });
+      }
+
+      return { token, user: { id: userId || null, username: response.data.username } };
     } catch (error) {
       console.error("Login failed:", error);
-      return rejectWithValue(
-        error.response?.data || { general: "Invalid credentials" }
-      );
+      return rejectWithValue(error.response?.data || { general: "Invalid credentials" });
     }
   }
 );
+
+
 
 
 const authSlice = createSlice({
@@ -102,7 +110,10 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = {
+          id: action.payload.user.id,
+          username: action.payload.user.username,
+        };
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -113,5 +124,6 @@ const authSlice = createSlice({
       });
   },
 });
+
 
 export default authSlice.reducer;

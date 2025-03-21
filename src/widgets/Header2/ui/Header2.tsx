@@ -6,11 +6,16 @@ import bell from "shared/images/bell.svg";
 import interrogation from "shared/images/interrogation.svg";
 import block from "shared/images/block.svg";
 import user_icon from "shared/images/user_icon.svg";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+
+
 
 export default function Header2() {
   const [dateTime, setDateTime] = useState(new Date());
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -20,12 +25,21 @@ export default function Header2() {
     return () => clearInterval(interval);
   }, []);
 
-  
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const pathnames = location.pathname.split("/").filter((x) => x);
-
-  
-  const filteredPathnames = pathnames.slice(1); 
-
+  const filteredPathnames = pathnames.slice(1);
 
   const breadcrumbLabels: { [key: string]: string } = {
     tasks: "Задачи",
@@ -38,6 +52,8 @@ export default function Header2() {
     kanban: "Канбан",
     user_projects: "Проекты",
   };
+
+
 
   return (
     <div className={classes.upper_block}>
@@ -58,9 +74,23 @@ export default function Header2() {
       <div className={classes.right_side}>
         <button className={classes.create_order}>Создать заказ</button>
         <div className={classes.control_panel}>
-          <button className={classes.panel_btn}>
-            <img src={bell} alt="" />
-          </button>
+          <div className={classes.notification_container} ref={notificationRef}>
+            <button 
+              className={classes.panel_btn} 
+              onClick={() => setShowNotifications(!showNotifications)}
+            >
+              
+            </button>
+            {showNotifications && (
+              <div className={classes.notification_dropdown}>
+                <div className={classes.notification_header}>
+                  <h3>Уведомления</h3>
+                
+                </div>
+                
+              </div>
+            )}
+          </div>
           <button className={classes.panel_btn}>
             <img src={interrogation} alt="" />
           </button>

@@ -20,6 +20,7 @@ export default function SideBar() {
     { text: "Проекты", image: projs, to: "user_projects" },
     { text: "Задачи", image: task, to: "tasks" },
     { text: "Специалисты", image: specialists, to: "specialists" },
+    { text: "Клиенты", image: specialists, to: "clients" },
     { text: "Воронка", image: funnel, to: "funnel" },
     { text: "Библиотека знаний", image: bibl, to: "library" },
     { text: "Чаты", image: bibl, to: "chats" },

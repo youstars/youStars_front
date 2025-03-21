@@ -18,7 +18,6 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    // justify-content: end;
 }
 
 .create_order {
@@ -46,23 +45,22 @@
     all: unset;
     display: flex;
     align-items: center;
+    position: relative;
+    cursor: pointer;
 }
 
 .time {
-    //width: 50px;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 0;
-
 }
 
 .time p {
-    //width: 35px;
     text-align: center;
     margin: 0;
-    line-height: 1.35; /* Уменьшаем высоту строки для сжатия текста */
+    line-height: 1.35;
 }
 
 .profile {
@@ -71,7 +69,6 @@
     background-color: var(--bg-color);
     padding: 8px;
     border-radius: 10px;
-
 }
 
 .breadcrumb_item {
@@ -87,4 +84,113 @@
 
 .tab_link {
     text-decoration: none;
+}
+
+.notification_container {
+    position: relative;
+}
+
+.notification_badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #FF4B4B;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 10px;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification_dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background-color: var(--bg-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 320px;
+    z-index: 1000;
+}
+
+.notification_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+    h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    button {
+        background: none;
+        border: none;
+        color: var(--bg-button-color);
+        cursor: pointer;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 4px;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+    }
+}
+
+.notification_list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification_item {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    &.unread {
+        background-color: rgba(var(--bg-button-color-rgb), 0.05);
+    }
+}
+
+.notification_content {
+    strong {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    p {
+        margin: 0;
+        font-size: 13px;
+        color: rgba(0, 0, 0, 0.7);
+        line-height: 1.4;
+    }
+}
+
+.notification_time {
+    font-size: 11px;
+    color: rgba(0, 0, 0, 0.5);
+    margin-top: 4px;
+    display: block;
+}
+
+.no_notifications {
+    padding: 24px 16px;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 14px;
 }

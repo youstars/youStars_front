@@ -1,0 +1,35 @@
+.projectBlock {
+    background: var(--dark-lighter-bg-color);
+    border-radius: 12px;
+    padding: 30px 32px;
+    margin-bottom: 40px;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    &__text {
+        display: flex;
+        justify-content: space-between;
+    }
+    &__title {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    &__total {
+        display: block;
+        font-size: 20px;
+        font-weight: 300;
+
+        margin-bottom: 15px;
+    }
+
+    &__list {
+        display: flex;
+        gap: 15px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+}

@@ -1,27 +1,27 @@
+
+
+export interface ChatMessage {
+  id: string;
+  content: string;
+  sender_id: string;
+  timestamp: string;
+}
+
 export interface Message {
-    id: string;
-    userId: string;
-    userName: string;
-    avatar?: string;
-    text: string;
-    timestamp: string;
-    replyTo?: Message;
-    highlighted?: boolean;
-  }
-  
-  export interface User {
-    id: string;
-    name: string;
-    avatar: string;
-  }
+  id: string;
+  userId: number;
+  userName: string;
+  text: string;
+  timestamp: string;
+  isOwn: boolean;
+}
 
-
-  export interface Chat {
-    id: string;
-    name: string;
-    status: string;
-    lastActive: string;
-    unread?: number;
-    messages: Message[];
-  }
-  
+export interface Chat {
+  id: string;
+  name: string;
+  status: string;
+  lastActive: string;
+  unread: number;
+  messages: Message[];
+  type: 'specialist' | 'business';
+}

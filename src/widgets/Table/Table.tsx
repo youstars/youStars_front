@@ -1,57 +1,66 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Search, SlidersHorizontal, Filter, Check } from 'lucide-react';
-import styles from './Table.module.scss';
+import React, { useState, useRef, useEffect } from "react";
+import { SlidersHorizontal, Filter, Check, MessageSquare } from "lucide-react";
+import Heart from "shared/images/Like.svg";
+import PaperPlane from "shared/images/paperplane.svg";
+import styles from "./Table.module.scss";
+import { getSpecialists } from "shared/store/slices/specialistsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "shared/store";
+import { useNavigate } from "react-router-dom";
+import Tag from "shared/UI/Tag/Tag";
+import Search from "shared/UI/Search/Search";
+import Avatar from "shared/UI/Avatar/Avatar";
+import SpecialistCard from "widgets/SpecialistCard/SpecialistCard";
+// import { useWebSocket } from 'context/WebSocketContext'
 
 function Table() {
-  const [selectedTags, setSelectedTags] = useState<string[]>(['Дизайнер', 'Без опыта', 'Junior', 'Middle']);
+  const dispatch = useDispatch<AppDispatch>();
+  const { list, loading, error } = useSelector(
+    (state: RootState) => state.specialists
+  );
+  const navigate = useNavigate();
+  // const [creatingChat, setCreatingChat] = useState<number | null>(null);
+  // const webSocket = useWebSocket();
+
+  // useEffect(() => {
+  //   console.log("✅ useEffect сработал!");
+  //   const fetchData = async() => {
+  //     try{
+  //     const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}student/me`)
+  //     const data = await response.json()
+  //     console.log(data, "DATA STUDENT ME");
+  //     }
+  //     catch (error){
+  //       console.error("error", error)
+
+  //   }
+  //   fetchData()
+  // },[])
+
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
-  const [selectedSort, setSelectedSort] = useState<string>('rating');
+  const [selectedSort, setSelectedSort] = useState<string>("rating");
   const sortButtonRef = useRef<HTMLButtonElement>(null);
 
-  const specialists = [
-    {
-      name: 'Алексей Дмитриевич Цой',
-      role: 'Middle-Дизайнер',
-      rating: 4.9,
-      reviews: 75,
-      description: 'Молодой дизайнер с большим количеством идеей и энтузиазмом, который трансформирует ваши мечты в реальность. Обладаю обширными навыками работы с стилем, материалами и умением находить интерес в простых вещах.',
-      skills: ['Логотипы', 'Брендинг', 'Айдентика', 'Анимация', 'Photoshop', 'After Effects', 'Adobe Illustrator'],
-      registrationDate: '01.02.2023',
-      activeProjects: 1,
-      activeTasks: 3,
-      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-    },
-    {
-      name: 'Ксения Ершова',
-      role: 'Дизайнер',
-      rating: 4.6,
-      reviews: 22,
-      description: 'Молодой дизайнер с большим количеством идеей и энтузиазмом, который трансформирует ваши мечты в реальность. Обладаю обширными навыками работы с стилем, материалами и умением находить интерес в простых вещах.',
-      skills: ['Брендинг', 'Айдентика', 'Анимация', 'Photoshop', 'Adobe Illustrator', 'After Effects', 'Figma'],
-      registrationDate: '01.02.2023',
-      activeProjects: 1,
-      activeTasks: 3,
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-    }
-  ];
-
   const sortOptions = [
-    { id: 'rating', label: 'По рейтингу' },
-    { id: 'reviews', label: 'По отзывам' },
-    { id: 'date', label: 'По дате регистрации' },
-    { id: 'projects', label: 'По количеству проектов' }
+    { id: "rating", label: "По рейтингу" },
+    { id: "reviews", label: "По отзывам" },
+    { id: "date", label: "По дате регистрации" },
+    { id: "projects", label: "По количеству проектов" },
   ];
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (sortButtonRef.current && !sortButtonRef.current.contains(event.target as Node)) {
+      if (
+        sortButtonRef.current &&
+        !sortButtonRef.current.contains(event.target as Node)
+      ) {
         setIsSortMenuOpen(false);
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -64,23 +73,25 @@ function Table() {
     setIsSortMenuOpen(false);
   };
 
+  useEffect(() => {
+    dispatch(getSpecialists());
+  }, [dispatch]);
+
+  if (loading) return <p>Загрузка...</p>;
+  if (error) return <p>Ошибка: {error}</p>;
+
   return (
     <div className={styles.container}>
       <div className={styles.mainContent}>
         {/* Search and Filter Header */}
         <div className={styles.searchHeader}>
-          <div className={styles.searchContainer}>
-            <Search className={styles.searchIcon} />
-            <input
-              type="text"
-              placeholder="Поиск специалиста"
-              className={styles.searchInput}
-            />
-          </div>
+          <Search />
           <div className={styles.buttonGroup}>
             <button
               ref={sortButtonRef}
-              className={`${styles.sortButton} ${isSortMenuOpen ? styles.active : ''}`}
+              className={`${styles.sortButton} ${
+                isSortMenuOpen ? styles.active : ""
+              }`}
               onClick={toggleSortMenu}
             >
               <SlidersHorizontal size={20} />
@@ -91,7 +102,9 @@ function Table() {
                 {sortOptions.map((option) => (
                   <div
                     key={option.id}
-                    className={`${styles.sortOption} ${selectedSort === option.id ? styles.active : ''}`}
+                    className={`${styles.sortOption} ${
+                      selectedSort === option.id ? styles.active : ""
+                    }`}
                     onClick={() => handleSortSelect(option.id)}
                   >
                     <span className={styles.checkmark}>
@@ -102,85 +115,18 @@ function Table() {
                 ))}
               </div>
             )}
-        
           </div>
-        </div>
-
-        {/* Tags */}
-        <div className={styles.tagList}>
-          {selectedTags.map((tag) => (
-            <span key={tag} className={styles.tag}>
-              {tag}
-            </span>
-          ))}
         </div>
 
         {/* Results Count */}
         <h2 className={styles.resultsTitle}>
-          Найдено 32 специалиста:
+          Найдено {list.length} специалистов:
         </h2>
 
         {/* Specialists List */}
         <div className={styles.specialistList}>
-          {specialists.map((specialist, index) => (
-            <div key={index} className={styles.specialistCard}>
-              <div className={styles.cardContent}>
-                <img
-                  src={specialist.image}
-                  alt={specialist.name}
-                  className={styles.profileImage}
-                />
-                <div className={styles.cardInfo}>
-                  <div className={styles.cardHeader}>
-                    <div className={styles.userInfo}>
-                      <h3 className={styles.name}>{specialist.name}</h3>
-                      <p className={styles.role}>{specialist.role}</p>
-                    </div>
-                    <div className={styles.actionGroup}>
-                      <div className={styles.rating}>
-                        <span className={styles.star}>★</span>
-                        <span>{specialist.rating}</span>
-                        <span className={styles.reviews}>({specialist.reviews})</span>
-                      </div>
-                      <div className={styles.buttons}>
-                        <button className={styles.iconButton}>
-                          ♡
-                        </button>
-                        <button className={styles.iconButton}>
-                          ↗
-                        </button>
-                        <button className={styles.profileButton}>
-                          Профиль
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <p className={styles.description}>
-                    {specialist.description}
-                  </p>
-
-                  <div className={styles.skillList}>
-                    {specialist.skills.map((skill) => (
-                      <span key={skill} className={styles.skill}>
-                        {skill}
-                      </span>
-                    ))}
-                    {specialist.skills.length > 6 && (
-                      <span className={`${styles.skill} ${styles.more}`}>
-                        +{specialist.skills.length - 6}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className={styles.metadata}>
-                    <span>Дата регистрации: {specialist.registrationDate}</span>
-                    <span>Проекты в процессе: {specialist.activeProjects}</span>
-                    <span>Задачи в процессе: {specialist.activeTasks}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {list.map((specialist) => (
+            <SpecialistCard key={specialist.id} specialist={specialist} />
           ))}
         </div>
       </div>
@@ -197,7 +143,7 @@ function Table() {
           <h3 className={styles.sectionTitle}>Профессия</h3>
           <div className={styles.checkboxGroup}>
             <div className={styles.checkboxItem}>
-              <input type="checkbox" id="design" checked />
+              <input type="checkbox" id="design" defaultChecked />
               <label htmlFor="design">Дизайн</label>
             </div>
             <div className={styles.checkboxItem}>
@@ -247,11 +193,11 @@ function Table() {
           <h3 className={styles.sectionTitle}>Образование и опыт</h3>
           <div className={styles.checkboxGroup}>
             <div className={styles.checkboxItem}>
-              <input type="checkbox" id="noExperience" checked />
+              <input type="checkbox" id="noExperience" defaultChecked />
               <label htmlFor="noExperience">Без опыта</label>
             </div>
             <div className={styles.checkboxItem}>
-              <input type="checkbox" id="junior" checked />
+              <input type="checkbox" id="junior" defaultChecked />
               <label htmlFor="junior">Junior</label>
             </div>
             <div className={styles.checkboxItem}>
@@ -259,7 +205,7 @@ function Table() {
               <label htmlFor="senior">Senior</label>
             </div>
             <div className={styles.checkboxItem}>
-              <input type="checkbox" id="middle" />
+              <input type="checkbox" id="middle" defaultChecked />
               <label htmlFor="middle">Middle</label>
             </div>
             <div className={styles.checkboxItem}>
