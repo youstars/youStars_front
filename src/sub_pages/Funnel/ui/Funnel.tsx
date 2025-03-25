@@ -10,6 +10,7 @@ import correctIcon from "shared/images/corectIcon.svg";
 import kubikIcon from "shared/images/kubikIcon.svg";
 import saveIcon from "shared/images/saveIcon.svg";
 import chatIcon from "shared/images/chatIcon.svg";
+import SideFunnel from "../../../widgets/SideBar/SideFunnel/SideFunnel";
 
 
 interface Funnel {
@@ -72,8 +73,11 @@ const Funnel = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const dispatch = useDispatch<AppDispatch>();
     const funnelData = useSelector(selectFunnel);
+    console.log("funnelData", funnelData);
     const [selected, setSelected] = useState<number>(0);
     const [selectedSubOption, setSelectedSubOption] = useState<number>(0);
+
+
 
     const subHandleSelect = useCallback((index: number) => {
         setSelectedSubOption(index);
@@ -107,81 +111,85 @@ const Funnel = () => {
     }, [selected]);
 
     return (
-        <div className={styles.container}>
-            <div className={styles.search}>
-                <div className={styles.input_wrapper}>
-                    <input
-                        className={styles.input}
-                        type="text"
-                        placeholder="Поиск"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <img src={search} alt=""/>
+            <div className={styles.container}>
+                <div className={styles.search}>
+                    <div className={styles.input_wrapper}>
+                        <input
+                            className={styles.input}
+                            type="text"
+                            placeholder="Поиск"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <img src={search} alt=""/>
+                    </div>
+
+                    <div className={styles.icons}>
+                        <img
+                            src={settingsIcon}
+                            alt=""
+                            style={{cursor: 'pointer'}}
+                        />
+                        <img src={addIcon} alt=""/>
+                        <img src={correctIcon} alt=""/>
+                    </div>
                 </div>
 
-                <div className={styles.icons}>
-                    <img src={settingsIcon} alt=""/>
-                    <img src={addIcon} alt=""/>
-                    <img src={correctIcon} alt=""/>
+                <div className={styles.options}>
+                    <div className={styles.options_items}>
+                        {["Все", "Новые", "По сроку", "По количеству задач", "По бюджету"].map((item, index) => (
+                            <p
+                                key={index}
+                                className={selected === index ? styles.selected : ""}
+                                onClick={() => handleSelect(index)}
+                            >
+                                {item}
+                            </p>
+                        ))}
+                    </div>
+                    <div>
+                        <img src={settingsIcon} alt="Настройки"/>
+                    </div>
                 </div>
-            </div>
 
-            <div className={styles.options}>
-                <div className={styles.options_items}>
-                    {["Все", "Новые", "По сроку", "По количеству задач", "По бюджету"].map((item, index) => (
-                        <p
-                            key={index}
-                            className={selected === index ? styles.selected : ""}
-                            onClick={() => handleSelect(index)}
-                        >
-                            {item}
-                        </p>
-                    ))}
+                <div className={styles.sub_options}>
+                    <div className={styles.sub_options_items}>
+                        {["Канбан", "Список", "Таймлайн", "Отчеты"].map((item, index) => (
+                            <p
+                                key={index}
+                                className={`${styles.sub_option} ${selectedSubOption === index ? styles.selected_sub_option : ""}`}
+                                onClick={() => subHandleSelect(index)}
+                            >
+                                {item}
+                            </p>
+                        ))}
+                    </div>
                 </div>
-                <div>
-                    <img src={settingsIcon} alt="Настройки"/>
-                </div>
-            </div>
+                <div className={styles.statusColumns}>
+                    {Object.keys(statusTitles).map((statusKey) => {
+                        const status = parseInt(statusKey);
+                        const statusOrders = ordersByStatus[status];
 
-            <div className={styles.sub_options}>
-                <div className={styles.sub_options_items}>
-                    {["Канбан", "Список", "Таймлайн", "Отчеты"].map((item, index) => (
-                        <p
-                            key={index}
-                            className={`${styles.sub_option} ${selectedSubOption === index ? styles.selected_sub_option : ""}`}
-                            onClick={() => subHandleSelect(index)}
-                        >
-                            {item}
-                        </p>
-                    ))}
-                </div>
-            </div>
-
-            <div className={styles.statusColumns}>
-                {Object.keys(statusTitles).map((statusKey) => {
-                    const status = parseInt(statusKey);
-                    const statusOrders = ordersByStatus[status];
-
-                    return (
-                        <div key={status} className={styles.statusColumn}>
-                            <div className={styles.statusHeader}>
-                                <h3>{statusTitles[status]}</h3>
+                        return (
+                            <div key={status} className={styles.statusColumn}>
+                                <div className={styles.statusHeader}>
+                                    <h3>{statusTitles[status]}</h3>
+                                </div>
+                                <div className={styles.tasksList}>
+                                    {statusOrders.length > 0 ? (
+                                        statusOrders.map((order) => (
+                                            <OrderCard key={order.id} order={order}/>
+                                        ))
+                                    ) : (
+                                        <p className={styles.noOrders}>Нет заявок</p>
+                                    )}
+                                </div>
                             </div>
-                            <div className={styles.tasksList}>
-                                {statusOrders.length > 0 ? (
-                                    statusOrders.map((order) => (
-                                        <OrderCard key={order.id} order={order}/>
-                                    ))
-                                ) : (
-                                    <p className={styles.noOrders}>Нет заявок</p>
-                                )}
-                            </div>
-                        </div>
-                    );
-                })}
+                        );
+                    })}
+                </div>
             </div>
-        </div>
+
     );
 };
 

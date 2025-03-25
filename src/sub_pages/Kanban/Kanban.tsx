@@ -1,7 +1,7 @@
-import React, {useEffect} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {getTasks} from "shared/store/slices/tasksSlice";
-import {AppDispatch} from "shared/store";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getTasks } from "shared/store/slices/tasksSlice";
+import { AppDispatch } from "shared/store";
 import classes from "./Kanban.module.scss";
 
 interface Task {
@@ -13,7 +13,6 @@ interface Task {
     notice: string;
     start_date: string;
     end_date: string;
-
     [key: string]: any;
 }
 
@@ -21,16 +20,28 @@ interface TaskGroup {
     [key: string]: Task[];
 }
 
+// 🎯 Статусы задач
 const statusTitles: { [key: number]: string } = {
-    0: "Нужно выполныть",
+    0: "Нужно выполнить",
     1: "В процессе",
     2: "Выполнено",
     3: "Провалено",
 };
 
-const TaskCard = ({task}: { task: Task }) => (
+const borderColors: { [key: number]: string } = {
+    0: "#bdbfc7",
+    1: "#FFC400",
+    2: "#3AFAE5",
+    3: "#FF4E4E",
+};
+
+
+const TaskCard = ({ task }: { task: Task }) => (
     <div className={classes.taskCard}>
-        <div className={classes.taskContent}>
+        <div
+            className={classes.taskContent}
+            style={{ borderLeft: `3px solid ${borderColors[task.status] || "#FFFFFF"}` }}
+        >
             <p className={classes.description}>{task.description || task.title}</p>
             <p className={classes.material}>{task.material}</p>
             <p className={classes.notice}>{task.notice}</p>
@@ -49,8 +60,7 @@ const Kanban = () => {
     useEffect(() => {
         const fetchTasks = async () => {
             try {
-                const result = await dispatch(getTasks()).unwrap();
-                console.log("Tasks data:", result);
+                await dispatch(getTasks()).unwrap();
             } catch (error) {
                 console.error("Error fetching tasks:", error);
             }
@@ -58,7 +68,8 @@ const Kanban = () => {
         fetchTasks();
     }, [dispatch]);
 
-    const groupedTasks: TaskGroup = tasksData.results?.reduce((acc: TaskGroup, task: Task) => {
+    // Группировка задач по статусу
+    const groupedTasks: TaskGroup = tasksData?.results?.reduce((acc: TaskGroup, task: Task) => {
         const statusTitle = statusTitles[task.status] || "Неизвестный статус";
         if (!acc[statusTitle]) {
             acc[statusTitle] = [];
@@ -67,11 +78,9 @@ const Kanban = () => {
         return acc;
     }, {}) || {};
 
-    console.log('hello')
-
     return (
         <div className={classes.container}>
-            {tasksData.results && tasksData.results.length > 0 ? (
+            {tasksData?.results?.length > 0 ? (
                 <div className={classes.statusColumns}>
                     {Object.entries(groupedTasks).map(([status, tasks]) => (
                         <div key={status} className={classes.statusColumn}>
@@ -81,7 +90,7 @@ const Kanban = () => {
                             <div className={classes.taskBlock}>
                                 <div className={classes.tasksList}>
                                     {tasks.map((task: Task) => (
-                                        <TaskCard key={task.id} task={task}/>
+                                        <TaskCard key={task.id} task={task} />
                                     ))}
                                 </div>
                             </div>

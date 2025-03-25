@@ -99,9 +99,9 @@ const ModalCalendar: React.FC<ModalCalendarProps> = ({
     const renderCalendar = () => {
         const daysInMonth = getDaysInMonth(currentDate);
         const firstDayOfMonth = getFirstDayOfMonth(currentDate);
-        const today = new Date().getDate(); // Получаем текущий день
-        const currentMonth = new Date().getMonth(); // Текущий месяц
-        const currentYear = new Date().getFullYear(); // Текущий год
+        const today = new Date().getDate();
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
 
 
         const days = [];

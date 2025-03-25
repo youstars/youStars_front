@@ -1,0 +1,444 @@
+.wrapper {
+  display: flex;
+  z-index: 100;
+
+  align-items: flex-start;
+  transition: all 0.3s ease;
+
+}
+
+.all_blocks_and_sidebar {
+  display: flex;
+  width: 100%;
+}
+
+.main {
+  transition: margin-right 0.3s ease;
+  width: 100%;
+}
+
+
+.form {
+  display: flex;
+  gap: 10px;
+  padding: 0 30px;
+  margin-top: 20px;
+}
+
+
+.search_and_filter {
+  width: 62%;
+  height: 40px;
+  background: #353a3d;
+  display: flex;
+  //justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+  //margin-left: 1px;
+  border-radius: 10px;
+}
+
+.input {
+  //width: 205px;
+  height: 30px;
+  list-style: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  background: #353a3d;
+  color: white;
+  padding-left: 20px;
+}
+
+
+.input_wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+}
+
+.search_icon {
+  //position: absolute;
+  left: 15px;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+
+.filters img {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.filters p {
+  font-family: Myriad Pro;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #ffffff;
+  vertical-align: middle;
+
+}
+
+.filters {
+  width: 306px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  background: #353a3d;
+  border-radius: 10px;
+}
+
+
+.sum_clients {
+  margin-left: 30px;
+  margin-top: 60px;
+}
+
+.sum_clients p {
+  font-family: Myriad Pro;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 100%;
+  vertical-align: middle;
+}
+
+
+//BLOCKS
+
+.all_blocks {
+  width: 96%;
+  display: flex;
+  flex-direction: column;
+  margin-left: 30px;
+  margin-top: 20px;
+  min-height: 222px;
+  background: #353a3d;
+  padding: 30px 32px;
+  border-radius: 10px;
+}
+
+.main_block {
+  display: flex;
+}
+
+.img_job_title {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  margin-right: auto;
+  gap: 16px;
+}
+
+.content p {
+  font-family: Myriad Pro;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 100%;
+  vertical-align: middle;
+  color: #ffffff;
+}
+
+.content h3 {
+  font-family: Myriad Pro;
+  font-weight: 600;
+  font-size: 29px;
+  line-height: 100%;
+  vertical-align: middle;
+  color: #ffffff;
+}
+
+
+.img {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  background: #987707;
+}
+
+.send_message {
+  display: flex;
+  //justify-content: center;
+  gap: 10px;
+  padding-right: 20px;
+}
+
+.button {
+  width: 148px;
+  height: 28px;
+  background: #353a3d;
+  color: #ffc400;
+  border: 1px solid #ffc400;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.send_message img {
+  width: 30px;
+  height: 30px;
+}
+
+.description {
+  font-family: Myriad Pro;
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 100%;
+  vertical-align: middle;
+  margin-top: 12px;
+}
+
+//.payment_block
+
+.payment_block {
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.payment_text {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+
+.payment_text p {
+  font-family: Myriad Pro;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 100%;
+  vertical-align: middle;
+}
+
+.payment_text span {
+  margin-left: 6px;
+}
+
+
+//сийдбар
+
+.sidebar {
+  width: 280px;
+  background: #2d3134;
+  color: white;
+  height: 100%;
+  transition: all 0.5s ease;
+  overflow: hidden;
+
+  &.closed {
+    width: 0;
+    opacity: 0;
+    padding: 0;
+  }
+
+  gap: 1px;
+  border: 1px solid #2a2b2e;
+}
+
+.open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+
+//filter
+
+.header_filter {
+  display: flex;
+  gap: 10px;
+  margin: 22px 0 0 20px;
+}
+
+.header_filter p {
+  font-family: Myriad Pro;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 100%;
+  vertical-align: middle;
+}
+
+.scope_block {
+  //margin: 16px 0 0 20px;
+  width: 200px;
+  margin: 22px 0 0 20px;
+}
+
+
+.scope_block p {
+  font-family: Myriad Pro;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  vertical-align: middle;
+}
+
+
+//чекбоксы
+
+.scope_block {
+  width: 200px;
+  color: white;
+  margin-top: 20px;
+}
+
+.scope_title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.checkboxList,
+.subList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.checkboxList li,
+.subList li {
+  margin-bottom: 10px;
+}
+
+.subList {
+  margin-left: 25px;
+  margin-top: 5px;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  gap: 8px;
+  color: white;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  display: none;
+}
+
+.customCheckbox {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffc400;
+  border-radius: 2px;
+  display: inline-block;
+  position: relative;
+}
+
+input[type="checkbox"]:checked + .customCheckbox {
+  background-color: #ffc400;
+}
+
+.block_more {
+  //margin-top: 20px;
+  width: 100%;
+  margin: 22px 0 0 20px;
+  padding-bottom: 20px;
+}
+
+.moreToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+
+  p {
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+  }
+}
+
+.arrow {
+  width: 8px;
+  height: 8px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(45deg);
+  transition: transform 0.3s ease;
+}
+
+.up {
+  transform: rotate(-135deg);
+}
+
+.down {
+  transform: rotate(45deg);
+}
+
+.moreContent {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  h4 {
+    margin-top: 10px;
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: white;
+    cursor: pointer;
+  }
+}
+
+.customCheckbox {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffc400;
+  border-radius: 2px;
+  display: inline-block;
+  background: transparent;
+}
+
+input[type="checkbox"]:checked + .customCheckbox {
+  background: #ffc400;
+}
+
+.buttonBlock {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  gap: 10px;
+
+  .applyBtn {
+    width: 189px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid #ffc400;
+    color: #ffc400;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+
+  .resetBtn {
+    width: 189px;
+    padding: 10px 20px;
+    background: #ffc400;
+    border: none;
+    border-radius: 12px;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+  }
+}

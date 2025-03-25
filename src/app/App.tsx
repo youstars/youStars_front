@@ -17,7 +17,8 @@ import Gantt from "sub_pages/Gantt/ui/Gantt";
 import ManagerPage from "pages/ManagerPage/ui/ManagerPage";
 import Kanban from "sub_pages/Kanban/Kanban";
 import Overview from "../sub_pages/Overview/Overview";
-
+import Clients from "../pages/Clients/Clients";
+//http://localhost:3000/manager/user_projects
 function App() {
   const { theme } = useTheme();
 
@@ -41,6 +42,7 @@ function App() {
                 <Route path="funnel" element={<Funnel/>} />
                 <Route path="library" element={<Library />} />
                 <Route path="settings" element={<Settings />} />
+                <Route path="clients" element={<Clients />} />
                 <Route path="overview" element={<Overview/>}>
                   <Route path="gantt" element={<Gantt/>} />
                   <Route path="kanban" element={<Kanban/>} />

@@ -18,7 +18,7 @@ export default function UserProjects() {
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
     const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
     const [isModalSpecialistOpen, setIsModalSpecialistOpen] = useState(false);
-    const [isModalCustomerOpen, setIsModalCustomerOpen] = useState(false);  // ✅ Добавлено состояние для модалки заказчиков
+    const [isModalCustomerOpen, setIsModalCustomerOpen] = useState(false);
     const [activeModalColumn, setActiveModalColumn] = useState<string>('');
     const [selectedTaskId, setSelectedTaskId] = useState<string | number | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -26,7 +26,7 @@ export default function UserProjects() {
     const dispatch = useDispatch<AppDispatch>();
 
     const getData = useSelector((state: any) => state.tasks.tasks);
-    console.log('projects', getData);
+    console.log('projectssqwq', getData.results);
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -59,7 +59,7 @@ export default function UserProjects() {
             setIsStatusModalOpen(true);
         } else if (columnName === "specialists") {
             setIsModalSpecialistOpen(true);
-        } else if (columnName === "client") {  // ✅ Добавлено открытие `CustomerModal`
+        } else if (columnName === "client") {
             setIsModalCustomerOpen(true);
         } else {
             setIsModalOpen(true);

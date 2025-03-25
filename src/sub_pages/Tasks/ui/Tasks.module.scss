@@ -26,12 +26,16 @@
 .header {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 2fr 1fr;
-    height: 36px;
+    height: 46px;
     padding: 0 16px;
     color: rgba(255, 255, 255, 0.7);
     font-size: 13px;
     font-weight: normal;
     align-items: center;
+}
+
+.header div:nth-child(5){
+    line-height: 10px;
 }
 
 .headerCell {
@@ -105,13 +109,13 @@
 }
 
 .taskGroup {
-    padding: 0; 
+    padding: 0;
 }
 
 .statusHeader {
     font-size: 16px;
     font-weight: bold;
-    margin-bottom: 4px; 
+    margin-bottom: 4px;
 }
 
 

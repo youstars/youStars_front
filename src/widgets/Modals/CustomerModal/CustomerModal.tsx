@@ -83,7 +83,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({ onClose, Input, Button })
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             setSearchTerm(e.target.value)
                         }
-                        placeholder="Поиск по заказчикам и коэффициенту"
+                        placeholder="Поиск"
                     />
                     <img src={search} alt="search"/>
                 </div>
