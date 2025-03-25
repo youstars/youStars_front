@@ -61,12 +61,11 @@ const CreateAccount = () => {
     re_password: Yup.string()
       .oneOf([Yup.ref("password"), null], t("Passwords must match"))
       .required(t("Password confirmation is required")),
-    terms: Yup.boolean()
-      .oneOf([true], t("You must accept the terms and conditions"))
-      .required(t("Required")), 
+   
   });
 
-  return (
+
+return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
@@ -131,7 +130,7 @@ const CreateAccount = () => {
                   "By creating an account, I agree to the YouStar Terms of Use and Privacy Policy."
                 )}
               </span>
-              <ErrorMessage name="terms" component="div" className={classes.error} />
+              {/* <ErrorMessage name="terms" component="div" className={classes.error} /> */}
             </fieldset>
             <Button
               className={classes.buttonContinue}
