@@ -1,8 +1,8 @@
-import React, {useState} from "react";
+import React from "react";
 import Header2 from "widgets/Header2/ui/Header2";
 import classes from "./ManagerPage.module.scss";
 import SideBar from "widgets/SideBar/ui/SideBar";
-import {Outlet, useNavigate} from "react-router-dom";
+import {Outlet} from "react-router-dom";
 
 
 

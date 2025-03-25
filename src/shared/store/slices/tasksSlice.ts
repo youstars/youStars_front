@@ -2,8 +2,7 @@ import axiosInstance from "shared/api/api";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 
-// const API_BASE_URL = "https://consult-fozz.onrender.com/ru/";
-const API_BASE_URL = "http://127.0.0.1:8000/ru/";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 export const getTasks = createAsyncThunk(
     "tasks/getTasks",

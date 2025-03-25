@@ -2,10 +2,6 @@ import {Button} from "shared/index";
 import {useTranslation} from "react-i18next";
 import person from 'shared/images/person.svg'
 import classes from './Steps.module.scss'
-import {getTasks} from "shared/store/slices/tasksSlice";
-import {useDispatch} from "react-redux";
-import {AppDispatch} from "shared/store";
-import {useEffect} from "react";
 
 const Steps = () => {
     const {t} = useTranslation();

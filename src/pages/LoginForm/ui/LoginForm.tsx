@@ -11,6 +11,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "shared/store";
 import { login } from "shared/store/slices/authSlice";
+import { CustomField } from "shared/UI/CustomField/CustomField";
+import { Formik, Form } from "formik"; // ✅ Импортируем Formik
+import * as Yup from "yup";
+
 
 const LoginForm = () => {
   const { theme } = useTheme();
@@ -27,10 +31,12 @@ const LoginForm = () => {
     username: "",
     password: "",
   });
-
-
+  const validationSchema = Yup.object({
+    username: Yup.string().required("Введите имя пользователя"),
+    password: Yup.string().required("Введите пароль"),
+  });
   console.log(formData);
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -51,48 +57,34 @@ const LoginForm = () => {
   };
 
   return (
-    <form className={classes.blockForm} onSubmit={handleSubmit}>
-      <h2>{t("Log in your account")}</h2>
-      <hr className={classes.hrSubTitle} />
-      <div className={classes.blockInputs}>
-        <fieldset className={classes.fieldEmail}>
-          <label className={classes.label}>{t("User name")}</label>
-          <Input className={classes.input}
-                        type='username'
-                        name="username"
-                        value={formData.username}
-                        onChange={handleChange}
-                        required />
-        </fieldset>
-        <fieldset className={classes.fieldPassword}>
-          <label className={classes.label}>{t("Password")}</label>
-          <Input className={classes.input}
-                        type='password'
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required />
-        </fieldset>
-        <Button
-                    className={classes.buttonLogIn}
-                    type="submit"
-                    disabled={loading}
-                >
-                    {loading ? t("Logging in...") : t("Log in")}
-                </Button>
-            </div>
-            {error && typeof error === "object" ? (
-                <ul className={classes.errorList}>
-                    {Object.entries(error).map(([key, value]) => (
-                        <li key={key} className={classes.errorItem}>
-                            {t(key)}: {typeof value === "string" ? t(value) : t("Unknown error")}
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                error && <p className={classes.error}>{t(String(error))}</p>
-            )}
-      <div className={classes.horizont}>
+   
+    <Formik
+      initialValues={{ username: "", password: "" }}
+      validationSchema={validationSchema}
+      onSubmit={async (values) => {
+        try {
+          const resultAction = await dispatch(login(values));
+          if (login.fulfilled.match(resultAction)) {
+            navigate("/test");
+          }
+        } catch (error) {
+          console.error("Login failed:", error);
+        }
+      }}
+    >
+      {({ isSubmitting }) => (
+        <Form className={classes.blockForm}>
+          <h2>{t("Log in your account")}</h2>
+          <hr className={classes.hrSubTitle} />
+  
+          <div className={classes.blockInputs}>
+            <CustomField name="username" label="Имя пользователя" className={classes.fieldLastName} />
+            <CustomField name="password" label="Пароль" type="password" className={classes.fieldPassword} />
+  
+            <Button className={classes.buttonLogIn} type="submit" disabled={isSubmitting || loading}>
+              {isSubmitting || loading ? t("Logging in...") : t("Log in")}
+            </Button>
+          </div> <div className={classes.horizont}>
         <hr className={classes.horizont_hr} />
         <p className={classes.horizont_p}>{t("Or")}</p>
         <hr className={classes.horizont_hr} />
@@ -107,16 +99,17 @@ const LoginForm = () => {
           <img className={classes.apple} src={icon} alt="apple" />
           <p className={classes.paragraph}>{t("Continue with Apple")}</p>
         </Button>
-        <Link to="/create-account/specialists">
+        <Link to="/create-account">
           <Button className={classes.createAccount}>
             {t("Create an account")}
           </Button>
         </Link>
       </div>
-    </form>
-  );
-};
+      
+        </Form>
+      )}
+    </Formik>
 
-export default LoginForm;
-
-
+ 
+  )};
+  export default LoginForm;

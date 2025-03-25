@@ -1,0 +1,83 @@
+.card {
+    width: 220px;
+    height: 158px;
+    background: #313338;
+    border-radius: 15px;
+    position: relative;
+    flex: 0 0 auto;
+    padding: 12px 20px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: repeat(7, auto);
+
+    gap: 4px;
+    font-family: 'Roboto', sans-serif !important;
+    overflow: hidden;
+    border-left: 2px solid var(--yellow-color);
+    &__name {
+        font-weight: bold;
+        font-size: 13px;
+        line-height: 14.3px;
+        color: #ededed;
+    }
+
+    &__chatIcon {
+        color: var(--yellow-color);
+        cursor: pointer;
+        justify-self: end;
+    }
+
+    &__amount {
+        color: #b3b3b3;
+        font-size: 10px;
+        line-height: 11.3px;
+        grid-column: 1 / -1;
+    }
+
+    &__status {
+        font-size: 10px;
+        line-height: 11.3px;
+        color: #b3b3b3;
+
+
+        grid-column: 1 / -1;
+
+        span {
+            font-weight: bold;
+            color: var(--dark-white-text-color);
+
+        }
+    }
+
+    &__tracker,
+    &__specialist {
+        font-size: 10px;
+        line-height: 11.3px;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        grid-column: 1 / -1;
+    }
+
+    &__timeline,
+    &__lastContact {
+        font-size: 10px;
+        line-height: 11.3px;
+            color: var(--dark-white-text-color);
+
+        display: flex;
+        gap: 4px;
+        
+        align-items: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        grid-column: 1 / -1;
+
+        span {
+            color: var(--dark-white-text-color);
+            margin-right: 2px;
+        }
+    }
+}

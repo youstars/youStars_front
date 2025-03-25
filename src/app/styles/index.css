@@ -18,18 +18,19 @@
   --bg-login-form:#F6F6F6;
   --bg-input-color: #EBEBEB;
   --text-input-color:#2D3134;
-  --bg-button-color: #FFC400;
+  --bg-button-color: #FFC400; 
   --bg-checkbox-color: #EBEBEB;
 }
 
 :root {
-  --font-family-main:  "Myriad Pro";
+  --font-family-main: "Myriad Pro", Arial, sans-serif;
+
   --font-size-m: 16px;
   --font-line-m: 24px;
-  --font-m: var(--font-size-m) / var(--font-line-m) var(--font-family-main);
+  --font-m: var(--font-size-m) var(--font-family-main);
   --font-size-l: 24px;
   --font-line-l: 32px;
-  --font-l: var(--font-size-l) / var(--font-line-l) var(--font-family-main);
+  --font-l: var(--font-size-l) var(--font-family-main);
 }
 
 * {
@@ -40,7 +41,10 @@
 
 
 .app {
-  font: var(--font-size-m);
+    font-family: var(--font-family-main);
+    font-size: var(--font-size-m);
+    line-height: var(--font-line-m);
+    color: var(--primery-color);
   color: var(--primery-color);
   background: var(--bg-color);
   min-height: 100vh;

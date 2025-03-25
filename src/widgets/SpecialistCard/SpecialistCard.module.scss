@@ -1,0 +1,103 @@
+.specialistCard {
+    background-color: #2C2C2C;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+  }
+  
+  .cardContent {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+  
+  .cardInfo {
+    flex: 1;
+  }
+  
+  .cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  
+  .userInfo {
+    .nameContainer {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+  
+      .name {
+        font-size: 1.125rem;
+        font-weight: 600;
+      }
+  
+      .rating {
+        display: flex;
+        align-items: center;
+  
+        .star {
+          color: #FFC400;
+          margin-right: 0.25rem;
+        }
+      }
+    }
+  
+    .role {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-top: 0.25rem;
+    }
+  }
+  
+  .actionGroup {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  
+    .buttons {
+      display: flex;
+      gap: 0.5rem;
+  
+      .iconButton {
+        all: unset;
+        cursor: pointer;
+      }
+  
+      .profileButton {
+        all: unset;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--yellow-color);
+        color: var(--yellow-color);
+        border-radius: var(--border-radius-main);
+        cursor: pointer;
+      }
+    }
+  }
+  
+  .description {
+    color: #9CA3AF;
+    margin: 1rem 0 1.5rem;
+  }
+  
+  .skillList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  
+    .skill {
+      background-color: #1E1E1E;
+      padding: 0.25rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+    }
+  }
+  
+  .metadata {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: #9CA3AF;
+  }
+  

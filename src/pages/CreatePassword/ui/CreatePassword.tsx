@@ -1,4 +1,3 @@
-import React from 'react';
 import classes from './CreatePasword.module.scss'
 import {Button, Input} from "shared/index";
 import {useTranslation} from "react-i18next";
