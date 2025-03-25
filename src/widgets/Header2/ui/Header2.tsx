@@ -8,15 +8,15 @@ import bell from "shared/images/bell.svg";
 import interrogation from "shared/images/interrogation.svg";
 import block from "shared/images/block.svg";
 import user_icon from "shared/images/user_icon.svg";
-import styles from "../../../sub_pages/Funnel/ui/Funnel.module.scss";
 import SideFunnel from "../../SideBar/SideFunnel/SideFunnel";
+import { useState, useEffect, useRef } from "react";
+
 
 
 export default function Header2() {
   const [dateTime, setDateTime] = useState(new Date());
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -25,6 +25,7 @@ export default function Header2() {
 
     return () => clearInterval(interval);
   }, []);
+
 
   const pathnames = location.pathname.split("/").filter((x) => x);
   const filteredPathnames = pathnames.slice(1);
@@ -41,13 +42,6 @@ export default function Header2() {
     user_projects: "Проекты",
   };
 
-  // Функция открытия/закрытия модального окна
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
-
-  // Функция переключения боковой панели (SideFunnel)
-  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
-  const closeSidebar = () => setIsSidebarOpen(false);
 
   return (
       <div className={classes.upper_block}>
@@ -65,26 +59,6 @@ export default function Header2() {
           })}
         </div>
 
-        <div className={classes.right_side}>
-          <button className={classes.create_order} onClick={openModal}>
-            Создать заказ
-          </button>
-          <div className={classes.control_panel}>
-            <button className={classes.panel_btn}>
-              <img onClick={toggleSidebar} src={bell} alt="Уведомления" />
-            </button>
-            <button className={classes.panel_btn}>
-              <img src={interrogation} alt="Помощь" />
-            </button>
-            <button className={classes.panel_btn}>
-              <img src={block} alt="Блокировка" />
-            </button>
-            <div className={classes.time}>
-              <p>{dateTime.toLocaleString()}</p>
-            </div>
-          </div>
-          <div className={classes.profile}>
-            <img src={user_icon} alt="Профиль" />
           </div>
         </div>
 

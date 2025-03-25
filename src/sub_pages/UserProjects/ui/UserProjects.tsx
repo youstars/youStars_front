@@ -59,7 +59,9 @@ export default function UserProjects() {
             setIsStatusModalOpen(true);
         } else if (columnName === "specialists") {
             setIsModalSpecialistOpen(true);
+
         } else if (columnName === "client") {
+
             setIsModalCustomerOpen(true);
         } else {
             setIsModalOpen(true);

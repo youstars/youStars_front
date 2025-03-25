@@ -5,6 +5,8 @@ import round from "shared/images/sideBarImgs/round.svg";
 import bibl from "shared/images/sideBarImgs/bibl.svg";
 import settings from "shared/images/sideBarImgs/settings.svg";
 import projs from "shared/images/sideBarImgs/projs.svg";
+import chat from "shared/images/sideBarImgs/fi-br-envelope.svg";
+import contacts from "shared/images/sideBarImgs/contacts.svg";
 import funnel from "shared/images/sideBarImgs/funnel.svg";
 import specialists from "shared/images/sideBarImgs/spcialists.svg";
 import task from "shared/images/sideBarImgs/task.svg";
@@ -21,9 +23,10 @@ export default function SideBar() {
     { text: "Проекты", image: projs, to: "user_projects" },
     { text: "Задачи", image: task, to: "tasks" },
     { text: "Специалисты", image: specialists, to: "specialists" },
-    { text: "Клиенты", image: clienst, to: "clients" },
+    { text: "Клиенты", image: contacts, to: "clients" },
     { text: "Воронка", image: funnel, to: "funnel" },
     { text: "Библиотека знаний", image: bibl, to: "library" },
+    { text: "Чаты", image: chat, to: "chats" },
     { text: "Настройки", image: settings, to: "settings" },
   ];
 
