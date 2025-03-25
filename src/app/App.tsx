@@ -20,7 +20,7 @@ import Overview from "../sub_pages/Overview/Overview";
 // import Chats from "sub_pages/Chats/ui/Chats";
 import { Header } from "widgets/Header";
 // import { WebSocketProvider } from "context/WebSocketContext";
-import TestChat from "sub_pages/Chats/TestChat";
+// import TestChat from "sub_pages/Chats/TestChat";
 import { Clients } from "sub_pages/Clients/ui/Clients";
 
 // import Chats from "sub_pages/Chats/ui/Chats";
@@ -50,7 +50,7 @@ function App() {
               <Route path="funnel" element={<Funnel />} />
               <Route path="library" element={<Library />} />
               <Route path="settings" element={<Settings />} />
-              <Route path="chats" element={<TestChat/>} />
+              {/* <Route path="chats" element={<Chats/>} /> */}
               <Route path="overview" element={<Overview />}>
                 <Route path="gantt" element={<Gantt />} />
                 <Route path="kanban" element={<Kanban />} />

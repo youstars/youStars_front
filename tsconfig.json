@@ -9,11 +9,11 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "baseUrl": "./src", // Это устанавливает корневую директорию для абсолютных импортов
+    "baseUrl": "./src",
     "paths": {
-      "shared/*": ["shared/*"], // Абсолютный импорт для shared
-      "app/*": ["app/*"],       // Абсолютный импорт для app
-      "images/*": ["shared/images/*"] // Абсолютный импорт для изображений
+      "shared/*": ["shared/*"], 
+      "app/*": ["app/*"],      
+      "images/*": ["shared/images/*"] 
     }
   },
   "ts-node": {
