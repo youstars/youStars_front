@@ -13,6 +13,7 @@ import task from "shared/images/sideBarImgs/task.svg";
 import arrow from "shared/images/sideBarImgs/arrow.svg";
 import search from "shared/images/sideBarImgs/search.svg";
 import arrow_back from 'shared/images/sideBarImgs/arrow_back.svg'
+import clienst from 'shared/images/sideBarImgs/clients.svg'
 
 export default function SideBar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -26,7 +27,6 @@ export default function SideBar() {
     { text: "Воронка", image: funnel, to: "funnel" },
     { text: "Библиотека знаний", image: bibl, to: "library" },
     { text: "Чаты", image: chat, to: "chats" },
-
     { text: "Настройки", image: settings, to: "settings" },
   ];
 
@@ -67,7 +67,7 @@ export default function SideBar() {
         )}
       </div>
 
-     
+
         <div className={classes.search}>
           <div className={classes.input_wrapper}>
             <input
@@ -82,7 +82,7 @@ export default function SideBar() {
             />
           </div>
         </div>
-    
+
       <div className={classes.navigation}>
         {navItems.map((item, index) => (
           <SideBarNav

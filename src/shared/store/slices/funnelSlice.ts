@@ -9,7 +9,7 @@ export const getOrders = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(`${API_BASE_URL}orders`);
-            console.log("API response:", response.data); // ✅ Проверяем структуру ответа
+            console.log("API response:", response.data);
             return response.data;
         } catch (error: any) {
             console.error("Error fetching orders:", error);

@@ -10,30 +10,16 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 30px;
+  gap: 10px;
   overflow-x: auto;
-  padding-bottom: 1rem;
   height: 100vh;
-  //margin-left: 20px;
-
-  &::-webkit-scrollbar {
-    height: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: #2a2b2e;
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #4a4b4e;
-    border-radius: 4px;
-  }
+  margin-top: 14px;
 }
 
 .statusColumn {
   flex: none;
-  //width: 270px;
+  width: 270px;
+
 }
 
 .statusHeader {
@@ -58,19 +44,26 @@
 }
 
 .taskBlock {
-  width: 270px;
-  background-color: #2a2b2e;
-  border-radius: 0 0 20px 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0 0 0;
+  position: relative;
+
 }
 
 .taskCard {
-  padding: 1rem;
+  //padding: 1rem;
+  gap: 10px;
+  padding-bottom: 10px;
 }
 
 .taskContent {
-  border: 1px solid #4a4b4e;
-  border-radius: 0.375rem;
-  padding: 0.75rem;
+  width: 270px;
+  height: 20vh;
+  background-color: #2a2b2e;
+  border-radius: 15px 15px 15px 15px;
+  padding: 12px 20px;
+  border-left: 1px solid #ffffff;
 }
 
 .material {
