@@ -121,9 +121,7 @@ fieldset {
   background: var(--bg-checkbox-color);
   border-radius: 2px;
   cursor: pointer;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+
   margin-top: 2px;
 }
 
@@ -240,5 +238,3 @@ fieldset {
   align-items: center;
   gap: 6px;
 }
-
-
