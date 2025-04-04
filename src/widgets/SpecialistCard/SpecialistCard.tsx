@@ -1,13 +1,17 @@
 import React from "react";
 import styles from "./SpecialistCard.module.scss";
-import Heart from "shared/images/Like.svg";
 import PaperPlane from "shared/images/paperplane.svg";
 import Avatar from "shared/UI/Avatar/Avatar";
 import Tag from "shared/UI/Tag/Tag";
+import { useNavigate } from "react-router-dom";
+import { Chat } from "shared/types/chat";
+import { useChatService } from "shared/hooks/useWebsocket";
+import IconButton from "shared/UI/IconButton/IconButton";
 
 interface Specialist {
   id: number;
   custom_user_id: {
+    id: number;
     avatar?: string;
     first_name?: string;
     full_name?: string;
@@ -27,6 +31,32 @@ interface SpecialistCardProps {
 }
 
 const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
+  const { chats, setActiveChat } = useChatService();
+
+  const handleChatClick = () => {
+    const specialistUserId = String(specialist.custom_user_id?.id);
+    console.log("specialist ID:", specialist.custom_user_id?.id);
+    chats.forEach((chat: Chat) => {
+      console.log("Чат ID:", chat.id);
+      chat.participants?.some((p: any) => String(p.id) === specialistUserId);
+    });
+    const chat = chats.find((chat: Chat) =>
+      chat.participants?.some((p: any) => String(p.id) === specialistUserId)
+    );
+
+    if (chat) {
+      setActiveChat(chat.id);
+      navigate("/manager/chats");
+    } else {
+      alert("Чат с этим специалистом не найден.");
+    }
+  };
+
+  const navigate = useNavigate();
+  const handleProfileClick = () => {
+    navigate(`/manager/specialists/${specialist.id}`);
+  };
+
   return (
     <div className={styles.specialistCard}>
       <div className={styles.cardContent}>
@@ -39,7 +69,10 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
             <div className={styles.userInfo}>
               <div className={styles.nameContainer}>
                 <h3 className={styles.name}>
-                  {`${specialist.custom_user_id?.first_name || specialist.custom_user_id?.username} 
+                  {`${
+                    specialist.custom_user_id?.first_name ||
+                    specialist.custom_user_id?.username
+                  } 
                   ${specialist.custom_user_id?.full_name || "ДАННЫХ НЕТ"}`}
                 </h3>
                 <div className={styles.rating}>
@@ -53,13 +86,13 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
             </div>
             <div className={styles.actionGroup}>
               <div className={styles.buttons}>
-                <button className={styles.iconButton}>
-                  <img src={Heart} alt="Like" />
+              <IconButton icon={PaperPlane} alt="Chat" onClick={handleChatClick} title="Начать чат" />
+                <button
+                  className={styles.profileButton}
+                  onClick={handleProfileClick}
+                >
+                  Профиль
                 </button>
-                <button className={styles.iconButton}>
-                  <img src={PaperPlane} alt="Send" />
-                </button>
-                <button className={styles.profileButton}>Профиль</button>
               </div>
             </div>
           </div>
@@ -82,8 +115,12 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
               Дата регистрации:{" "}
               {specialist.custom_user_id?.date_joined || "ДАННЫХ НЕТ"}
             </span>
-            <span>Проекты в процессе: {specialist.projects_in_progress || "0"}</span>
-            <span>Задачи в процессе: {specialist.tasks_in_progress || "0"}</span>
+            <span>
+              Проекты в процессе: {specialist.projects_in_progress || "0"}
+            </span>
+            <span>
+              Задачи в процессе: {specialist.tasks_in_progress || "0"}
+            </span>
           </div>
         </div>
       </div>

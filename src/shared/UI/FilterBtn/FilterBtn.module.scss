@@ -1,0 +1,29 @@
+.filters {
+    min-width: 113px;
+    height: 30px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    background: #353a3d;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 10px 20px;
+  
+    img {
+      width: 14px;
+      height: 14px;
+    }
+  
+    p {
+      font-family: Myriad Pro, sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #ffffff;
+      vertical-align: middle;
+    }
+  }
+  
+
+  

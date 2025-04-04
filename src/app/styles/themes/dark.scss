@@ -1,13 +1,22 @@
 .app.dark {
   --bg-color: #353A3D;
+  --secondary-bg-color: #2A2B2E;
+  
   --primery-color: white;
   --secondary-color: white;
   --bg-toggle-color : #2D3134;
+
   --bg-login-form:#2D3134;
   --bg-input-color:#353A3D;
   --text-input-color:white;
   --bg-button-color: #FFC400;
   --bg-checkbox-color:#353A3D;
-  --secondary-font-color: #888888
-
+  --secondary-font-color: #888888;
+  // --dark-bg-color: #2A2B2E;
+  --dark-lighter-bg-color: #353A3D;
+  --text-input-color: #2D3134;
+  --yellow-color: #FFC400;
+  --grey-text-color: #888888;
+  --dark-white-text-color: #EDEDED;
 }
+

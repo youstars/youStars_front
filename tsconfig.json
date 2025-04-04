@@ -11,9 +11,12 @@
     "esModuleInterop": true,
     "baseUrl": "./src",
     "paths": {
-      "shared/*": ["shared/*"], 
-      "app/*": ["app/*"],      
-      "images/*": ["shared/images/*"] 
+      "shared/*": ["shared/*"],
+      "context/*": ["context/*"],
+      "pages/*": ["pages/*"],
+      "sub_pages/*": ["sub_pages/*"],
+      "widgets/*": ["widgets/*"],
+      "app/*": ["app/*"]
     }
   },
   "ts-node": {

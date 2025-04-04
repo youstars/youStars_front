@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import DatePicker, {registerLocale} from 'react-datepicker';
-import ru from 'date-fns/locale/ru';
+import { ru }from 'date-fns/locale/ru'
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './ModalOrder.module.scss';
 import R from 'shared/images/R.svg';

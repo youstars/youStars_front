@@ -1,2 +1,1 @@
-import Header from "./ui/Header";
-export {Header}
+export { default } from './Header';

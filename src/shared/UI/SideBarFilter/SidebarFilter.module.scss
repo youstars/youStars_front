@@ -1,0 +1,207 @@
+.sidebarOverlay {
+  width: 320px;
+  height: 100vh;
+  background-color: #2d3134;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3); // Тень слева, так как сайдбар справа
+  transition: transform 0.3s ease; // Плавная анимация
+  overflow-y: auto;
+  flex-shrink: 0;
+  position: fixed; // Фиксируем сайдбар справа
+  top: 0;
+  right: 0;
+  transform: translateX(100%); // Изначально скрыт за правой границей
+  z-index: 1000; // Убедимся, что сайдбар поверх контента
+}
+
+.sidebarOverlay.open {
+  transform: translateX(0); // Выдвигается в видимую область
+}
+
+// Убираем display: none, так как используем transform для анимации
+// .sidebarOverlay:not(.open) {
+//   display: none;
+// }
+
+// Остальные стили остаются без изменений
+.header_filter {
+  display: flex;
+  gap: 10px;
+  margin: 22px 0 0 20px;
+}
+
+.header_filter p {
+  font-family: Myriad Pro;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 100%;
+  vertical-align: middle;
+}
+
+.scope_block {
+  width: 200px;
+  margin: 22px 0 0 20px;
+}
+
+.scope_block p {
+  font-family: Myriad Pro;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  vertical-align: middle;
+}
+
+.scope_block {
+  width: 200px;
+  color: white;
+  margin-top: 20px;
+}
+
+.scope_title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.checkboxList,
+.subList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.checkboxList li,
+.subList li {
+  margin-bottom: 10px;
+}
+
+.subList {
+  margin-left: 25px;
+  margin-top: 5px;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  gap: 8px;
+  color: white;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  display: none;
+}
+
+.customCheckbox {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffc400;
+  border-radius: 2px;
+  display: inline-block;
+  position: relative;
+}
+
+input[type="checkbox"]:checked + .customCheckbox {
+  background-color: #ffc400;
+}
+
+.block_more {
+  width: 100%;
+  margin: 22px 0 0 20px;
+  padding-bottom: 20px;
+}
+
+.moreToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+
+  p {
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+  }
+}
+
+.arrow {
+  width: 8px;
+  height: 8px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(45deg);
+  transition: transform 0.3s ease;
+}
+
+.up {
+  transform: rotate(-135deg);
+}
+
+.down {
+  transform: rotate(45deg);
+}
+
+.moreContent {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  h4 {
+    margin-top: 10px;
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: white;
+    cursor: pointer;
+  }
+}
+
+.customCheckbox {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffc400;
+  border-radius: 2px;
+  display: inline-block;
+  background: transparent;
+}
+
+input[type="checkbox"]:checked + .customCheckbox {
+  background: #ffc400;
+}
+
+.buttonBlock {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  gap: 10px;
+
+  .applyBtn {
+    width: 189px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid #ffc400;
+    color: #ffc400;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+
+  .resetBtn {
+    width: 189px;
+    padding: 10px 20px;
+    background: #ffc400;
+    border: none;
+    border-radius: 12px;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+  }
+}
