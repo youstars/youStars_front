@@ -1,5 +1,5 @@
 .specialistCard {
-    background-color: #2C2C2C;
+    background-color: var(--secondary-bg-color);;
     border-radius: 0.5rem;
     padding: 1.5rem;
   }
@@ -65,7 +65,7 @@
   
       .profileButton {
         all: unset;
-        padding: 0.5rem 1rem;
+        padding: 0.5rem 2.5rem;
         border: 1px solid var(--yellow-color);
         color: var(--yellow-color);
         border-radius: var(--border-radius-main);

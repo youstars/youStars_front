@@ -1,11 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "shared/api/api";
 import Cookies from "js-cookie";
-import { getUserIdFromToken } from "app/utils/cookies";
-
+import { getUserIdFromToken } from "shared/utils/cookies";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
 
 export const register = createAsyncThunk(
   "auth/register",
@@ -15,7 +13,7 @@ export const register = createAsyncThunk(
   ) => {
     try {
       const endpoint =
-        role === "specialists"
+        role === "student"
           ? "ru/auth/users/student/registration/"
           : "ru/auth/users/business/registration/";
 
@@ -23,7 +21,6 @@ export const register = createAsyncThunk(
         `${API_BASE_URL}${endpoint}`,
         formData
       );
-
 
       return response.data;
     } catch (error: any) {
@@ -37,7 +34,6 @@ export const register = createAsyncThunk(
 interface ErrorType {
   [key: string]: string;
 }
-
 
 //Login
 
@@ -55,29 +51,33 @@ export const login = createAsyncThunk(
 
       const token = response.data.access;
 
-
       Cookies.set("access_token", token, {
         expires: 7,
         secure: true,
         sameSite: "None",
       });
 
-
       const userId = getUserIdFromToken();
       if (userId) {
-        Cookies.set("user_id", userId.toString(), { expires: 7, secure: true, sameSite: "None" });
+        Cookies.set("user_id", userId.toString(), {
+          expires: 7,
+          secure: true,
+          sameSite: "None",
+        });
       }
 
-      return { token, user: { id: userId || null, username: response.data.username } };
+      return {
+        token,
+        user: { id: userId || null, username: response.data.username },
+      };
     } catch (error) {
       console.error("Login failed:", error);
-      return rejectWithValue(error.response?.data || { general: "Invalid credentials" });
+      return rejectWithValue(
+        error.response?.data || { general: "Invalid credentials" }
+      );
     }
   }
 );
-
-
-
 
 const authSlice = createSlice({
   name: "auth",
@@ -124,6 +124,5 @@ const authSlice = createSlice({
       });
   },
 });
-
 
 export default authSlice.reducer;

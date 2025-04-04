@@ -4,7 +4,6 @@ import whiteApple from "shared/images/whiteApple.svg";
 import { useTranslation } from "react-i18next";
 import classes from "./CreatedAccount.module.scss";
 import { Link, useNavigate} from "react-router-dom";
-import { useTheme } from "app/provider/lib_lib/useTheme";
 import google from "shared/images/google.svg";
 import { Button } from "shared/index";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,6 +12,8 @@ import { register } from "shared/store/slices/authSlice";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { CustomField } from "shared/UI/CustomField/CustomField";
+import { useTheme } from "shared/providers/theme/useTheme";
+
 
 const CreateAccount = () => {
   const { theme } = useTheme();
@@ -21,8 +22,9 @@ const CreateAccount = () => {
   const { loading, error } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
 
-  
-  const role = (localStorage.getItem("role") as 'specialists' | 'business') || "specialists";
+  const rawRole = localStorage.getItem("role") || "specialists";
+  const role = rawRole === "specialists" ? "student" : "business";
+
 
   const icon = useMemo(() => {
     return theme === "dark" ? whiteApple : blackApple;
@@ -72,7 +74,7 @@ return (
       onSubmit={async (values, { setSubmitting }) => {
         try {
           const resultAction = await dispatch(
-            register({ role: role || "specialists", formData: values })
+            register({ role, formData: values }) 
           );
           if (register.fulfilled.match(resultAction)) {
             navigate("/");

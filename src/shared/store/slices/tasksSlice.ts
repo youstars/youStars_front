@@ -32,7 +32,7 @@ export const updateTaskDeadline = createAsyncThunk(
                 }
             );
 
-            // ✅ проверь, что API реально возвращает обновлённый task
+            
             return response.data;
         } catch (error: any) {
             console.error("Error updating deadline:", error);

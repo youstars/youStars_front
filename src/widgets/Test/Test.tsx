@@ -2,7 +2,8 @@ import classes from './Test.module.scss'
 import {Button} from "shared/index";
 import {useTranslation} from "react-i18next";
 import {Link} from "react-router-dom";
-import {Header} from "../Header";
+
+
 
 const Test = () => {
     const {t} = useTranslation();

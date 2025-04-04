@@ -2,7 +2,6 @@ import { useState } from "react";
 import classes from "./LoginForm.module.scss";
 import blackApple from "shared/images/blackApple.svg";
 import whiteApple from "shared/images/whiteApple.svg";
-import { useTheme } from "app/provider/lib_lib/useTheme";
 import { useMemo } from "react";
 import { Button, Input } from "shared/index";
 import google from "shared/images/google.svg";
@@ -12,8 +11,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "shared/store";
 import { login } from "shared/store/slices/authSlice";
 import { CustomField } from "shared/UI/CustomField/CustomField";
-import { Formik, Form } from "formik"; // ✅ Импортируем Formik
+import { Formik, Form } from "formik"; 
 import * as Yup from "yup";
+import { useTheme } from "shared/providers/theme/useTheme";
 
 
 const LoginForm = () => {

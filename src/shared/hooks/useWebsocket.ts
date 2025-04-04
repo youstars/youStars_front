@@ -1,52 +1,74 @@
-import { useEffect, useRef, useState } from "react";
+// shared/hooks/useChatService.ts
+import { useEffect } from "react";
+import { useAppSelector } from "./useAppSelector";
 
-export const useWebSocket = (url: string) => {
-  const [isConnected, setIsConnected] = useState(false);
-  const [messages, setMessages] = useState<any[]>([]);
-  const wsRef = useRef<WebSocket | null>(null);
+import {
+  fetchChats,
+  setActiveChat,
+  setActiveChatType,
+  setError,
+  setIsConnected,
+} from "shared/store/slices/chatSlice";
+import { ChatType, Message } from "shared/types/chat";
+import { getCookie } from "shared/utils/cookies";
+import {
+  connectToWebSocket,
+  sendMessageViaWebSocket,
+} from "shared/providers/webSocket/webSocketService";
+import { useAppDispatch } from "./useAppDispatch";
 
-  useEffect(() => {
-    const ws = new WebSocket(url);
-    wsRef.current = ws;
+export const useChatService = () => {
+  const dispatch = useAppDispatch();
+  const chats = useAppSelector((state) => state.chat.chats);
+  const activeChat = useAppSelector((state) => state.chat.activeChat);
+  const isConnected = useAppSelector((state) => state.chat.isConnected);
+  const error = useAppSelector((state) => state.chat.error);
+  const isAdmin = parseInt(getCookie("user_id") || "1") === 1;
 
-    ws.onopen = () => {
-      console.log("✅ WebSocket подключен:", url);
-      setIsConnected(true);
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        setMessages((prev) => [...prev, data]);
-      } catch (err) {
-        console.error("Ошибка обработки WebSocket-сообщения:", err);
-      }
-    };
-
-    ws.onerror = (error) => {
-      console.error("❌ Ошибка WebSocket:", error);
-      setIsConnected(false);
-    };
-
-    ws.onclose = () => {
-      console.warn("🔄 WebSocket закрыт, попытка переподключения...");
-      setTimeout(() => {
-        if (!wsRef.current || wsRef.current.readyState === WebSocket.CLOSED) {
-          wsRef.current = new WebSocket(url);
-        }
-      }, 5000);
-    };
-
-    return () => {
-      ws.close();
-    };
-  }, [url]);
-
-  const sendMessage = (message: any) => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify(message));
+  const setActiveChatWithType = (chatId: string) => {
+    const chat = chats.find((c) => c.id === chatId);
+    if (chat) {
+      dispatch(setActiveChat(chatId));
+      dispatch(setActiveChatType(chat.type));
+      connectToWebSocket(chatId, dispatch);
     }
   };
 
-  return { messages, sendMessage, isConnected };
+  const sendMessage = (text: string, replyTo?: Message | null) => {
+    if (!activeChat) return;
+    sendMessageViaWebSocket(text, activeChat, replyTo?.id);
+  };
+
+  const reconnect = () => {
+    if (activeChat) {
+      connectToWebSocket(activeChat, dispatch);
+    } else {
+      dispatch(setError("Нет активного чата"));
+    }
+  };
+
+  useEffect(() => {
+    const userId = parseInt(getCookie("user_id") || "1");
+    const isAdmin = userId === 1;
+    const defaultType: ChatType = "admin-specialist";
+
+    dispatch(fetchChats(isAdmin ? undefined : defaultType));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (activeChat) {
+      connectToWebSocket(activeChat, dispatch);
+    }
+  }, [activeChat, dispatch]);
+
+  return {
+    chats,
+    activeChat,
+    isConnected,
+    error,
+    isAdmin,
+    sendMessage,
+    setActiveChat: setActiveChatWithType,
+    reconnect,
+  };
 };
