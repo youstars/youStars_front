@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import styles from "./ChatInput.module.scss";
 import Smile from "shared/images/chatIcons/fi-br-laugh.svg";
 import Mic from "shared/images/chatIcons/fi-br-microphone.svg";
 import PaperPlane from "shared/images/chatIcons/fi-br-paper-plane.svg";
@@ -25,20 +26,17 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, replyTo, cancelRep
 
   return (
     <>
-      {replyTo && (
-        <div className="chat-reply">
-          <span className="chat-reply__name">{replyTo.userName}</span>
-          <p className="chat-reply__text">{replyTo.text}</p>
-          <button className="chat-reply__close" onClick={cancelReply}>
-            ✖
-          </button>
-        </div>
-      )}
-
-      <form className="chat-input" onSubmit={handleSubmit}>
+     {replyTo && (
+  <div className={styles.chatReply}>
+    <span className={styles.name}>{replyTo.userName}</span>
+    <p className={styles.text}>{replyTo.text}</p>
+    <button className={styles.close} onClick={cancelReply}>✖</button>
+  </div>
+)}
+      <form className={styles.chatInput} onSubmit={handleSubmit}>
         <textarea
           ref={textareaRef}
-          className="chat-input__field"
+          className={styles.field}
           placeholder="Сообщение..."
           value={message}
           onChange={(e) => {
@@ -55,15 +53,15 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, replyTo, cancelRep
             }
           }}
         />
-        <div className="chat-input__actions">
-          <button type="button" className="chat-input__button">
-            <img src={Smile} alt="Smile Icon" width={20} height={20} />
+  <div className={styles.actions}>
+  <button type="button" className={styles.button}>
+            <img src={Smile} alt="Smile Icon" />
           </button>
-          <button type="button" className="chat-input__button">
-            <img src={Mic} alt="Mic Icon" width={20} height={20} />
+          <button type="button" className={styles.button}>
+            <img src={Mic} alt="Mic Icon" />
           </button>
-          <button type="submit" className="chat-input__button">
-            <img src={PaperPlane} alt="Send Icon" width={20} height={20} />
+          <button type="button" className={styles.button}>
+            <img src={PaperPlane} alt="Send Icon" />
           </button>
         </div>
       </form>
