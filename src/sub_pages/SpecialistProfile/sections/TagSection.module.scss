@@ -1,0 +1,38 @@
+.container {
+    padding: 20px;
+    background-color: var(--bg-color);
+    border-radius: var(--border-radius-main);
+  }
+  
+  .label {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 24px;
+  }
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .tag {
+    padding: 8px 24px;
+    font-size: 16px;
+    background-color: var(--secondary-bg-color);
+    border-radius: 8px;
+    white-space: nowrap;
+    color: #fff;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    text-align: left;
+    &.center {
+        text-align: center;
+    }
+  }
+  

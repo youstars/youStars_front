@@ -10,21 +10,6 @@ import Chat from "shared/images/clientImgs/Chat.svg";
 import Write from "shared/images/clientImgs/Write.svg";
 
 export const ClientProfile = (): JSX.Element => {
-
-  interface Business {
-    id: number;
-    custom_user_id: number; 
-    business_name?: string | null;
-    employee_count?: string;
-    geography?: string | null;
-    niche?: string | null;
-    problems?: string | null;
-    revenue?: string;
-    tasks?: string | null;
-    years_on_market?: number;
-  }
-  
-
   const client = {
     name: "Иванов Иван Иванович",
     position: "CEO",
@@ -39,100 +24,85 @@ export const ClientProfile = (): JSX.Element => {
       mood: "4.9/5",
     },
   };
-  //  const navigate = useNavigate();
-  //  const handleProfileClick = () => {
-  //   navigate(`/manager/clients/${business.id}`);
-  // };
 
   return (
     <div className={styles.main}>
       <div className={styles.container}>
         <div className={styles.client}>
-          <div className={styles.client__info}>
-            <div className={styles.client__avatar}>
+          <div className={styles.clientInfo}>
+            <div className={styles.clientAvatar}>
               <Avatar />
-              <p className={styles.client__days}>3 дня</p>
+              <p className={styles.clientDays}>3 дня</p>
             </div>
-            <div className={styles.client__text}>
-              <h3 className={styles.client__name}>{client.name}</h3>
-              <p className={styles.client__position}>{client.position}</p>
-              <p className={styles.client__company}>{client.company}</p>
-              <p className={styles.client__rating}>Рейтинг заказчика 4/5</p>
+            <div className={styles.clientText}>
+              <h3 className={styles.clientName}>{client.name}</h3>
+              <p className={styles.clientPosition}>{client.position}</p>
+              <p className={styles.clientCompany}>{client.company}</p>
+              <p className={styles.clientRating}>Рейтинг заказчика 4/5</p>
             </div>
           </div>
 
-          <div className={styles.client__contacts}>
-            <p className={styles.client__contact}>
-              <img
-                src={Phone}
-                alt="Телефон"
-                className={styles.client__iconImg}
-              />{" "}
+          <div className={styles.clientContacts}>
+            <p className={styles.clientContact}>
+              <img src={Phone} alt="Телефон" className={styles.clientIconImg} />{" "}
               {client.phone}
             </p>
-            <p className={styles.client__contact}>
+            <p className={styles.clientContact}>
               {" "}
-              <img
-                src={Mail}
-                alt="Mail"
-                className={styles.client__iconImg}
-              />{" "}
+              <img src={Mail} alt="Mail" className={styles.clientIconImg} />{" "}
               {client.email}{" "}
             </p>
-            <p className={styles.client__contact}>
-              <img src={Web} alt="Web" className={styles.client__iconImg} />{" "}
+            <p className={styles.clientContact}>
+              <img src={Web} alt="Web" className={styles.clientIconImg} />{" "}
               {client.website}
             </p>
           </div>
-          <div className={styles.client__metrics}>
-            <p className={styles.client__metric}>
+
+          <div className={styles.clientMetrics}>
+            <p className={styles.clientMetric}>
               Активность: {client.metrics.activity}
             </p>
-            <p className={styles.client__metric}>
+            <p className={styles.clientMetric}>
               Стоимость: {client.metrics.cost}
             </p>
-            <p className={styles.client__metric}>
+            <p className={styles.clientMetric}>
               Средняя стоимость: {client.metrics.avgCost}
             </p>
-            <p className={styles.client__metric}>
+            <p className={styles.clientMetric}>
               Настроение: {client.metrics.mood}
             </p>
           </div>
 
-          <div className={styles.client__icons}>
-            <button className={styles.client__icon}>
-            <img
-                src={Chat}
-                alt="Chat"
-              />
+          <div className={styles.clientIcons}>
+            <button className={styles.clientIcon}>
+              <img src={Chat} alt="Chat" />
             </button>
-            <button className={styles.client__icon}><img
-                src={Write}
-                alt="Write"
-              /></button>
+            <button className={styles.clientIcon}>
+              <img src={Write} alt="Write" />
+            </button>
           </div>
         </div>
 
-        <div className={styles.business__info}>
-          <div className={styles.business__block}>
-            <h4 className={styles.business__title}>Сфера деятельности</h4>
-            <div className={styles.business__empty}></div>
+        <div className={styles.businessInfo}>
+          <div className={styles.businessBlock}>
+            <h4 className={styles.businessTitle}>Сфера деятельности</h4>
+            <div className={styles.businessEmpty}></div>
           </div>
-          <div className={styles.business__block}>
-            <h4 className={styles.business__title}>Проблемы бизнеса</h4>
-            <div className={styles.business__empty}></div>
+          <div className={styles.businessBlock}>
+            <h4 className={styles.businessTitle}>Проблемы бизнеса</h4>
+            <div className={styles.businessEmpty}></div>
           </div>
-          <div className={styles.business__block}>
-            <h4 className={styles.business__title}>Задачи бизнеса</h4>
-            <div className={styles.business__empty}></div>
+          <div className={styles.businessBlock}>
+            <h4 className={styles.businessTitle}>Задачи бизнеса</h4>
+            <div className={styles.businessEmpty}></div>
           </div>
         </div>
 
-        <div className={styles.business__statistics}>
-          <button className={styles.business__stat}>География</button>
-          <button className={styles.business__stat}>Сотрудников</button>
-          <button className={styles.business__stat}>Годовая выручка</button>
-          <button className={styles.business__stat}>Лет на рынке</button>
+        <div className={styles.businessStatistics}>
+          <button className={styles.businessStat}>География</button>
+          <button className={styles.businessStat}>Сотрудников</button>
+          <button className={styles.businessStat}>Годовая выручка</button>
+          <button className={styles.businessStat}>Лет на рынке</button>
         </div>
       </div>
 

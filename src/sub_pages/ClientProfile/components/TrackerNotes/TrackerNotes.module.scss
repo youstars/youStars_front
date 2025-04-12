@@ -7,84 +7,83 @@
     flex-direction: column;
     gap: 15px;
     padding: 30px 32px;
+}
 
-    &__title {
-        font-size: 18px;
-        font-weight: bold;
-    }
+.trackerNotesTitle {
+    font-size: 18px;
+    font-weight: bold;
+}
 
-    &__list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
+.trackerNotesList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
-    &__item {
-        display: flex;
-        gap: 20px; /* Отступ между колонками */
-        padding: 10px;
-        border-radius: 8px;
-    }
+.trackerNotesItem {
+    display: flex;
+    gap: 20px; /* Отступ между колонками */
+    padding: 10px;
+    border-radius: 8px;
+}
 
-    /* Контейнер с аватаром и автором */
-    &__user {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
-    }
+/* Контейнер с аватаром и автором */
+.trackerNotesUser {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
 
-    &__avatar {
-        width: 40px;
-        height: 40px;
-        background: #fff;
-        border-radius: var(--border-radius-main);
-    }
+.trackerNotesAvatar {
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border-radius: var(--border-radius-main);
+}
 
-    &__author {
-        font-size: 14px;
-        margin-top: 10px;
-        font-weight: bold;
-        color: white;
-        text-align: center;
-    }
+.trackerNotesAuthor {
+    font-size: 14px;
+    margin-top: 10px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+}
 
+.trackerNotesContent {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
 
-    &__content {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        flex: 1;
-    }
+.trackerNotesText {
+    background: var(--dark-bg-color);
+    padding: 14px 20px;
+    border-radius: var(--border-radius-main);
+    font-size: 14px;
+    color: white;
+}
 
-    &__text {
-        background: var(--dark-bg-color);
-        padding: 14px 20px;
-        border-radius: var(--border-radius-main);
-        font-size: 14px;
-        color: white;
-    }
+.trackerNotesDate {
+    font-size: 12px;
+    color: white;
+    margin-top: 9px;
+}
 
-    &__date {
-        font-size: 12px;
-        color: white;
-        margin-top: 9px;
-    }
+.trackerNotesAdd {
+    margin-left: 8px;
+    background: none;
+    border: none;
+    color: var(--grey-text-color);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 
-    &__add {
-        margin-left: 8px;
-        background: none;
-        border: none;
-        color: var(--grey-text-color);
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-
-        &:hover {
-            text-decoration: underline;
-        }
+    &:hover {
+        text-decoration: underline;
     }
 }

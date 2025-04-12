@@ -1,0 +1,29 @@
+.table {
+    display: flex;
+    flex-direction: column;
+
+    overflow-x: auto;
+  }
+  
+  .row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #1f1f1f; 
+    font-size: 13px;
+    align-items: center;
+  
+    &:nth-child(even) {
+      background-color: #2a2a2a;
+    }
+  
+    &.head {
+      background: transparent;
+      color: #b0b0b0;
+      font-weight: 600;
+    }
+  }
+  
+  

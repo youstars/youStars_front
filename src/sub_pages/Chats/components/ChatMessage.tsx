@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
+import styles from "./ChatMessage.module.scss";
 import { Message } from "shared/types/chat";
 
 interface ChatMessageProps {
   message: Message;
   onReply: (message: Message) => void;
 }
+
 const ChatMessage: React.FC<ChatMessageProps> = ({ message, onReply }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
@@ -32,17 +34,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onReply }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showMenu]);
 
-  console.log("ChatMessage рендерит:", message);
+  const messageClassNames = [
+    styles.message,
+    message.isOwn ? styles.own : styles.other,
+  ].join(" ");
 
   return (
-    <div
-      className={`message ${message.isOwn ? "message--own" : "message--other"}`}
-      onContextMenu={handleContextMenu}
-    >
+    <div className={messageClassNames} onContextMenu={handleContextMenu}>
       {showMenu && menuPosition && (
         <div
           ref={menuRef}
-          className="message__context-menu"
+          className={styles.contextMenu}
           style={{ top: menuPosition.y, left: menuPosition.x }}
           onClick={() => {
             onReply(message);
@@ -53,29 +55,29 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onReply }) => {
         </div>
       )}
 
-      <div className="message__avatar">
+      <div className={styles.avatar}>
         <img
           src={`https://ui-avatars.com/api/?name=${encodeURIComponent(message.userName)}&background=random`}
           alt={message.userName}
         />
       </div>
 
-      <div className="message__content">
-        <div className="message__header">
-          <span className="message__name">{message.userName}</span>
-          <span className="message__time">
+      <div className={styles.content}>
+        <div className={styles.header}>
+          <span className={styles.name}>{message.userName}</span>
+          <span className={styles.time}>
             {new Date(message.timestamp).toLocaleTimeString()}
           </span>
         </div>
 
         {message.replyTo && (
-          <div className="message__reply">
-            <span className="message__reply-name">{message.replyTo.userName}</span>
-            <p className="message__reply-text">{message.replyTo.text}</p>
+          <div className={styles.reply}>
+            <span className={styles.name}>{message.replyTo.userName}</span>
+            <p className={styles.text}>{message.replyTo.text}</p>
           </div>
         )}
 
-        <p className="message__text">{message.text}</p>
+        <p className={styles.text}>{message.text}</p>
       </div>
     </div>
   );

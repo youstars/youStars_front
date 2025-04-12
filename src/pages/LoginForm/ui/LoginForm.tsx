@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import classes from "./LoginForm.module.scss";
 import blackApple from "shared/images/blackApple.svg";
 import whiteApple from "shared/images/whiteApple.svg";
 import { useMemo } from "react";
-import { Button, Input } from "shared/index";
+import { Button } from "shared/index";
 import google from "shared/images/google.svg";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
@@ -22,7 +22,8 @@ const LoginForm = () => {
   const icon = useMemo(() => {
     return theme === "dark" ? whiteApple : blackApple;
   }, [theme, google, blackApple, whiteApple]);
-
+  const usernameRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);  
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state: RootState) => state.auth);
@@ -78,8 +79,21 @@ const LoginForm = () => {
           <hr className={classes.hrSubTitle} />
   
           <div className={classes.blockInputs}>
-            <CustomField name="username" label="Имя пользователя" className={classes.fieldLastName} />
-            <CustomField name="password" label="Пароль" type="password" className={classes.fieldPassword} />
+          <CustomField
+  name="username"
+  label="Имя пользователя"
+  className={classes.fieldLastName}
+  nextFieldRef={passwordRef}
+/>
+
+<CustomField
+  name="password"
+  label="Пароль"
+  type="password"
+  className={classes.fieldPassword}
+  isLast
+/>
+
   
             <Button className={classes.buttonLogIn} type="submit" disabled={isSubmitting || loading}>
               {isSubmitting || loading ? t("Logging in...") : t("Log in")}

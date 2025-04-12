@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styles from "./SidebarFilter.module.scss";
 import filterIcon from "shared/images/filter.svg";
 
@@ -17,14 +17,14 @@ const SideBarFilter = ({ isOpen }: { isOpen: boolean }) => {
   };
 
   return (
-    <div className={`${styles.sidebarOverlay} ${isOpen ? styles.open : ""}`}>
-      <div className={styles.header_filter}>
+    <div className={`${styles.overlay} ${isOpen ? styles.open : ""}`}>
+      <div className={styles.header}>
         <img src={filterIcon} alt="filter" />
         <p>Фильтр</p>
       </div>
 
-      <div className={styles.scope_block}>
-        <p className={styles.scope_title}>Профессия</p>
+      <div className={styles.scope}>
+        <p className={styles.title}>Профессия</p>
         <ul className={styles.checkboxList}>
           {["design", "programming", "it"].map((key) => (
             <li key={key}>
@@ -35,35 +35,28 @@ const SideBarFilter = ({ isOpen }: { isOpen: boolean }) => {
                   checked={selectedFilters.includes(key)}
                   onChange={() => handleCheckboxChange(key)}
                 />
-                <span className={styles.customCheckbox}></span>
-                {
-                  {
-                    design: "Дизайн",
-                    programming: "Программирование",
-                    it: "IT",
-                  }[key]
-                }
+                <span className={styles.checkbox}></span>
+                {{
+                  design: "Дизайн",
+                  programming: "Программирование",
+                  it: "IT",
+                }[key]}
               </label>
             </li>
           ))}
         </ul>
       </div>
 
-      <div className={styles.block_more}>
-        <div
-          className={styles.moreToggle}
-          onClick={() => setIsMoreOpen((prev) => !prev)}
-        >
+      <div className={styles.more}>
+        <div className={styles.toggle} onClick={() => setIsMoreOpen((prev) => !prev)}>
           <p>Больше</p>
           <span
-            className={`${styles.arrow} ${
-              isMoreOpen ? styles.up : styles.down
-            }`}
+            className={`${styles.arrow} ${isMoreOpen ? styles.up : styles.down}`}
           />
         </div>
 
         {isMoreOpen && (
-          <div className={styles.moreContent}>
+          <div className={styles.content}>
             <label>
               Только с проектами
               <input
@@ -72,7 +65,7 @@ const SideBarFilter = ({ isOpen }: { isOpen: boolean }) => {
                 checked={selectedFilters.includes("active")}
                 onChange={() => handleCheckboxChange("active")}
               />
-              <span className={styles.customCheckbox}></span>
+              <span className={styles.checkbox}></span>
             </label>
 
             <h4>Опыты</h4>
@@ -84,7 +77,7 @@ const SideBarFilter = ({ isOpen }: { isOpen: boolean }) => {
                   checked={selectedFilters.includes(key)}
                   onChange={() => handleCheckboxChange(key)}
                 />
-                <span className={styles.customCheckbox}></span> {key}
+                <span className={styles.checkbox}></span> {key}
               </label>
             ))}
 
@@ -97,14 +90,14 @@ const SideBarFilter = ({ isOpen }: { isOpen: boolean }) => {
                   checked={selectedFilters.includes(key)}
                   onChange={() => handleCheckboxChange(key)}
                 />
-                <span className={styles.customCheckbox}></span>
+                <span className={styles.checkbox}></span>
                 {key === "hasReviews" ? "Есть отзывы" : "Нет отзывов"}
               </label>
             ))}
 
-            <div className={styles.buttonBlock}>
-              <button className={styles.applyBtn}>Применить</button>
-              <button onClick={handleResetFilters} className={styles.resetBtn}>
+            <div className={styles.buttons}>
+              <button className={styles.apply}>Применить</button>
+              <button onClick={handleResetFilters} className={styles.reset}>
                 Сбросить все
               </button>
             </div>

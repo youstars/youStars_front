@@ -2,7 +2,6 @@ import React from "react";
 import styles from "./TrackerNotes.module.scss";
 import Plus from "shared/images/clientImgs/Plus.svg";
 
-
 export const TrackerNotes = (): JSX.Element => {
     const notes = [
         {
@@ -21,31 +20,28 @@ export const TrackerNotes = (): JSX.Element => {
 
     return (
         <div className={styles.trackerNotes}>
-            <h3 className={styles.trackerNotes__title}>Заметки трекеров</h3>
+            <h3 className={styles.trackerNotesTitle}>Заметки трекеров</h3>
 
-            <div className={styles.trackerNotes__list}>
+            <div className={styles.trackerNotesList}>
                 {notes.map((note) => (
-                    <div key={note.id} className={styles.trackerNotes__item}>
-                        {/* Контейнер с аватаром и автором */}
-                        <div className={styles.trackerNotes__user}>
-                            <div className={styles.trackerNotes__avatar}></div>
-                            <span className={styles.trackerNotes__author}>{note.author}</span>
+                    <div key={note.id} className={styles.trackerNotesItem}>
+                 
+                        <div className={styles.trackerNotesUser}>
+                            <div className={styles.trackerNotesAvatar}></div>
+                            <span className={styles.trackerNotesAuthor}>{note.author}</span>
                         </div>
 
-                        {/* Контейнер с текстом и датой */}
-                        <div className={styles.trackerNotes__content}>
-                            <div className={styles.trackerNotes__text}>{note.text}</div>
-                            <span className={styles.trackerNotes__date}>{note.date}</span>
+                    
+                        <div className={styles.trackerNotesContent}>
+                            <div className={styles.trackerNotesText}>{note.text}</div>
+                            <span className={styles.trackerNotesDate}>{note.date}</span>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <button className={styles.trackerNotes__add}>
-            <img
-                src={Plus}
-                alt="Plus"
-              />  Добавить комментарий
+            <button className={styles.trackerNotesAdd}>
+                <img src={Plus} alt="Plus" /> Добавить комментарий
             </button>
         </div>
     );

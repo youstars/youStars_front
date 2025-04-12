@@ -59,13 +59,12 @@ const projects: Project[] = [
 export const ProjectBlock = (): JSX.Element => {
     return (
         <div className={styles.projectBlock}>
-            <div className={styles.projectBlock__text}>
-   <h3 className={styles.projectBlock__title}>Проекты в обработке</h3>
-            <span className={styles.projectBlock__total}>Стоимость проектов: 450 000 ₽</span>
+            <div className={styles.projectBlockText}>
+                <h3 className={styles.projectBlockTitle}>Проекты в обработке</h3>
+                <span className={styles.projectBlockTotal}>Стоимость проектов: 450 000 ₽</span>
             </div>
-         
-            
-            <div className={styles.projectBlock__list}>
+
+            <div className={styles.projectBlockList}>
                 {projects.map((project) => (
                     <CardItem key={project.id} project={project} />
                 ))}

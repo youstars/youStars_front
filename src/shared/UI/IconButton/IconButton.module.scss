@@ -1,17 +1,18 @@
 .iconButton {
-    all: unset;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.15s ease, background-color 0.15s ease;
-    width: 36px;
-    height: 36px;
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  border: 1px solid white;
+  border-radius: var(--border-radius-main);
 
-  
-    &:active {
-      transform: scale(0.92); // эффект "уменьшения" при клике
-    }
-
+  &:active {
+    transform: scale(0.92);
   }
-  
+
+  img {
+    display: block;
+  }
+}

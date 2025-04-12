@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./ChatListItem.module.scss";
 import { formatDate } from "shared/utils/formatDate";
 
 interface ChatListItemProps {
@@ -20,28 +21,25 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
   onClick,
   isBusiness = false,
 }) => {
+  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${isBusiness ? "0077b6" : "random"}`;
+
   return (
-    <div
-      className={`chat-list-item ${active ? "chat-list-item--active" : ""}`}
-      onClick={onClick}
-    >
-      <div className="chat-list-item__avatar">
-        <img
-          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-            name
-          )}&background=${isBusiness ? "0077b6" : "random"}`}
-          alt={name}
-        />
-      </div>
-      <div className="chat-list-item__content">
-        <div className="chat-list-item__header">
-          <span className="chat-list-item__name">{name}</span>
-          <span className="chat-list-item__time">{formatDate(time)}</span>
-        </div>
-        <div className="chat-list-item__status">{lastMessage}</div>
-      </div>
-      {unread ? <div className="chat-list-item__badge">{unread}</div> : null}
+<div
+  className={`${styles.chatListItem} ${active ? styles["chatListItem--active"] : ""}`}
+  onClick={onClick}
+>
+  <div className={styles.avatar}>
+    <img src={avatarUrl} alt={name} />
+  </div>
+  <div className={styles.content}>
+    <div className={styles.header}>
+      <span className={styles.name}>{name}</span>
+      <span className={styles.time}>{formatDate(time)}</span>
     </div>
+    <div className={styles.status}>{lastMessage}</div>
+  </div>
+  {unread ? <div className={styles.badge}>{unread}</div> : null}
+</div>
   );
 };
 

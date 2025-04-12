@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import "./Chats.scss";
+import styles from "./Chats.module.scss"; // Импорт модульных стилей
 import { formatDate } from "shared/utils/formatDate";
 import { getShortType } from "shared/utils/getShortType";
 import ChatListItem from "./components/ChatListItem";
@@ -8,6 +8,7 @@ import ChatInput from "./components/ChatInput";
 import type { Chat, Message } from "shared/types/chat";
 import { useChatService } from "shared/hooks/useWebsocket";
 import SearchInput from "shared/UI/SearchInput/SearchInput";
+import Notifications from "Notifications/Notifications";
 
 const Chats: React.FC = () => {
   const [replyTo, setReplyTo] = useState<Message | null>(null);
@@ -22,7 +23,6 @@ const Chats: React.FC = () => {
     reconnect,
     isAdmin,
   } = useChatService();
-  
 
   const [activeTab, setActiveTab] = useState<"all" | "specialists" | "businesses" | "projects">("all");
 
@@ -87,32 +87,39 @@ const Chats: React.FC = () => {
   console.log(" Текущий чат:", currentChat);
 
   return (
-    <div className="app-container">
-      <div className="top-section">
-        <div className="search-container">
-         <SearchInput />
+    <div className={styles.appContainer}>
+      <div className={styles.topSection}>
+        <div className={styles.searchContainer}>
+          <SearchInput />
         </div>
+        <Notifications />
 
         {isAdmin && (
-          <div className="tabs">
+          <div className={styles.tabs}>
             {["all", "specialists", "businesses", "projects"].map((tab) => (
               <div
                 key={tab}
-                className={`tab ${activeTab === tab ? "active" : ""}`}
+                className={`${styles.tab} ${activeTab === tab ? styles.active : ""}`}
                 onClick={() => setActiveTab(tab as any)}
               >
-                {tab === "all" ? "Все чаты" :
-                 tab === "specialists" ? "Специалисты" :
-                 tab === "businesses" ? "Бизнесы" : "Проекты"}
+                {tab === "all"
+                  ? "Все чаты"
+                  : tab === "specialists"
+                  ? "Специалисты"
+                  : tab === "businesses"
+                  ? "Бизнесы"
+                  : "Проекты"}
               </div>
             ))}
           </div>
         )}
       </div>
 
-      <div className="content-section">
-        <div className="chat-list">
-          <div className="chat-list-header"><h3>Чаты</h3></div>
+      <div className={styles.contentSection}>
+        <div className={styles.chatList}>
+          <div className={styles.chatListHeader}>
+            <h3>Чаты</h3>
+          </div>
           {filteredChats.map((chat: Chat) => (
             <ChatListItem
               key={chat.id}
@@ -128,18 +135,18 @@ const Chats: React.FC = () => {
         </div>
 
         {currentChat ? (
-          <div className="chat-container">
-            <div className="chat-header">
-              <div className="chat-header__user">
-                <div className="chat-header__avatar">
+          <div className={styles.chatContainer}>
+            <div className={styles.chatHeader}>
+              <div className={styles.user}>
+                <div className={styles.avatar}>
                   <img
                     src={`https://ui-avatars.com/api/?name=${encodeURIComponent(currentChat.name)}&background=random`}
                     alt={currentChat.name}
                   />
                 </div>
-                <div className="chat-header__text">
+                <div className={styles.text}>
                   <h2>{currentChat.name}</h2>
-                  <span className="chat-header__status">
+                  <span className={styles.status}>
                     {currentChat.status} • Последняя активность: {formatDate(currentChat.lastActive)}
                   </span>
                 </div>
@@ -147,26 +154,23 @@ const Chats: React.FC = () => {
             </div>
 
             {!isConnected && (
-              <div className="connection-error">
-                <div className="connection-error__title">
-                 
-                  Ошибка соединения
-                </div>
+              <div className={styles.connectionError}>
+                <div className={styles.title}>Ошибка соединения</div>
                 <div>{error || "Отключено от сервера чата"}</div>
-                <button className="connection-error__button" onClick={reconnect}>Попробовать переподключиться</button>
+                <button className={styles.button} onClick={reconnect}>
+                  Попробовать переподключиться
+                </button>
               </div>
             )}
 
-            <div className="message-list" ref={messageListRef}>
+            <div className={styles.messageList} ref={messageListRef}>
               {currentChat.messages?.length > 0 ? (
                 currentChat.messages.map((message: Message) => {
                   console.log("Рендеринг сообщения:", message);
-                  return (
-                    <ChatMessage key={message.id} message={message} onReply={handleReply} />
-                  );
+                  return <ChatMessage key={message.id} message={message} onReply={handleReply} />;
                 })
               ) : (
-                <div className="empty-chat-message">
+                <div className={styles.emptyChatMessage}>
                   <p>Нет сообщений. Начните общение прямо сейчас!</p>
                 </div>
               )}
@@ -179,12 +183,18 @@ const Chats: React.FC = () => {
             />
           </div>
         ) : (
-          <div className="chat-container" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ textAlign: "center", color: "#757575" }}>Выберите чат, чтобы начать общение</div>
+          <div
+            className={styles.chatContainer}
+            style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+          >
+            <div style={{ textAlign: "center", color: "#757575" }}>
+              Выберите чат, чтобы начать общение
+            </div>
           </div>
         )}
       </div>
     </div>
   );
 };
+
 export default Chats;

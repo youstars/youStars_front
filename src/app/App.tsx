@@ -21,6 +21,8 @@ import { useTheme } from "shared/providers/theme/useTheme";
 import Header from "widgets/Header";
 import Gantt from "sub_pages/Gantt/Gantt";
 import Funnel from "sub_pages/Funnel/Funnel";
+import ProjectProfile from "sub_pages/ProjectProfile/ProjectProfile";
+import BusinessApplication from "sub_pages/BusinessApplication/BusinessApplication";
 
 
 function App() {
@@ -28,7 +30,6 @@ function App() {
   const location = useLocation(); 
 
   const isManagerPage = location.pathname.startsWith("/manager");
-
   return (
     <div className={`app ${theme}`}>
         <Suspense fallback={""}>
@@ -45,7 +46,7 @@ function App() {
               <Route path="specialists/:id" element={<SpecialistProfile />} /> 
               <Route path="clients" element={<Clients />} />
               <Route path="clients/:id" element={<ClientProfile />} />
-              <Route path="funnel" element={<Funnel />} />
+              <Route path="funnel" element={<Funnel/>} />
               <Route path="library" element={<Library />} />
               <Route path="settings" element={<Settings />} />
               <Route path="chats" element={<Chats/>} />
@@ -53,6 +54,9 @@ function App() {
                 <Route path="gantt" element={<Gantt />} />
                 <Route path="kanban" element={<Kanban />} />
               </Route>
+              {/* not yet in flow */}
+              <Route path="business-application" element={<BusinessApplication />}/>
+              <Route path="projectProfile" element={<ProjectProfile />} />
             </Route>
           </Routes>
         </Suspense>
