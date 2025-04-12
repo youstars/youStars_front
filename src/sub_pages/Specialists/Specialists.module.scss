@@ -3,100 +3,91 @@
   width: 100%;
   min-height: 100vh;
   position: relative;
-  transition: margin-right 0.3s ease;
-  background-color: #2D3134;
-  color: white;
+  background-color: var(--bg-toggle-color);
+  color: var(--primery-color);
   padding: 2rem;
-}
-
-.mainContent {
-  flex: 1;
-  padding: 20px;
   transition: margin-right 0.3s ease;
-  overflow-y: auto;
-}
 
-.mainContentShifted {
-  margin-right: 320px;
-}
-
-.wrapper {
-  position: relative;
-  display: flex;
-  width: 100%;
-}
-
-.form {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.search {
-  flex: 1;
-  display: flex;
-}
-
-.input_wrapper {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.input {
-  width: 100%;
-  height: 40px;
-  padding: 0 2.5rem 0 1rem;
-  border: none;
-  border-radius: 10px;
-  background: #353a3d;
-  color: white;
-  font-size: 14px;
-  outline: none;
-}
-
-.filters {
-  width: 306px;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
-  background: #353a3d;
-  border-radius: 10px;
-  color: white;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.filters img {
-  width: 14px;
-  height: 14px;
-  cursor: pointer;
-}
-
-.filters p {
-  font-family: Myriad Pro;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 20px;
-  color: #ffffff;
-  vertical-align: middle;
-}
-
-.resultsTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-}
-
-.specialistList {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-
+  .mainContent {
+    flex: 1;
+    padding: 20px;
+    transition: margin-right 0.3s ease;
+    overflow-y: auto;
+  
+    &.shifted {
+      margin-right: 320px;
+    }
   
   
+
+    .form {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+
+      .search {
+        flex: 1;
+        display: flex;
+
+        .inputWrapper {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          position: relative;
+
+          input {
+            width: 100%;
+            height: 40px;
+            padding: 0 2.5rem 0 1rem;
+            border: none;
+            border-radius: 10px;
+            background: var(--bg-input-color);
+            color: var(--text-input-color);
+            font-size: 14px;
+            outline: none;
+          }
+        }
+      }
+
+      .filters {
+        width: 306px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        background: var(--bg-input-color);
+        border-radius: 10px;
+        color: var(--primery-color);
+        cursor: pointer;
+        flex-shrink: 0;
+
+        img {
+          width: 14px;
+          height: 14px;
+          cursor: pointer;
+        }
+
+        p {
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 20px;
+          vertical-align: middle;
+        }
+      }
+    }
+
+    .resultsTitle {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .specialistList {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./SpecialistCard.module.scss";
-import PaperPlane from "shared/images/paperplane.svg";
+import PaperPlane from "shared/assets/icons/paperPlane.svg";
 import Avatar from "shared/UI/Avatar/Avatar";
 import Tag from "shared/UI/Tag/Tag";
 import { useNavigate } from "react-router-dom";

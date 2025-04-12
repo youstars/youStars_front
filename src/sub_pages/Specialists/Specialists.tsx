@@ -59,10 +59,8 @@ function Specialists() {
   return (
     <div className={styles.container}>
       <div
-        className={`${styles.mainContent} ${
-          isSidebarOpen ? styles.mainContentShifted : ""
-        }`}
-      >
+  className={`${styles.mainContent} ${isSidebarOpen ? styles.shifted : ""}`}
+>
         <div className={styles.form}>
           <div className={styles.search}>
             <SearchInput

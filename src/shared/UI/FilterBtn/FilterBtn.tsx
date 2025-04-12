@@ -3,7 +3,7 @@ import styles from "./FilterBtn.module.scss";
 import filtersIcon from "shared/images/filters.svg";
 
 interface FilterBtnProps {
-  onClick: () => void;
+  onClick?: () => void;
   label?: string;
 }
 
