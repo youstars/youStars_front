@@ -1,32 +1,35 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./SideFunnel.module.scss";
-import chat from '../../../shared/images/chat.svg';
-import chats from '../../../shared/images/chats.svg';
-import {useDispatch, useSelector} from "react-redux";
-import lines from '../../../shared/images/calendar-alt 3.svg';
-import calendar from '../../../shared/images/calendar.svg';
-import time from '../../../shared/images/time.svg';
-import check from '../../../shared/images/check.svg';
-import plus from '../../../shared/images/plus.svg';
-import upplod from '../../../shared/images/upplod.svg';
-import corect from '../../../shared/images/edit.svg';
-import {selectFunnel} from "shared/store/slices/funnelSlice";
-import {getTasks, updateTaskDeadline} from "shared/store/slices/tasksSlice";
 import arrow from "shared/images/sideBarImgs/arrow.svg";
+import { useDispatch, useSelector } from "react-redux";
+// import { getTasks } from "shared/store/slices/tasksSlice";
+import { selectFunnel } from "shared/store/slices/funnelSlice";
+import chat from "shared/images/chat.svg";
+import chats from "shared/images/chats.svg";
+import filter from "shared/images/filter.svg";
+import calendar from "shared/images/calendar.svg";
+import lines from "shared/images/calendar-alt 3.svg";
+import time from "shared/images/time.svg";
+import check from "shared/images/check.svg";
+import plus from "shared/images/plus.svg";
+import upplod from "shared/images/upplod.svg";
+import corect from "shared/images/edit.svg";
+import { getTasks, updateTaskDeadline } from "shared/store/slices/tasksSlice";
 
+// Определяем тип пропсов для SideFunnel
+interface SideFunnelProps {
+    isOpen: boolean;
+    toggleSidebar: () => void;
+}
 
-// @ts-ignore
-const ExpandableText = ({text, maxLength = 100}) => {
+const ExpandableText = ({ text, maxLength = 100 }: { text: string; maxLength?: number }) => {
     const [expanded, setExpanded] = useState(false);
     const isLong = text.length > maxLength;
-
-
-    // @ts-ignore
-    const getData = useSelector((state) => state.tasks.tasks);
+    const getData = useSelector((state: any) => state.tasks.tasks);
     const funnelData = useSelector(selectFunnel);
 
     useEffect(() => {
-        console.log('SDB', funnelData);
+        console.log("SDB", funnelData);
     }, [getData, funnelData]);
 
     const toggleExpanded = (e: any) => {
@@ -53,37 +56,28 @@ const ExpandableText = ({text, maxLength = 100}) => {
     );
 };
 
-// @ts-ignore
-const SideFunnel = () => {
+const SideFunnel: React.FC<SideFunnelProps> = ({ isOpen, toggleSidebar }) => {
     const dispatch = useDispatch();
-    // @ts-ignore
-    const getData = useSelector((state) => state.tasks.tasks);
+    const getData = useSelector((state: any) => state.tasks.tasks);
     const funnelData = useSelector(selectFunnel);
     const [isSubtasksOpen, setIsSubtasksOpen] = useState(false);
     const [isFilesOpen, setIsFilesOpen] = useState(false);
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-
-
+    const [deadline, setDeadline] = useState("");
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getTasks());
-    }, [dispatch]);
-
-
-    const toggleSidebar = () => {
-        if (!isSidebarVisible) {
-            setIsSidebarVisible(true);
-            setTimeout(() => setIsSidebarOpen(true), 10);
-        } else {
-            setIsSidebarOpen(false);
-            setTimeout(() => setIsSidebarVisible(false), 300);
+        if (isOpen) {
+            // @ts-ignore
+            dispatch(getTasks());
         }
-    };
+    }, [isOpen, dispatch]);
 
+    useEffect(() => {
+        const fetchedDate = getData?.results?.[0]?.end_date?.split("T")[0];
+        if (fetchedDate && fetchedDate !== deadline) {
+            setDeadline(fetchedDate);
+        }
+    }, [getData, deadline]);
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
@@ -91,22 +85,6 @@ const SideFunnel = () => {
             setUploadedFiles([...uploadedFiles, ...Array.from(files)]);
         }
     };
-
-    const [deadline, setDeadline] = useState("");
-    useEffect(() => {
-        const fetchedDate = getData?.results?.[0]?.end_date?.split("T")[0];
-        if (fetchedDate && fetchedDate !== deadline) {
-            setDeadline(fetchedDate);
-        }
-    }, [getData]);
-
-    useEffect(() => {
-        if (isSidebarOpen) {
-            // @ts-ignore
-            dispatch(getTasks());
-        }
-    }, [isSidebarOpen, dispatch]);
-
 
     const handleDateChange = async (e: any) => {
         const newDate = e.target.value;
@@ -116,7 +94,7 @@ const SideFunnel = () => {
         if (taskId) {
             try {
                 // @ts-ignore
-                await dispatch(updateTaskDeadline({id: taskId, end_date: newDate}));
+                await dispatch(updateTaskDeadline({ id: taskId, end_date: newDate }));
                 // @ts-ignore
                 dispatch(getTasks());
                 console.log("Дедлайн успешно обновлён");
@@ -127,14 +105,14 @@ const SideFunnel = () => {
     };
 
     return (
-        <div className={`${classes.sidebar} ${isSidebarOpen ? classes.open : ''}`}>
+        <div className={`${classes.sidebar} ${isOpen ? classes.open : ''}`}>
             <div className={classes.content}>
                 <div className={classes.content}>
                     <img
                         src={arrow}
                         alt="Toggle Sidebar"
                         onClick={toggleSidebar}
-                        className={`${classes.arrowToggle} ${isSidebarOpen ? classes.rotated : ''}`}
+                        className={`${classes.arrowToggle} ${isOpen ? classes.rotated : ''}`}
                     />
                     <header className={classes.header}>
                         <div className={classes.bloks}>
@@ -162,8 +140,6 @@ const SideFunnel = () => {
                                         <img src={calendar} alt=""/>
                                         <p>{deadline || 'Без названия'}</p>
                                     </div>
-
-
                                 </div>
 
                                 <div className={classes.project_name}>
@@ -196,7 +172,6 @@ const SideFunnel = () => {
                             </div>
                         )}
 
-
                         <div className={classes.editDeadline}>
                             <label htmlFor="deadlineInput">Запрос</label>
                             <input
@@ -206,14 +181,12 @@ const SideFunnel = () => {
                                 onChange={handleDateChange}
                                 className={classes.dateInput}
                             />
-
                             <img src={corect} alt="calendar icon"/>
                         </div>
 
-
-                        {/* Компонент с раскрывающимся текстом */}
                         <ExpandableText
-                            text="The same screen can be built in a lot of different ways, but only a few of them will get your message across correctly and result in an easy-to-use software or..."/>
+                            text="The same screen can be built in a lot of different ways, but only a few of them will get your message across correctly and result in an easy-to-use software or..."
+                        />
 
                         {funnelData?.[0] && (
                             <div className={classes.funnelInfo}>
@@ -235,9 +208,10 @@ const SideFunnel = () => {
                         <div className={classes.blok_paragraph}>
                             <h3>Заметки по заявке</h3>
                             <div className={classes.paragraph}>
-                                <p>The same screen can be built in a lot of different ways, but only a few of them will
-                                    get
-                                    your message across correctly and result in an.</p>
+                                <p>
+                                    The same screen can be built in a lot of different ways, but only a few of them will
+                                    get your message across correctly and result in an.
+                                </p>
                             </div>
                         </div>
 
@@ -247,11 +221,7 @@ const SideFunnel = () => {
                                 onClick={() => setIsSubtasksOpen((prev) => !prev)}
                             >
                                 <h3>Подзадачи</h3>
-                                <span
-                                    className={`${classes.arrow} ${
-                                        isSubtasksOpen ? classes.up : classes.down
-                                    }`}
-                                />
+                                <span className={`${classes.arrow} ${isSubtasksOpen ? classes.up : classes.down}`}/>
                             </div>
 
                             {isSubtasksOpen && (
@@ -268,15 +238,13 @@ const SideFunnel = () => {
                             )}
                         </div>
 
-
                         <div className={classes.uploadWrapper}>
                             <div className={classes.uploadHeader}>
-                                  <span
-                                      className={`${classes.arrow} ${isFilesOpen ? classes.up : classes.down}`}
-                                      onClick={() => setIsFilesOpen(prev => !prev)}
-                                  />
-                                <p onClick={() => setIsFilesOpen(prev => !prev)}>Файлы</p>
-
+                <span
+                    className={`${classes.arrow} ${isFilesOpen ? classes.up : classes.down}`}
+                    onClick={() => setIsFilesOpen((prev) => !prev)}
+                />
+                                <p onClick={() => setIsFilesOpen((prev) => !prev)}>Файлы</p>
                                 <div className={classes.rightControls}>
                                     <label className={classes.uploadIcon}>
                                         <img src={upplod} alt="Upload"/>
@@ -308,7 +276,7 @@ const SideFunnel = () => {
                 </div>
             </div>
         </div>
-            );
-            };
+    );
+};
 
-            export default SideFunnel;
+export default SideFunnel;

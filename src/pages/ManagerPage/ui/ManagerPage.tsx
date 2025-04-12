@@ -18,8 +18,6 @@ export default function ManagerPage() {
                     <Outlet/>
                 </div>
             </div>
-
-            <SideFunnel/>
         </div>
     );
 }
