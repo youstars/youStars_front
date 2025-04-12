@@ -3,7 +3,6 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-
 export const getOrders = createAsyncThunk(
     "funnel/getOrders",
     async (_, { rejectWithValue }) => {
@@ -65,5 +64,8 @@ const funnelSlice = createSlice({
 export const selectFunnel = (state: { funnel: FunnelState }) => state.funnel.funnel;
 export const selectFunnelStatus = (state: { funnel: FunnelState }) => state.funnel.status;
 export const selectFunnelError = (state: { funnel: FunnelState }) => state.funnel.error;
+
+// Экспортируем getOrders под именем getFunnelData, чтобы его можно было вызывать через dispatch(getFunnelData())
+export const getFunnelData = getOrders;
 
 export default funnelSlice.reducer;

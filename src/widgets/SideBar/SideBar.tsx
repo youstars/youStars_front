@@ -12,7 +12,11 @@ import specialists from "shared/images/sideBarImgs/spcialists.svg";
 import task from "shared/images/sideBarImgs/task.svg";
 import arrow from "shared/images/sideBarImgs/arrow.svg";
 import arrow_back from 'shared/images/sideBarImgs/arrow_back.svg'
+
 import SearchInput from "shared/UI/SearchInput/SearchInput";
+import clienst from 'shared/images/sideBarImgs/clients.svg'
+import admins from 'shared/images/admins.svg'
+
 
 export default function SideBar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -27,6 +31,7 @@ export default function SideBar() {
     { text: "Воронка", image: funnel, to: "funnel" },
     { text: "Библиотека знаний", image: bibl, to: "library" },
     { text: "Чаты", image: chat, to: "chats" },
+    { text: "Админы", image: admins, to: "admins" },
     { text: "Настройки", image: settings, to: "settings" },
   ];
 

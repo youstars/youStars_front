@@ -16,7 +16,7 @@
       "pages/*": ["pages/*"],
       "sub_pages/*": ["sub_pages/*"],
       "widgets/*": ["widgets/*"],
-      "app/*": ["app/*"]
+      "app/*": ["app/*"],
     }
   },
   "ts-node": {

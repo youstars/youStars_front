@@ -5,16 +5,18 @@ import projectsSlice from "shared/store/slices/projectsSlice";
 import funnelSlice from "shared/store/slices/funnelSlice";
 import specialistsReducer from "shared/store/slices/specialistsSlice";
 import chatReducer from "shared/store/slices/chatSlice";
+import adminRegistrationReducer from "shared/store/slices/adminRegistrationSlice";
 
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
     tasks: tasksSlice,
-    projects:projectsSlice,
-    funnel:funnelSlice,
+    projects: projectsSlice,
+    funnel: funnelSlice,
     specialists: specialistsReducer,
     chat: chatReducer,
+    adminRegistration: adminRegistrationReducer,
   },
 });
 

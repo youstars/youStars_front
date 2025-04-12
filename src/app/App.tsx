@@ -23,11 +23,16 @@ import Gantt from "sub_pages/Gantt/Gantt";
 import Funnel from "sub_pages/Funnel/Funnel";
 import ProjectProfile from "sub_pages/ProjectProfile/ProjectProfile";
 import BusinessApplication from "sub_pages/BusinessApplication/BusinessApplication";
+// import Chats from "sub_pages/Chats/ui/Chats";
+import AdminsPage from "../pages/AdminsPage/AdminsPage";
+import FormAuthAdmin from "../sub_pages/FormAuthAdmin/FormAuthAdmin";
+// import { WebSocketProvider } from "context/WebSocketContext";
+
 
 
 function App() {
   const { theme } = useTheme();
-  const location = useLocation(); 
+  const location = useLocation();
 
   const isManagerPage = location.pathname.startsWith("/manager");
   return (
@@ -43,13 +48,16 @@ function App() {
               <Route path="user_projects" element={<UserProjects />} />
               <Route path="tasks" element={<Tasks />} />
               <Route path="specialists" element={<Specialists />} />
-              <Route path="specialists/:id" element={<SpecialistProfile />} /> 
+              <Route path="specialists/:id" element={<SpecialistProfile />} />
               <Route path="clients" element={<Clients />} />
               <Route path="clients/:id" element={<ClientProfile />} />
               <Route path="funnel" element={<Funnel/>} />
               <Route path="library" element={<Library />} />
+              <Route path="admins" element={<AdminsPage/>} />
               <Route path="settings" element={<Settings />} />
               <Route path="chats" element={<Chats/>} />
+              <Route path="auth_admin" element={<FormAuthAdmin/>} />
+              {/* <Route path="chats" element={<Chats/>} /> */}
               <Route path="overview" element={<Overview />}>
                 <Route path="gantt" element={<Gantt />} />
                 <Route path="kanban" element={<Kanban />} />
