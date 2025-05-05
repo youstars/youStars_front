@@ -60,6 +60,9 @@
   "devDependencies": {
     "@types/frappe-gantt": "^0.6.4",
     "@types/js-cookie": "^3.0.6",
-    "@types/yup": "^0.32.0"
+    "@types/yup": "^0.32.0",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.4"
   }
 }

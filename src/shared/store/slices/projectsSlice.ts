@@ -8,7 +8,7 @@ export const getProjects = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`${API_BASE_URL}projects`);
-      return response.data;
+      return response.data.results;
     } catch (error: any) {
       console.error("Error fetching projects:", error);
       return rejectWithValue(error.response?.data || "Произошла ошибка");
@@ -18,7 +18,7 @@ export const getProjects = createAsyncThunk(
 
 export interface Project {
   id: number;
-  title: string;
+  name: string; 
   description: string;
   assigned_specialist: string;
   project: string;

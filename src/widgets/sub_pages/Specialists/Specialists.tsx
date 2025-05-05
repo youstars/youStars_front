@@ -14,15 +14,15 @@ function Specialists() {
     (state: RootState) => state.specialists
   );
 
-  useEffect(() => {
-    const getBusiness = async () => {
-      const res = await fetch("http://127.0.0.1:8000/business");
-      const data = await res.json();
-      console.log("Business", data);
-      return data;
-    };
-    getBusiness();
-  }, []);
+  // useEffect(() => {
+  //   const getBusiness = async () => {
+  //     const res = await fetch("http://127.0.0.1:8000/business");
+  //     const data = await res.json();
+  //     console.log("Business", data);
+  //     return data;
+  //   };
+  //   getBusiness();
+  // }, []);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -59,8 +59,10 @@ function Specialists() {
   return (
     <div className={styles.container}>
       <div
-  className={`${styles.mainContent} ${isSidebarOpen ? styles.shifted : ""}`}
->
+        className={`${styles.mainContent} ${
+          isSidebarOpen ? styles.shifted : ""
+        }`}
+      >
         <div className={styles.form}>
           <div className={styles.search}>
             <SearchInput
@@ -79,7 +81,7 @@ function Specialists() {
         <div className={styles.specialistList}>
           {list
             .filter((specialist) =>
-              specialist.custom_user_id?.full_name
+              specialist.custom_user?.full_name
                 ?.toLowerCase()
                 .includes(searchTerm.toLowerCase())
             )

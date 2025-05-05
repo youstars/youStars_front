@@ -1,12 +1,12 @@
 import classes from './Clients.module.scss'
 import {Button, Input} from "shared/index";
-import search from "../../shared/images/sideBarImgs/search.svg";
-import filters from "../../shared/images/filters.svg";
-import star from "../../shared/images/star.svg";
+import search from "shared/images/sideBarImgs/search.svg";
+import filters from "shared/images/filters.svg";
+import star from "shared/images/star.svg";
 import {useDispatch, useSelector} from "react-redux";
 import {getTasks} from "shared/store/slices/tasksSlice";
 import {useEffect, useState} from "react";
-import filter from "../../shared/images/filter.svg";
+import filter from "shared/images/filter.svg";
 
 const Clients = () => {
     const dispatch = useDispatch();

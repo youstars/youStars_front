@@ -6,19 +6,20 @@ import classes from "./CreatedAccount.module.scss";
 import { Link, useNavigate} from "react-router-dom";
 import google from "shared/images/google.svg";
 import { Button } from "shared/index";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "shared/store";
+import { useSelector } from "react-redux";
+import {  RootState } from "shared/store";
 import { register } from "shared/store/slices/authSlice";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { CustomField } from "shared/UI/CustomField/CustomField";
 import { useTheme } from "shared/providers/theme/useTheme";
+import { useAppDispatch } from "shared/hooks/useAppDispatch";
 
 
 const CreateAccount = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch()
   const { loading, error } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
 
@@ -37,7 +38,7 @@ const CreateAccount = () => {
     full_name: "",
     email: "",
     password: "",
-    re_password: "",
+    password2: "",
     terms: false, 
   };
 
@@ -60,7 +61,7 @@ const CreateAccount = () => {
         }
       )
       .required(t("Password is required")),
-    re_password: Yup.string()
+      password2: Yup.string()
       .oneOf([Yup.ref("password"), null], t("Passwords must match"))
       .required(t("Password confirmation is required")),
    
@@ -116,7 +117,7 @@ return (
               className={classes.fieldPassword}
             />
             <CustomField
-              name="re_password"
+              name="password2"
               label="Password confirmation"
               type="password"
               className={classes.fieldPassword}

@@ -5,13 +5,13 @@ import Checklist from "shared/assets/icons/checklist.svg";
 import Chat from "shared/assets/icons/chat.svg";
 import GroupChat from "shared/assets/icons/groupChat.svg";
 import IconButton from "shared/UI/IconButton/IconButton";
-import ProgressBar from "../../shared/UI/ProgressBar/ProgressBar";
-import TextAreaField from "../../shared/UI/TextAreaField/TextAreaField";
+import ProgressBar from "shared/UI/ProgressBar/ProgressBar";
+import TextAreaField from "shared/UI/TextAreaField/TextAreaField";
 import { Tracker } from "./types";
 import { TableColumn } from "./types";
 import AvatarWithName from "shared/UI/AvatarWithName/AvatarWithName";
 import { Specialist } from "./types";
-import ProjectFiles from "../../shared/UI/ProjectFiles/ProjectFiles";
+import ProjectFiles from "shared/UI/ProjectFiles/ProjectFiles";
 import CustomTable from "shared/UI/CustomTable/CustomTable";
 
 export default function ProjectProfile() {

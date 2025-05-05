@@ -10,7 +10,7 @@ import IconButton from "shared/UI/IconButton/IconButton";
 
 interface Specialist {
   id: number;
-  custom_user_id: {
+  custom_user: {
     id: number;
     avatar?: string;
     first_name?: string;
@@ -34,8 +34,8 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
   const { chats, setActiveChat } = useChatService();
 
   const handleChatClick = () => {
-    const specialistUserId = String(specialist.custom_user_id?.id);
-    console.log("specialist ID:", specialist.custom_user_id?.id);
+    const specialistUserId = String(specialist.custom_user?.id);
+    console.log("specialist ID:", specialist.custom_user?.id);
     chats.forEach((chat: Chat) => {
       console.log("Чат ID:", chat.id);
       chat.participants?.some((p: any) => String(p.id) === specialistUserId);
@@ -61,8 +61,8 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
     <div className={styles.specialistCard}>
       <div className={styles.cardContent}>
         <Avatar
-          src={specialist.custom_user_id?.avatar}
-          alt={specialist.custom_user_id?.full_name || "ДАННЫХ НЕТ"}
+          src={specialist.custom_user?.avatar}
+          alt={specialist.custom_user?.full_name || "ДАННЫХ НЕТ"}
         />
         <div className={styles.cardInfo}>
           <div className={styles.cardHeader}>
@@ -70,10 +70,10 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
               <div className={styles.nameContainer}>
                 <h3 className={styles.name}>
                   {`${
-                    specialist.custom_user_id?.first_name ||
-                    specialist.custom_user_id?.username
+                    specialist.custom_user?.first_name ||
+                    specialist.custom_user?.username
                   } 
-                  ${specialist.custom_user_id?.full_name || "ДАННЫХ НЕТ"}`}
+                  ${specialist.custom_user?.full_name || "ДАННЫХ НЕТ"}`}
                 </h3>
                 <div className={styles.rating}>
                   <span className={styles.star}>★</span>
@@ -81,7 +81,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
                 </div>
               </div>
               <p className={styles.role}>
-                {specialist.custom_user_id?.role || "ДАННЫХ НЕТ"}
+                {specialist.custom_user?.role || "ДАННЫХ НЕТ"}
               </p>
             </div>
             <div className={styles.actionGroup}>
@@ -113,7 +113,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
           <div className={styles.metadata}>
             <span>
               Дата регистрации:{" "}
-              {specialist.custom_user_id?.date_joined || "ДАННЫХ НЕТ"}
+              {specialist.custom_user?.date_joined || "ДАННЫХ НЕТ"}
             </span>
             <span>
               Проекты в процессе: {specialist.projects_in_progress || "0"}

@@ -5,52 +5,131 @@ import Mail from "shared/images/clientImgs/mail.svg";
 import Web from "shared/images/clientImgs/network.svg";
 import Chat from "shared/images/clientImgs/Chat.svg";
 import Write from "shared/images/clientImgs/Write.svg";
-import { TrackerNotes } from "sub_pages/ClientProfile/components/TrackerNotes/TrackerNotes";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { RootState } from "shared/store";
-import { getProjects } from "shared/store/slices/projectsSlice";
-import { selectTasks } from "shared/store/slices/tasksSlice";
+import { getProjects, selectProjects } from "shared/store/slices/projectsSlice";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { useAppSelector } from "shared/hooks/useAppSelector";
 import TagSection from "./TagSection";
 import ProjectFiles from "shared/UI/ProjectFiles/ProjectFiles";
 import RateItem from "shared/UI/RateItem/RateItem";
 import CustomDivTable from "shared/UI/CutomDivTable/CustomDivTable";
+import { TrackerNotes } from "widgets/sub_pages/ClientProfile/components/TrackerNotes/TrackerNotes";
+import { Specialist } from "shared/store/slices/specialistsSlice";
+import { updateMe } from "shared/store/slices/meSlice";
+import Spinner from "shared/UI/Spinner/Spinner";
 
-const SpecialistCard = () => {
+interface SpecialistCardProps {
+  specialist: Specialist;
+  isSelf?: boolean;
+}
+
+const SpecialistCard: React.FC<SpecialistCardProps> = ({
+  specialist,
+  isSelf = false,
+}) => {
   const { id } = useParams<{ id: string }>();
-  const specialists = useAppSelector(
-    (state: RootState) => state.specialists.list
-  );
   const dispatch = useAppDispatch();
-  const allProjects = useAppSelector(selectTasks).results || [];
+
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [phoneValue, setPhoneValue] = useState(
+    specialist.custom_user.phone_number || ""
+  );
+
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [emailValue, setEmailValue] = useState(
+    specialist.custom_user.email || ""
+  );
+
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [description, setDescription] = useState(
+    specialist.self_description || ""
+  );
+
+  const handleDescriptionClick = () => {
+    if (isSelf) {
+      setIsEditingDescription(true);
+    }
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDescription(e.target.value);
+  };
+
+  const handleDescriptionBlur = async () => {
+    setIsEditingDescription(false);
+    try {
+      await dispatch(updateMe({ self_description: description })).unwrap();
+      console.log("Описание успешно обновлено");
+    } catch (error) {
+      console.error("Ошибка при обновлении описания:", error);
+    }
+  };
 
   useEffect(() => {
     dispatch(getProjects());
   }, [dispatch]);
 
-  console.log("Проектов получено:", allProjects.length);
+  const allProjects = useAppSelector(selectProjects) || [];
 
-  const specialist = specialists.find((s) => s.id === Number(id));
-  if (!specialist) {
-    return (
-      <div style={{ color: "white", padding: "20px" }}>
-        Специалист не найден
-      </div>
-    );
+  if (!specialist || !specialist.custom_user) {
+    return <Spinner />;
   }
 
   const name =
-    specialist.custom_user_id.first_name || specialist.custom_user_id.username;
-  const fullName = specialist.custom_user_id.full_name || "ФИО не указано";
+    specialist.custom_user.first_name || specialist.custom_user.username;
+  const fullName = specialist.custom_user.full_name || "ФИО не указано";
 
   const specialistProjects = allProjects.filter(
-    (project: any) =>
-      project.assigned_specialist === specialist.custom_user_id.username
+    (project) => project.assigned_specialist === specialist.custom_user.username
   );
-  const activeProjects = specialistProjects.filter((p) => !p.is_finished);
-  const finishedProjects = specialistProjects.filter((p) => p.is_finished);
+
+  const activeProjects = specialistProjects.filter(
+    (project) => project.is_finished === false
+  );
+  const finishedProjects = specialistProjects.filter(
+    (project) => project.is_finished === true
+  );
+
+  const handleEmailClick = () => {
+    if (isSelf) {
+      setIsEditingEmail(true);
+    }
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmailValue(e.target.value);
+  };
+
+  const handleEmailBlur = async () => {
+    setIsEditingEmail(false);
+    try {
+      await dispatch(updateMe({ custom_user: { email: emailValue } })).unwrap();
+      console.log("Email успешно обновлён");
+    } catch (error) {
+      console.error("Ошибка обновления email:", error);
+    }
+  };
+
+  const handlePhoneClick = () => {
+    if (isSelf) {
+      setIsEditingPhone(true);
+    }
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhoneValue(e.target.value);
+  };
+
+  const handlePhoneBlur = async () => {
+    setIsEditingPhone(false);
+    try {
+      await dispatch(updateMe({ phone_number: phoneValue })).unwrap();
+      console.log("✅ Телефон успешно обновлён");
+    } catch (error) {
+      console.error("❌ Ошибка при обновлении телефона:", error);
+    }
+  };
 
   return (
     <div className={styles.main}>
@@ -58,7 +137,7 @@ const SpecialistCard = () => {
         <div className={styles.client}>
           <div className={styles.info}>
             <div className={styles.avatar}>
-              <Avatar src={specialist.custom_user_id.avatar} size="52" />
+              <Avatar src={specialist.custom_user.avatar} size="52" />
               <p className={styles.days}>3 дня</p>
             </div>
             <div className={styles.text}>
@@ -72,11 +151,38 @@ const SpecialistCard = () => {
 
           <div className={styles.contacts}>
             <p className={styles.contact}>
-              <img src={Phone} alt="Телефон" />{" "}
-              {specialist.custom_user_id.phone_number || "Не указано"}
+              <img src={Phone} alt="Телефон" />
+              {isEditingPhone ? (
+                <input
+                  type="text"
+                  value={phoneValue}
+                  onChange={handlePhoneChange}
+                  onBlur={handlePhoneBlur}
+                  autoFocus
+                  className={styles.inputField}
+                />
+              ) : (
+                <span onClick={handlePhoneClick}>
+                  {phoneValue || "Не указано"}
+                </span>
+              )}
             </p>
             <p className={styles.contact}>
-              <img src={Mail} alt="Почта" /> {specialist.custom_user_id.email}
+              <img src={Mail} alt="Почта" />
+              {isEditingEmail ? (
+                <input
+                  type="email"
+                  value={emailValue}
+                  onChange={handleEmailChange}
+                  onBlur={handleEmailBlur}
+                  autoFocus
+                  className={styles.inputField}
+                />
+              ) : (
+                <span onClick={handleEmailClick}>
+                  {emailValue || "Не указано"}
+                </span>
+              )}
             </p>
             <p className={styles.contact}>
               <img src={Web} alt="Web" /> —
@@ -102,10 +208,21 @@ const SpecialistCard = () => {
 
         <div className={styles.about}>
           <h3 className={styles.title}>О специалисте</h3>
-          <p className={styles.desc}>
-            Маркетолог с 5-летним опытом в сфере e-commerce, специализируюсь на
-            performance-рекламе.
-          </p>
+          {isEditingDescription ? (
+            <input
+              type="text"
+              value={description}
+              onChange={handleDescriptionChange}
+              onBlur={handleDescriptionBlur}
+              autoFocus
+              className={styles.inputField}
+            />
+          ) : (
+            <p className={styles.desc} onClick={handleDescriptionClick}>
+              {description || "Описание не указано"}
+            </p>
+          )}
+
           <div className={styles.columns}>
             <TagSection
               title="Оказываемые услуги"
@@ -147,28 +264,33 @@ const SpecialistCard = () => {
           <RateItem title="Занятость в неделю" value="До 20 часов" />
           <RateItem title="Часовой пояс" value="UTC+3" />
         </div>
+
         <div className={styles.projects}>
-          <CustomDivTable
-          activeProjects={[activeProjects.length]}
-            headers={[
-              "Название",
-              "Клиент",
-              "Трекер",
-              "Таймлайн",
-              "Сумма",
-              "Осталось",
-            ]}
-            rows={activeProjects.map((task) => [
-              task.project || "Данных нет",
-              task.client_name || "Данных нет",
-              task.tracker_name || "Данных нет",
-              task.start_date && task.end_date
-                ? `${task.start_date} — ${task.end_date}`
-                : "Данных нет",
-              task.project_cost || "Данных нет",
-              task.remaining_tasks ?? "Данных нет",
-            ])}
-          />
+          {specialistProjects.length === 0 ? (
+            <p>Нет активных проектов</p>
+          ) : (
+            <CustomDivTable
+              activeProjects={[activeProjects.length]}
+              headers={[
+                "Название",
+                "Клиент",
+                "Трекер",
+                "Таймлайн",
+                "Сумма",
+                "Осталось",
+              ]}
+              rows={activeProjects.map((project) => [
+                project.name || "Нет названия",
+                "-", 
+                "-", 
+                project.start_date && project.end_date
+                  ? `${project.start_date} — ${project.end_date}`
+                  : "Нет дат",
+                project.project_cost || "Нет стоимости",
+                project.remaining_tasks?.toString() ?? "Нет данных",
+              ])}
+            />
+          )}
         </div>
 
         <div className={styles.finishedProjects}>
@@ -208,7 +330,7 @@ const SpecialistCard = () => {
           </div>
         </div>
         <div className={styles.trackerNotes}>
-        <TrackerNotes />
+          <TrackerNotes />
         </div>
         <div className={styles.education}>
           <h3 className={styles.title}>Образование</h3>
@@ -272,7 +394,6 @@ const SpecialistCard = () => {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

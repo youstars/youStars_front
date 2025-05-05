@@ -7,15 +7,16 @@ import interrogation from "shared/images/interrogation.svg";
 import block from "shared/images/block.svg";
 import user_icon from "shared/images/user_icon.svg";
 import { useState, useEffect, useRef } from "react";
-
-
+import { useSelector } from "react-redux";
+import { selectMe } from "shared/store/slices/meSlice";
+import Avatar from "shared/UI/Avatar/Avatar";
 
 export default function Header2() {
   const [dateTime, setDateTime] = useState(new Date());
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
-
+  const { data: user } = useSelector(selectMe);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -27,19 +28,20 @@ export default function Header2() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target as Node)
+      ) {
         setShowNotifications(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-
-  
   const pathnames = location.pathname.split("/").filter((x) => x);
   const filteredPathnames = pathnames.slice(1);
 
@@ -58,8 +60,6 @@ export default function Header2() {
     specialist: "Специалист",
   };
 
-
-
   return (
     <div className={classes.upper_block}>
       <div className={classes.left_side}>
@@ -67,7 +67,9 @@ export default function Header2() {
           const routeTo = `/${pathnames.slice(0, index + 2).join("/")}`;
           return (
             <div key={routeTo} className={classes.breadcrumb_item}>
-              {index > 0 && <img src={arrow} alt="→" className={classes.arrow_icon} />}
+              {index > 0 && (
+                <img src={arrow} alt="→" className={classes.arrow_icon} />
+              )}
               <Link to={routeTo} className={classes.tab_link}>
                 <Tab label={breadcrumbLabels[name] || name} />
               </Link>
@@ -80,19 +82,15 @@ export default function Header2() {
         <button className={classes.create_order}>Создать заказ</button>
         <div className={classes.control_panel}>
           <div className={classes.notification_container} ref={notificationRef}>
-            <button 
-              className={classes.panel_btn} 
+            <button
+              className={classes.panel_btn}
               onClick={() => setShowNotifications(!showNotifications)}
-            >
-              
-            </button>
+            ></button>
             {showNotifications && (
               <div className={classes.notification_dropdown}>
                 <div className={classes.notification_header}>
                   <h3>Уведомления</h3>
-                
                 </div>
-                
               </div>
             )}
           </div>
@@ -107,7 +105,9 @@ export default function Header2() {
           </div>
         </div>
         <div className={classes.profile}>
-          <img src={user_icon} alt="" />
+          <Link to="/manager/me">
+            <Avatar src={user?.avatar || user_icon} alt="Профиль" />
+          </Link>
         </div>
       </div>
     </div>

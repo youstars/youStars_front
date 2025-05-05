@@ -1,6 +1,7 @@
 .upper_block {
     width: 100%;
     border: 1px solid #272A2D;
+    border-left: none;
     height: 100px;
     background-color: var(--bg-toggle-color);
     display: flex;

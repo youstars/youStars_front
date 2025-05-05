@@ -1,11 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
-import { getTasks, selectTasks, selectTasksStatus, selectTasksError } from "shared/store/slices/tasksSlice";
 import { MONTHS, OPEN_STATUSES, CLOSED_STATUSES } from "./constants";
 import { isToday, isWeekend, calculateTaskPosition } from "./utils";
 import "./Gantt.scss";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { useAppSelector } from "shared/hooks/useAppSelector";
 import { Task } from "./types";
+import { useOutletContext } from "react-router-dom";
+
+import {
+  getProjectTasks,
+  selectProjectTasks,
+  selectProjectTasksStatus,
+  selectProjectTasksError
+} from "shared/store/slices/projectTasksSlice";
+
 
 const Gantt: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -13,13 +21,16 @@ const Gantt: React.FC = () => {
   const [currentDate] = useState<Date>(new Date());
   const [visibleMonth, setVisibleMonth] = useState<number>(currentDate.getMonth());
   const [scrolling, setScrolling] = useState(false);
+  const { currentProjectId } = useOutletContext<{ currentProjectId: number | null }>();
+  const tasksData = useAppSelector(selectProjectTasks);
 
-  const tasksData = useAppSelector(selectTasks);
-  const status = useAppSelector(selectTasksStatus);
-  const error = useAppSelector(selectTasksError);
+  const status = useAppSelector(selectProjectTasksStatus);
+  const error = useAppSelector(selectProjectTasksError);
 
+  console.log("currentProjectId", currentProjectId);
+  console.log("tasksData", tasksData);
 
-  const tasks: Task[] = tasksData?.results.map((task: any) => ({
+  const tasks: Task[] = tasksData?.map((task: any) => ({
     id: task.id,
     name: task.title,
     start: new Date(task.start_date),
@@ -28,9 +39,37 @@ const Gantt: React.FC = () => {
     specialist: task.assigned_specialist,
   })) ?? [];
 
+
   useEffect(() => {
-    dispatch(getTasks());
-  }, [dispatch]);
+    if (currentProjectId) {
+      dispatch(getProjectTasks(currentProjectId));
+    }
+  
+
+    const scrollToCurrentMonth = () => {
+      if (scrollContainerRef.current) {
+        const currentMonth = currentDate.getMonth();
+        const dayWidth = 30;
+        const daysBefore = Array.from({ length: currentMonth }, (_, i) =>
+          new Date(currentDate.getFullYear(), i + 1, 0).getDate()
+        ).reduce((sum, days) => sum + days, 0);
+  
+        scrollContainerRef.current.scrollLeft = daysBefore * dayWidth;
+      }
+    };
+  
+    setTimeout(scrollToCurrentMonth, 0); 
+  }, [dispatch, currentProjectId]);
+  
+
+  useEffect(() => {
+    if (currentProjectId) {
+      dispatch(getProjectTasks(currentProjectId));
+    }
+  }, [dispatch, currentProjectId]);
+
+  if (!currentProjectId) return <p>Выберите проект</p>;
+
 
   const handleScroll = () => {
     if (scrollContainerRef.current && !scrolling) {
@@ -82,10 +121,10 @@ const Gantt: React.FC = () => {
   };
 
   const getStatusLabel = (status: string): string => {
-    if (OPEN_STATUSES.includes(status)) return "Статус открыт";
-    if (CLOSED_STATUSES.includes(status)) return "Статус закрыт";
-    return "Неизвестный статус";
+    const openStatuses = ["to_do", "in_progress", "review"];
+    return openStatuses.includes(status) ? "Статус открыт" : "Статус закрыт";
   };
+  
 
   const days = getDaysArray();
 
@@ -105,12 +144,12 @@ const Gantt: React.FC = () => {
       <div className="gantt-content">
         <div className="gantt-status-table">
           <p className="graph">График времени</p>
-          {tasks.map((task) => (
-            <div key={task.id} className="gantt-status-row">
-              <span>{task.specialist[0]}</span>
-              <span>{getStatusLabel(task.status)}</span>
-            </div>
-          ))}
+          {tasks.map((task, index) => (
+  <div key={task.id || `task-${index}`} className="gantt-status-row">
+    <span>{task.specialist[0]}</span>
+    <span>{getStatusLabel(task.status)}</span>
+  </div>
+))}
         </div>
 
         <div ref={scrollContainerRef} className="gantt-calendar-container" onScroll={handleScroll}>
@@ -118,7 +157,7 @@ const Gantt: React.FC = () => {
             <div className="gantt-calendar">
               {days.map((day, index) => (
                 <div
-                  key={index}
+                  key={day.toISOString()}
                   className={`gantt-day ${isWeekend(day) ? "weekend" : ""} ${isToday(day) ? "today" : ""}`}
                 >
                   <div className="gantt-day-header">
