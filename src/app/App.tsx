@@ -5,29 +5,26 @@ import { CreateAccountAsync } from "../pages/CreatedAccount";
 import { LoginFormAsync } from "../pages/LoginForm";
 import { StepsAsync } from "../pages/Steps";
 import Test from "../widgets/Test/Test";
-import UserProjects from "sub_pages/UserProjects/ui/UserProjects";
-import Tasks from "sub_pages/Tasks/ui/Tasks";
-import Specialists from "sub_pages/Specialists/Specialists";
-import Library from "sub_pages/Library/Library";
-import Settings from "sub_pages/Settings/Settings";
-import ManagerPage from "pages/ManagerPage/ui/ManagerPage";
-import Kanban from "sub_pages/Kanban/Kanban";
-import Overview from "../sub_pages/Overview/Overview";
-import Clients from "sub_pages/Clients/Clients";
-import Chats from "sub_pages/Chats/Chats";
-import { ClientProfile } from "sub_pages/ClientProfile/ClientProfile";
-import SpecialistProfile from "sub_pages/SpecialistProfile/SpecialistProfile";
 import { useTheme } from "shared/providers/theme/useTheme";
 import Header from "widgets/Header";
-import Gantt from "sub_pages/Gantt/Gantt";
-import Funnel from "sub_pages/Funnel/Funnel";
-import ProjectProfile from "sub_pages/ProjectProfile/ProjectProfile";
-import BusinessApplication from "sub_pages/BusinessApplication/BusinessApplication";
-// import Chats from "sub_pages/Chats/ui/Chats";
-import AdminsPage from "../pages/AdminsPage/AdminsPage";
-import FormAuthAdmin from "../sub_pages/FormAuthAdmin/FormAuthAdmin";
-// import { WebSocketProvider } from "context/WebSocketContext";
-
+import UserProjects from "widgets/sub_pages/UserProjects/ui/UserProjects";
+import FormAuthAdmin from "widgets/sub_pages/FormAuthAdmin/FormAuthAdmin";
+import AdminsPage from "widgets/sub_pages/AdminsPage/AdminsPage";
+import ProjectProfile from "widgets/sub_pages/ProjectProfile/ProjectProfile";
+import BusinessApplication from "widgets/sub_pages/BusinessApplication/BusinessApplication";
+import Funnel from "widgets/sub_pages/Funnel/Funnel";
+import Gantt from "widgets/sub_pages/Gantt/Gantt";
+import SpecialistProfile from "widgets/sub_pages/SpecialistProfile/UserProfilePage";
+import { ClientProfile } from "widgets/sub_pages/ClientProfile/ClientProfile";
+import Chats from "widgets/sub_pages/Chats/Chats";
+import Specialists from "widgets/sub_pages/Specialists/Specialists";
+import Library from "widgets/sub_pages/Library/Library";
+import Settings from "widgets/sub_pages/Settings/Settings";
+import ManagerPage from "pages/ManagerPage/ui/ManagerPage";
+import Kanban from "widgets/sub_pages/Kanban/Kanban";
+import Overview from "widgets/sub_pages/Overview/Overview";
+import Clients from "widgets/sub_pages/Clients/Clients";
+import TaskTable from "widgets/sub_pages/Tasks/ui/Tasks";
 
 
 function App() {
@@ -46,7 +43,8 @@ function App() {
             <Route path={"/steps"} element={<StepsAsync />} />
             <Route path={"/manager"} element={<ManagerPage />}>
               <Route path="user_projects" element={<UserProjects />} />
-              <Route path="tasks" element={<Tasks />} />
+              <Route path="me" element={<SpecialistProfile isSelf />} />
+              <Route path="tasks" element={<TaskTable />} />
               <Route path="specialists" element={<Specialists />} />
               <Route path="specialists/:id" element={<SpecialistProfile />} />
               <Route path="clients" element={<Clients />} />

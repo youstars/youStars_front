@@ -10,7 +10,7 @@ import correctIcon from "shared/images/corectIcon.svg";
 import kubikIcon from "shared/images/kubikIcon.svg";
 import saveIcon from "shared/images/saveIcon.svg";
 import chatIcon from "shared/images/chatIcon.svg";
-import SideFunnel from "../../widgets/SideBar/SideFunnel/SideFunnel";
+import SideFunnel from "widgets/SideBar/SideFunnel/SideFunnel";
 
 interface Funnel {
     amount: string;

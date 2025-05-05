@@ -1,24 +1,34 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "shared/api/api";
-
+import { getCookie } from "shared/utils/cookies"; 
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000/";
 console.log("API_BASE_URL:", API_BASE_URL);
+
 
 export const getSpecialists = createAsyncThunk(
   "specialists/getSpecialists",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`${API_BASE_URL}list`);
+      const token = getCookie("access_token"); 
+
+      const response = await axiosInstance.get(
+        `${API_BASE_URL}users/specialists/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       console.log("Полученные специалисты:", response.data);
-      return response.data;
+      return response.data.results;
     } catch (error: any) {
       console.error("Ошибка при получении специалистов:", error);
       return rejectWithValue(error.response?.data || "Произошла ошибка");
     }
   }
 );
-
 
 interface CustomUser {
   id: number;
@@ -33,12 +43,12 @@ interface CustomUser {
   phone_number: string | null;
 }
 
-interface Specialist {
+export interface Specialist {
   id: number;
   age: number | null;
   before_university: string | null;
   course: string | null;
-  custom_user_id: CustomUser;
+  custom_user: CustomUser;
   education_status: string | null;
   faculty: string | null;
   gender: string | null;

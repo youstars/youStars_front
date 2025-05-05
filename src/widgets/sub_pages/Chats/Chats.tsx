@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import styles from "./Chats.module.scss"; // Импорт модульных стилей
+import styles from "./Chats.module.scss"; 
 import { formatDate } from "shared/utils/formatDate";
 import { getShortType } from "shared/utils/getShortType";
 import ChatListItem from "./components/ChatListItem";

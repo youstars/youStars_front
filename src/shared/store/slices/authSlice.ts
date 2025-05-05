@@ -14,8 +14,8 @@ export const register = createAsyncThunk(
     try {
       const endpoint =
         role === "student"
-          ? "ru/auth/users/student/registration/"
-          : "ru/auth/users/business/registration/";
+          ? "ru/auth/users/specialist/registration/"
+          : "ru/auth/users/client/registration/";
 
       const response = await axiosInstance.post(
         `${API_BASE_URL}${endpoint}`,
@@ -44,7 +44,7 @@ export const login = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await axiosInstance.post("ru/auth/token/create", {
+      const response = await axiosInstance.post("ru/auth/token/create/", {
         username,
         password,
       });

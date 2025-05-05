@@ -12,6 +12,8 @@
     "baseUrl": "./src",
     "paths": {
       "shared/*": ["shared/*"],
+      "entities/*": ["entities/*"],
+
       "context/*": ["context/*"],
       "pages/*": ["pages/*"],
       "sub_pages/*": ["sub_pages/*"],
