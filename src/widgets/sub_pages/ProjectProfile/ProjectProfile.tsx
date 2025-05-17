@@ -153,10 +153,10 @@ export default function ProjectProfile() {
         />
       </div>
       <div className={styles.projectFiles}>
-      <ProjectFiles
+      {/* <ProjectFiles
         files={[{ name: "NDA" }, { name: "Резюме" }, { name: "Портфолио" }]}
         onAddClick={() => console.log("Добавить файл")}
-      />
+      /> */}
       </div>
     </div>
   );

@@ -14,13 +14,14 @@ export const updateMe = createAsyncThunk(
     try {
       const token = getCookie("access_token");
 
-      const response = await axios.patch("http://127.0.0.1:8000/ru/auth/users/me/", data, {
+      const response = await axios.patch("http://127.0.0.1:8000/auth/users/me/", data, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
-
+      console.log("Обновленный профиль", response.data);
+      
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response?.data || "Ошибка обновления профиля");
@@ -35,12 +36,13 @@ export const getMe = createAsyncThunk(
     try {
       const token = getCookie("access_token");
 
-      const response = await axios.get("http://127.0.0.1:8000/ru/users/profile/", {
+      const response = await axios.get("http://127.0.0.1:8000/users/profile/", {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
+console.log("Полученный профиль", response.data);
 
       return response.data;
     } catch (error: any) {

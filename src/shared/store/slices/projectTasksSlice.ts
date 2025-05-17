@@ -4,7 +4,7 @@ export const getProjectTasks = createAsyncThunk(
   'projectTasks/fetch',
   async (projectId: number, thunkAPI) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/ru/projects/${projectId}/tasks/`);
+      const response = await fetch(`http://127.0.0.1:8000/projects/${projectId}/tasks/`);
       const data = await response.json();
       return data;  
     } catch (error: any) {
