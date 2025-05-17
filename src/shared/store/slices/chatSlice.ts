@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Chat, ChatType, Message } from "shared/types/chat";
 import { getCookie } from "shared/utils/cookies";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
 
 interface ChatState {
   chats: Chat[];
@@ -31,7 +33,7 @@ export const fetchChats = createAsyncThunk<Chat[], ChatType | undefined>(
     const userId = parseInt(getCookie("user_id") || "1");
     const isAdmin = userId === 1;
 
-    let url = `http://localhost:8000/chat/chats/`;
+    let url = `${API_BASE_URL}chat/chats/`;
     if (!isAdmin && chatType) {
       url += `?type=${chatType}`;
     }

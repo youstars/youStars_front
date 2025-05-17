@@ -1,22 +1,67 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axiosInstance from "shared/api/api";
+import axios from "axios";
+import { getCookie } from "shared/utils/cookies";
+import { Project } from
+  "widgets/sub_pages/ClientProfile/components/ProjectBlock/ProjectBlock";
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+export interface SpecialistFile {
+    name: string;
+    file: string;
+    description?: string;
+    specialist?: number;
+  }
 
 export interface Client {
   id: number;
   custom_user: {
     id: number;
     full_name: string;
+    first_name: string;
+    last_name: string;
+    username: string;
+    time_zone: string;
     email: string;
     avatar: string | null;
     phone_number: string | null;
     role: string;
+    tg_nickname?: string | null;
+   
   };
-  business_name?: string;
-  position?: string;
-  revenue?: string;
-  employee_count?: string;
-  // добавь сюда остальные поля по мере необходимости
+ file?: SpecialistFile[]; 
+  business_name?: string | null;
+  position?: string | null;
+
+
+  description?: string | null;
+  problems?: string | null;
+  tasks?: string | null;
+  business_goals?: string | null;
+  solving_problems?: string | null;
+  target_audience?: string | null;
+
+  geography?: string | null;
+  employee_count?: string | null;
+  revenue?: string | null;
+  years_on_market?: string | null;
+
+  professional_areas?: number[];        
+  business_scope_ids?: number[];       
+
+  overall_rating?: number | null;
+  mood?: number | null;
+
+  /* метрики заказов */
+  orders_total?: number;
+  orders_in_progress?: number;
+  order_cost_avg?: number;
+  projects_count?: number;
+  projects?: Project[];  
 }
+
+
+
 
 interface ClientState {
   data: Client | null;
@@ -29,44 +74,56 @@ const initialState: ClientState = {
   loading: false,
   error: null,
 };
-// 🔹 Получить клиента по ID (не текущего)
+
+
 export const getClientById = createAsyncThunk<Client, number>(
-    "client/getClientById",
-    async (id, { rejectWithValue }) => {
-      try {
-        const response = await axiosInstance.get(`/users/clients/${id}/`);
-        return response.data;
-      } catch (error: any) {
-        return rejectWithValue("Ошибка при получении клиента по ID");
-      }
-    }
-  );
-  
-// 🔹 GET текущего клиента
-export const getClientMe = createAsyncThunk<Client>(
-  "client/getClientMe",
-  async (_, { rejectWithValue }) => {
+  "client/getClientById",
+  async (id, thunkAPI) => {
     try {
-      const response = await axiosInstance.get("/users/clients/");
+      const token = getCookie("access_token");
+      const response = await axios.get(
+        `${API_BASE_URL}users/client/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       return response.data;
     } catch (error: any) {
-      return rejectWithValue("Ошибка при получении клиента");
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Ошибка при получении клиента по ID"
+      );
     }
   }
 );
 
-// 🔹 PATCH клиента
-export const updateClient = createAsyncThunk<Client, Partial<Client>>(
+
+// 🔹 Обновить клиента
+export const updateClient = createAsyncThunk<Client, any>(
   "client/updateClient",
   async (clientData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.patch("/users/clients/me/", clientData);
+      const token = getCookie("access_token");
+
+      const response = await axios.patch(
+        "http://127.0.0.1:8000/users/clients/me/",
+        clientData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       return response.data;
     } catch (error: any) {
-      return rejectWithValue("Ошибка при обновлении клиента");
+      return rejectWithValue(error.response?.data || "Ошибка при обновлении клиента");
     }
   }
 );
+
 
 const clientSlice = createSlice({
   name: "client",
@@ -74,21 +131,6 @@ const clientSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getClientMe.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(getClientMe.fulfilled, (state, action: PayloadAction<Client>) => {
-        state.loading = false;
-        state.data = action.payload;
-      })
-      .addCase(getClientMe.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-      .addCase(updateClient.fulfilled, (state, action: PayloadAction<Client>) => {
-        state.data = action.payload;
-      })
       .addCase(getClientById.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -100,8 +142,20 @@ const clientSlice = createSlice({
       .addCase(getClientById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+     
+      .addCase(updateClient.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateClient.fulfilled, (state, action) => {
+  console.log("payload из updateClient:", action.payload.position); // <- должно быть "boss"
+  state.data = action.payload;            // ← обновляем store
+})
+      .addCase(updateClient.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
-      
   },
 });
 

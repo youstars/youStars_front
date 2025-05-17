@@ -3,7 +3,7 @@ import styles from "./RateItem.module.scss";
 
 interface RateItemProps {
   title: string;
-  value: string;
+  value: React.ReactNode;
 }
 
 const RateItem: React.FC<RateItemProps> = ({ title, value }) => {
@@ -16,4 +16,3 @@ const RateItem: React.FC<RateItemProps> = ({ title, value }) => {
 };
 
 export default RateItem;
-

@@ -31,7 +31,7 @@ const Chats: React.FC = () => {
   }, [chats]);
 
   const getFilteredChats = () => {
-    if (!isAdmin) return chats;
+ 
     switch (activeTab) {
       case "specialists":
         return chats.filter((chat: Chat) => getShortType(chat.type) === "specialist");
@@ -45,9 +45,9 @@ const Chats: React.FC = () => {
   };
 
   const filteredChats = getFilteredChats();
-  const currentChat = useMemo(() => {
-    return activeChat ? chats.find((chat: Chat) => chat.id === activeChat) : null;
-  }, [activeChat, chats]);
+  const currentChat = activeChat
+  ? chats.find((chat: Chat) => chat.id === activeChat)
+  : null;
 
   useEffect(() => {
     console.log("Отфильтрованные чаты:", filteredChats);
@@ -94,25 +94,24 @@ const Chats: React.FC = () => {
         </div>
         <Notifications />
 
-        {isAdmin && (
-          <div className={styles.tabs}>
-            {["all", "specialists", "businesses", "projects"].map((tab) => (
-              <div
-                key={tab}
-                className={`${styles.tab} ${activeTab === tab ? styles.active : ""}`}
-                onClick={() => setActiveTab(tab as any)}
-              >
-                {tab === "all"
-                  ? "Все чаты"
-                  : tab === "specialists"
-                  ? "Специалисты"
-                  : tab === "businesses"
-                  ? "Бизнесы"
-                  : "Проекты"}
-              </div>
-            ))}
-          </div>
-        )}
+        <div className={styles.tabs}>
+  {["all", "specialists", "businesses", "projects"].map((tab) => (
+    <div
+      key={tab}
+      className={`${styles.tab} ${activeTab === tab ? styles.active : ""}`}
+      onClick={() => setActiveTab(tab as any)}
+    >
+      {tab === "all"
+        ? "Все чаты"
+        : tab === "specialists"
+        ? "Специалисты"
+        : tab === "businesses"
+        ? "Бизнесы"
+        : "Проекты"}
+    </div>
+  ))}
+</div>
+
       </div>
 
       <div className={styles.contentSection}>

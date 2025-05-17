@@ -33,7 +33,7 @@ export const fetchSpecialistTasks = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`${API_BASE_URL}task_specialist/`);
-      return response.data.results; // массив задач
+      return response.data.results;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Ошибка при загрузке задач специалиста");
     }

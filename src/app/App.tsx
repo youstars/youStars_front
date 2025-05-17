@@ -25,54 +25,64 @@ import Kanban from "widgets/sub_pages/Kanban/Kanban";
 import Overview from "widgets/sub_pages/Overview/Overview";
 import Clients from "widgets/sub_pages/Clients/Clients";
 import TaskTable from "widgets/sub_pages/Tasks/ui/Tasks";
-
+import { getMe } from "shared/store/slices/meSlice";
+import { useEffect } from "react";
+import { useAppDispatch } from "shared/hooks/useAppDispatch";
 
 function App() {
   const { theme } = useTheme();
   const location = useLocation();
 
   const isManagerPage = location.pathname.startsWith("/manager");
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
   return (
     <div className={`app ${theme}`}>
-        <Suspense fallback={""}>
-          {!isManagerPage && <Header />}
-          <Routes>
-            <Route path={"/"} element={<LoginFormAsync />} />
-            <Route path="/create-account" element={<CreateAccountAsync />} />
-            <Route path={"/test"} element={<Test />} />
-            <Route path={"/steps"} element={<StepsAsync />} />
-            <Route path={"/manager"} element={<ManagerPage />}>
-              <Route path="user_projects" element={<UserProjects />} />
-              <Route path="me" element={<SpecialistProfile isSelf />} />
-              <Route path="tasks" element={<TaskTable />} />
-              <Route path="specialists" element={<Specialists />} />
-              <Route path="specialists/:id" element={<SpecialistProfile />} />
-              <Route path="clients" element={<Clients />} />
-              <Route path="clients/:id" element={<ClientProfile />} />
-              <Route path="funnel" element={<Funnel/>} />
-              <Route path="library" element={<Library />} />
-              <Route path="admins" element={<AdminsPage/>} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="chats" element={<Chats/>} />
-              <Route path="auth_admin" element={<FormAuthAdmin/>} />
-              {/* <Route path="chats" element={<Chats/>} /> */}
-              <Route path="overview" element={<Overview />}>
-                <Route path="gantt" element={<Gantt />} />
-                <Route path="kanban" element={<Kanban />} />
-              </Route>
-              {/* not yet in flow */}
-              <Route path="business-application" element={<BusinessApplication />}/>
-              <Route path="projectProfile" element={<ProjectProfile />} />
+      <Suspense fallback={""}>
+        {!isManagerPage && <Header />}
+        <Routes>
+          <Route path={"/"} element={<LoginFormAsync />} />
+          <Route path="/create-account" element={<CreateAccountAsync />} />
+          {/* <Route path={"/test"} element={<Test />} /> */}
+          <Route path={"/steps"} element={<StepsAsync />} />
+          <Route path={"/manager"} element={<ManagerPage />}>
+            <Route path="user_projects" element={<UserProjects />} />
+            {/* <Route path="me" element={<SpecialistProfile isSelf />} /> */}
+            <Route path="tasks" element={<TaskTable />} />
+            <Route path="specialists" element={<Specialists />} />
+            <Route path="specialists/:id" element={<SpecialistProfile />} />
+            <Route path="clients" element={<Clients />} />
+            <Route path="clients/:id" element={<ClientProfile />} />
+            <Route path="funnel" element={<Funnel />} />
+            <Route path="library" element={<Library />} />
+            <Route path="admins" element={<AdminsPage />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="chats" element={<Chats />} />
+            <Route path="auth_admin" element={<FormAuthAdmin />} />
+            <Route path="me" element={<SpecialistProfile isSelf />} />
+
+            {/* <Route path="chats" element={<Chats/>} /> */}
+            <Route path="overview" element={<Overview />}>
+              <Route path="gantt" element={<Gantt />} />
+              <Route path="kanban" element={<Kanban />} />
             </Route>
-          </Routes>
-        </Suspense>
+            {/* not yet in flow */}
+            <Route
+              path="business-application"
+              element={<BusinessApplication />}
+            />
+            <Route path="projectProfile" element={<ProjectProfile />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </div>
   );
 }
 
 export default function AppWithRouter() {
   return (
-
     <BrowserRouter>
       <App />
     </BrowserRouter>
