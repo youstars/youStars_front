@@ -12,7 +12,7 @@ export const getSpecialistById = createAsyncThunk(
       const token = getCookie("access_token");
 
       const response = await axios.get(
-        `${API_BASE_URL}${id}`,
+        `${API_BASE_URL}users/specialist/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

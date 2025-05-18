@@ -13,10 +13,12 @@ export const getProjectTasks = createAsyncThunk(
   }
 );
 
+
+
 const projectTasksSlice = createSlice({
   name: 'projectTasks',
   initialState: {
-    tasks: [], // 💡 массив задач
+    tasks: [], 
     status: 'idle',
     error: null,
   },
