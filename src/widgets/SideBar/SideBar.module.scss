@@ -33,7 +33,6 @@
   justify-content: center;
   align-items: center;
   gap: 10px;
-
 }
 
 .proj_avatar {
@@ -44,15 +43,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
 }
 
 .proj_avatar p {
   font-size: 14px;
   font-weight: 600;
   color: var(--secondary-font-color);
-
-
 }
 
 .block_name {
@@ -107,7 +103,8 @@
 
 .active {
   background-color: yellow;
-  font-weight: bold;
+  font-weight: 800;
+  
 }
 
 .arrow_back{

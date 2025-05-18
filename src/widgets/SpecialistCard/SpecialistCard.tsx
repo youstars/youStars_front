@@ -79,12 +79,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
               onClick={handleChatClick}
               title="Начать чат"
             />
-            <IconButton
-              icon={Plus}
-              alt="Add"
-              onClick={handleChatClick}
-              
-            />
+            <IconButton icon={Plus} alt="Add" onClick={handleChatClick} />
             <button
               className={styles.profileButton}
               onClick={handleProfileClick}
@@ -121,14 +116,30 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
           </div>
         </div>
         <div className={styles.stats}>
-  <div><strong>Проекты в работе:</strong> {specialist.projects_in_progress_count ?? "—"}</div>
+          <div>
+            <strong>Проекты в работе:</strong>{" "}
+            {specialist.projects_in_progress_count ?? "—"}
+          </div>
 
-  <div><strong>Осталось задач:</strong> {specialist.tasks_in_progress_count ?? "—"}</div>
-  <div><strong>Ставка:</strong> {specialist.appr_hourly_rate ? `${specialist.appr_hourly_rate}₴/ч` : "—"}</div>
-  <div><strong>Стоимость:</strong> {specialist.specialist_cost_total ?? "—"}</div>
-  <div><strong>Занятость:</strong> {specialist.hours_per_week ?? "—"} в неделю</div>
-</div>
-
+          <div>
+            <strong>Осталось задач:</strong>{" "}
+            {specialist.tasks_in_progress_count ?? "—"}
+          </div>
+          <div>
+            <strong>Ставка:</strong>{" "}
+            {specialist.appr_hourly_rate
+              ? `${specialist.appr_hourly_rate}₴/ч`
+              : "—"}
+          </div>
+          <div>
+            <strong>Стоимость:</strong>{" "}
+            {specialist.specialist_cost_total ?? "—"}
+          </div>
+          <div>
+            <strong>Занятость:</strong> {specialist.hours_per_week ?? "—"} в
+            неделю
+          </div>
+        </div>
       </div>
     </div>
   );
