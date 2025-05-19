@@ -1,0 +1,83 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axiosInstance from "shared/api/api";
+import { getCookie } from "shared/utils/cookies";
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000/";
+
+export const getClients = createAsyncThunk(
+  "clients/getClients",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = getCookie("access_token");
+
+      const response = await axiosInstance.get(
+        `${API_BASE_URL}users/clients/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Полученные клиенты:", response.data);
+      return response.data.results;
+    } catch (error: any) {
+      console.error("Ошибка при получении клиентов:", error);
+      return rejectWithValue(error.response?.data?.detail || "Произошла ошибка при загрузке клиентов");
+    }
+  }
+);
+
+// Тип данных клиента (можешь уточнить структуру под свой API)
+interface Client {
+  id: number;
+  business_name: string;
+  custom_user: {
+    id: number;
+    full_name: string;
+    username: string;
+    email: string;
+    phone_number: string | null;
+    avatar: string | null;
+  };
+}
+
+interface ClientsState {
+  list: Client[];
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: ClientsState = {
+  list: [],
+  loading: false,
+  error: null,
+};
+
+const clientsSlice = createSlice({
+  name: "clients",
+  initialState,
+  reducers: {
+    clearClientError: (state) => {
+      state.error = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getClients.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getClients.fulfilled, (state, action) => {
+        state.loading = false;
+        state.list = action.payload;
+      })
+      .addCase(getClients.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+  },
+});
+
+export const { clearClientError } = clientsSlice.actions;
+export default clientsSlice.reducer;

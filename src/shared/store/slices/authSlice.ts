@@ -73,11 +73,32 @@ export const login = createAsyncThunk(
     } catch (error) {
       console.error("Login failed:", error);
       return rejectWithValue(
-        error.response?.data || { general: "Invalid credentials" }
-      );
+  { general: error.response?.data?.detail || "Invalid credentials" }
+);
+
     }
   }
 );
+
+
+export const logout = createAsyncThunk(
+  "auth/logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      const refresh = Cookies.get("refresh_token"); 
+      await axiosInstance.post("/auth/token/logout/", { refresh });
+
+      Cookies.remove("access_token");
+      Cookies.remove("refresh_token");
+      Cookies.remove("user_id");
+
+      return true;
+    } catch (error) {
+      return rejectWithValue("Ошибка выхода");
+    }
+  }
+);
+
 
 const authSlice = createSlice({
   name: "auth",

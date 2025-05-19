@@ -52,6 +52,8 @@ h2 {
 .fieldPassword {
   display: flex;
   flex-direction: column;
+  position: relative;
+
 }
 
 fieldset {
@@ -154,5 +156,18 @@ fieldset {
 }
 
 
+.errorWrapper {
+  height: 20px; 
+  margin-top: 10px;
+  position: absolute;
+  top: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-
+.errorMessage {
+  color: red;
+  font-size: 14px;
+  text-align: center;
+}

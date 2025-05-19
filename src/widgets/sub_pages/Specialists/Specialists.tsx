@@ -14,15 +14,6 @@ function Specialists() {
     (state: RootState) => state.specialists
   );
 
-  // useEffect(() => {
-  //   const getBusiness = async () => {
-  //     const res = await fetch("http://127.0.0.1:8000/business");
-  //     const data = await res.json();
-  //     console.log("Business", data);
-  //     return data;
-  //   };
-  //   getBusiness();
-  // }, []);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

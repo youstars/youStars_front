@@ -42,13 +42,13 @@
     overflow: auto;
     gap: 20px;
     background-color: var(--dark-bg-color);
- 
+    padding: 32px;
   }
   
   .container {
     padding: 30px;
     background-color: var(--dark-lighter-bg-color);
-    
+    border-radius: var(--border-radius-main);
   }
   
   .client {
@@ -198,8 +198,7 @@
   flex-wrap: wrap;
   font-family: 'Myriad Pro Bold', sans-serif;
   gap: 20px;
-    font-size: 13px;
-
+  font-size: 13px;
   margin-top: 24px;
 }
 
@@ -215,6 +214,5 @@
   border-radius: 8px;
   padding: 12px 20px;
   color: #fff;
-
   font-weight: 600;
 }
