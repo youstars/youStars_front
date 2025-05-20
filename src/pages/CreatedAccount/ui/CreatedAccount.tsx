@@ -39,43 +39,43 @@ const CreateAccount = () => {
     email: "",
     password: "",
     password2: "",
-    terms: false, 
+    terms: false,
   };
-
-  const validationSchema = Yup.object({
-    username: Yup.string()
-      .min(3, t("Username must be at least 3 characters"))
-      .required(t("Username is required")),
-    full_name: Yup.string().required(t("Full name is required")),
-    email: Yup.string()
-      .email(t("Invalid email address"))
-      .required(t("Email is required")),
-      password: Yup.string()
-      .min(8, t("Password must be at least 8 characters"))
-      .test(
-        "not-similar-to-username",
-        t("Password is too similar to the username"),
-        function (value) {
-          const username = this.resolve(Yup.ref("username")) as string;
-          return value && username ? !value.includes(username) : true;
-        }
-      )
-      .required(t("Password is required")),
-      password2: Yup.string()
-      .oneOf([Yup.ref("password"), null], t("Passwords must match"))
-      .required(t("Password confirmation is required")),
-   
-  });
+  //
+  // const validationSchema = Yup.object({
+  //   username: Yup.string()
+  //     .min(3, t("Username must be at least 3 characters"))
+  //     .required(t("Username is required")),
+  //   full_name: Yup.string().required(t("Full name is required")),
+  //   email: Yup.string()
+  //     .email(t("Invalid email address"))
+  //     .required(t("Email is required")),
+  //     password: Yup.string()
+  //     .min(8, t("Password must be at least 8 characters"))
+  //     .test(
+  //       "not-similar-to-username",
+  //       t("Password is too similar to the username"),
+  //       function (value) {
+  //         const username = this.resolve(Yup.ref("username")) as string;
+  //         return value && username ? !value.includes(username) : true;
+  //       }
+  //     )
+  //     .required(t("Password is required")),
+  //     password2: Yup.string()
+  //     .oneOf([Yup.ref("password"), null], t("Passwords must match"))
+  //     .required(t("Password confirmation is required")),
+  //
+  // });
 
 
 return (
     <Formik
       initialValues={initialValues}
-      validationSchema={validationSchema}
+      // validationSchema={validationSchema}
       onSubmit={async (values, { setSubmitting }) => {
         try {
           const resultAction = await dispatch(
-            register({ role, formData: values }) 
+            register({ role, formData: values })
           );
           if (register.fulfilled.match(resultAction)) {
             navigate("/");
@@ -97,7 +97,7 @@ return (
               label="Name"
               className={classes.fieldName}
             />
-            
+
             <CustomField
               name="full_name"
               label="Last name"
@@ -133,7 +133,7 @@ return (
                   "By creating an account, I agree to the YouStar Terms of Use and Privacy Policy."
                 )}
               </span>
-              {/* <ErrorMessage name="terms" component="div" className={classes.error} /> */}
+               <ErrorMessage name="terms" component="div" className={classes.error} />
             </fieldset>
             <Button
               className={classes.buttonContinue}

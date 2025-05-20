@@ -15,7 +15,7 @@ export const getSpecialistById = createAsyncThunk(
       const token = getCookie("access_token");
 
       const response = await axios.get(
-        `http://127.0.0.1:8000/ru/users/specialists/${id}/`,
+        `http://127.0.0.1:8000/users/specialists/${id}/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -23,7 +23,7 @@ export const getSpecialistById = createAsyncThunk(
           },
         }
       );
-      
+
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response?.data || "Ошибка запроса");

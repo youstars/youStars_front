@@ -13,10 +13,7 @@ export type TaskPosition = {
     name: string;
     start: Date;
     end: Date;
-    status: number;
+    status: string;
     specialist: string;
-    executor?: string; 
-    project: string;
-    assigned_specialist: string;
-    admin: string;
-};
+  };
+  

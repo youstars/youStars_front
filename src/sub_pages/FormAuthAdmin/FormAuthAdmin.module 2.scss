@@ -1,0 +1,214 @@
+// Цветовые переменные
+$background-gradient: linear-gradient(to bottom right, #111827, #1a1c2e, #1a1c2e);
+$primary-color: #FACC15; // Жёлтый цвет для радио и кнопок
+$error-color: #f87171;
+$text-color: #ffffff;
+$input-bg: #353a3d;
+$input-border: #1f2937;
+$hint-color: #9ca3af;
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  //align-items: center;
+  padding-left: 30px;
+}
+
+.span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background:$error-color;
+}
+
+.label_title {
+  display: flex;
+  //align-items: center;
+  gap: 6px;
+}
+
+.label_title p {
+  margin-top: 6px;
+}
+
+.formWrapper {
+  width: 100%;
+  max-width: 42rem;
+}
+
+.form {
+  backdrop-filter: blur(8px);
+  border-radius: 1rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  margin-bottom: 0.5rem;
+  h2 {
+    color: #ededed;
+    font-size: 1.875rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: $hint-color;
+    .dot {
+      height: 0.75rem;
+      width: 0.75rem;
+      border-radius: 50%;
+      background-color: $error-color;
+      position: relative;
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: $error-color;
+        opacity: 0.75;
+        animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+      }
+    }
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+.formFields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.inputGroup {
+  label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: $text-color;
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+  .inputWrapper {
+    input {
+      width: 100%;
+      background: $input-bg;
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      color: $text-color;
+      border: 1px solid $input-border;
+      outline: none;
+      transition: border 0.3s ease;
+      &::placeholder {
+        color: #6b7280;
+      }
+      &:focus {
+        border: 2px solid $primary-color;
+      }
+    }
+  }
+  .hint {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: $hint-color;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+}
+
+/* Красная обводка для невалидного поля */
+.errorInput {
+  border: 2px solid $error-color !important;
+}
+
+/* Кастомные радио кнопки */
+.radioGroup {
+  display: flex;
+  gap: 1rem;
+  label {
+    display: flex;
+    align-items: center;
+    color: $text-color;
+    font-weight: 500;
+    font-size: 0.875rem;
+    input[type="radio"] {
+      appearance: none;
+      width: 1rem;
+      height: 1rem;
+      margin-right: 0.5rem;
+      border: 2px solid $primary-color;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      &:checked {
+        background: $primary-color;
+      }
+    }
+  }
+}
+
+.error {
+  color: $error-color;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Кастомное оформление кнопок */
+.buttons {
+  display: flex;
+  gap: 1rem;
+  button {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.3s ease, background 0.3s ease;
+    &:hover {
+      transform: scale(1.02);
+    }
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+.submitButton {
+  background: linear-gradient(to right, $primary-color, lighten($primary-color, 10%));
+  color: #353a3d;
+  background: #FFC400;
+  border: none;
+
+}
+
+.saveButton {
+  background: #2d3134;
+  border:  1px solid #ffc400;
+  //color: $text-color;
+  //&:hover {
+  //  background: #FFC400;
+  //
+  //}
+  color: #ffc400;
+}
+
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}

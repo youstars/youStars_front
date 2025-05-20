@@ -1,105 +1,202 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getTasks } from "shared/store/slices/tasksSlice";
-import { AppDispatch } from "shared/store";
+import { getTasks, updateTaskStatus, optimisticUpdateTaskStatus } from "shared/store/slices/tasksSlice";
+import { AppDispatch, RootState } from "shared/store";
+import { Task, TaskStatus } from "./types";
+import AddTaskModal from "./AddTaskModal/AddTaskModal";
 import classes from "./Kanban.module.scss";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import SideFunnel from "widgets/SideBar/SideFunnel/SideFunnel";
+import arrow_back from 'shared/images/sideBarImgs/arrow_back.svg'
 
-interface Task {
-    id: string | number;
-    description: string;
-    title: string;
-    status: number;
-    material: string;
-    notice: string;
-    start_date: string;
-    end_date: string;
-    [key: string]: any;
-}
+const orderedStatusKeys: TaskStatus[] = [
+    "to_do", "in_progress", "completed", "help", "pending", "review", "canceled"
+];
 
-interface TaskGroup {
-    [key: string]: Task[];
-}
-
-// 🎯 Статусы задач
-const statusTitles: { [key: number]: string } = {
-    0: "Нужно выполнить",
-    1: "В процессе",
-    2: "Выполнено",
-    3: "Провалено",
+const statusTitles: Record<TaskStatus, string> = {
+    to_do: "Нужно выполнить",
+    in_progress: "В процессе",
+    completed: "Выполнено",
+    help: "Помощь",
+    pending: "В ожидании",
+    review: "Проверка",
+    canceled: "Отменено",
 };
 
-const borderColors: { [key: number]: string } = {
-    0: "#bdbfc7",
-    1: "#FFC400",
-    2: "#3AFAE5",
-    3: "#FF4E4E",
+const borderColors: Record<TaskStatus, string> = {
+    to_do: "#5D8EF1",
+    in_progress: "#FFC400",
+    completed: "#4FBF4B",
+    help: "#4DB7A5",
+    pending: "#888888",
+    review: "#FF9500",
+    canceled: "#FF4E4E",
 };
 
+const TaskCard: React.FC<{ task: Task }> = ({ task }) => (
+    <div
+        className={classes.taskCard}
+        draggable
+        onDragStart={(e) => {
+            e.dataTransfer.setData("task-id", String(task.id));
+            e.dataTransfer.effectAllowed = "move";
 
-const TaskCard = ({ task }: { task: Task }) => (
-    <div className={classes.taskCard}>
+            const target = e.currentTarget as HTMLElement;
+            target.classList.add(classes.dragging);
+
+            const handleDragEnd = () => {
+                target.classList.remove(classes.dragging);
+                target.removeEventListener("dragend", handleDragEnd);
+            };
+            target.addEventListener("dragend", handleDragEnd);
+        }}
+    >
         <div
             className={classes.taskContent}
-            style={{ borderLeft: `3px solid ${borderColors[task.status] || "#FFFFFF"}` }}
+            style={{
+                borderLeft: `3px solid ${borderColors[task.status]}`
+            }}
         >
-            <p className={classes.description}>{task.description || task.title}</p>
-            <p className={classes.material}>{task.material}</p>
-            <p className={classes.notice}>{task.notice}</p>
-            <div className={classes.dates}>
-                <p>Начало: {task.start_date}</p>
-                <p>Конец: {task.end_date}</p>
-            </div>
+            <p className={classes.title}><strong>{task.title}</strong></p>
+            <p className={classes.description}><span>Дедлайн</span> {new Date(task.deadline).toLocaleDateString()}</p>
+            <p className={classes.material}><strong>Исполнители</strong> {task.assigned_specialist?.length || 0}</p>
+            <p className={classes.notice}><strong>Оценка времени</strong> {task.execution_period || "—"} часов</p>
+            <p className={classes.dates_paragraph}><strong>Начало статуса</strong> {new Date(task.start_date).toLocaleDateString()}</p>
+            <p className={classes.dates_paragraph}><strong>Подзадачи</strong> {task.subtasks_count}</p>
         </div>
     </div>
 );
 
-const Kanban = () => {
+const Kanban: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const tasksData = useSelector((state: any) => state.tasks.tasks);
+    const { results: tasks } = useSelector((state: RootState) => state.tasks.tasks);
+    const [startIndex, setStartIndex] = useState(0);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [hoveredStatus, setHoveredStatus] = useState<TaskStatus | null>(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                await dispatch(getTasks()).unwrap();
-            } catch (error) {
-                console.error("Error fetching tasks:", error);
-            }
-        };
-        fetchTasks();
+        dispatch(getTasks()).catch((err) => console.error("Ошибка при получении задач:", err));
     }, [dispatch]);
 
-    // Группировка задач по статусу
-    const groupedTasks: TaskGroup = tasksData?.results?.reduce((acc: TaskGroup, task: Task) => {
-        const statusTitle = statusTitles[task.status] || "Неизвестный статус";
-        if (!acc[statusTitle]) {
-            acc[statusTitle] = [];
+    console.log(tasks)
+
+    const groupedTasks: Record<TaskStatus, Task[]> = {
+        to_do: [], in_progress: [], completed: [],
+        help: [], pending: [], review: [], canceled: []
+    };
+
+    tasks.forEach((task) => {
+        if (groupedTasks[task.status]) {
+            groupedTasks[task.status].push(task);
         }
-        acc[statusTitle].push(task);
-        return acc;
-    }, {}) || {};
+    });
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>, status: TaskStatus) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        if (hoveredStatus !== status) {
+            setHoveredStatus(status);
+        }
+    };
+
+    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+            setHoveredStatus(null);
+        }
+    };
+
+    const handleDrop = async (e: React.DragEvent<HTMLDivElement>, newStatus: TaskStatus) => {
+        e.preventDefault();
+        setHoveredStatus(null);
+
+        const taskId = Number(e.dataTransfer.getData("task-id"));
+        if (!taskId) return;
+
+        const task = tasks.find((t) => t.id === taskId);
+        if (!task || task.status === newStatus) return;
+
+        dispatch(optimisticUpdateTaskStatus({ id: taskId, status: newStatus }));
+        try {
+            await dispatch(updateTaskStatus({ id: taskId, status: newStatus })).unwrap();
+        } catch (err) {
+            console.error("Ошибка при смене статуса:", err);
+        }
+    };
+
+    const canScrollLeft = startIndex > 0;
+    const canScrollRight = startIndex < orderedStatusKeys.length - 4;
+    const visibleStatuses = orderedStatusKeys.slice(startIndex, startIndex + 4);
+
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
 
     return (
-        <div className={classes.container}>
-            {tasksData?.results?.length > 0 ? (
+        <div className={`${classes.container} ${isSidebarOpen ? classes.sidebarOpen : ''}`}>
+            <div className={classes.statusColumnsWrapper}>
                 <div className={classes.statusColumns}>
-                    {Object.entries(groupedTasks).map(([status, tasks]) => (
-                        <div key={status} className={classes.statusColumn}>
+                    {canScrollLeft && (
+                        <button className={`${classes.navButton} ${classes.leftControl}`} onClick={() => setStartIndex((prev) => prev - 1)}>
+                            <ChevronLeft size={20} />
+                        </button>
+                    )}
+
+                    {visibleStatuses.map((statusKey) => (
+                        <div
+                            key={statusKey}
+                            className={`${classes.statusColumn} ${hoveredStatus === statusKey ? classes.hovered : ''}`}
+                            onDragOver={(e) => handleDragOver(e, statusKey)}
+                            onDragLeave={handleDragLeave}
+                            onDrop={(e) => handleDrop(e, statusKey)}
+                        >
                             <div className={classes.statusHeader}>
-                                <h3>{status}</h3>
+                                <h3>{statusTitles[statusKey]} <span>{groupedTasks[statusKey].length}</span></h3>
                             </div>
-                            <div className={classes.taskBlock}>
-                                <div className={classes.tasksList}>
-                                    {tasks.map((task: Task) => (
-                                        <TaskCard key={task.id} task={task} />
-                                    ))}
+                            {groupedTasks[statusKey].length > 0 ? (
+                                <div
+                                    className={classes.taskBlock}
+                                    style={{
+                                        backgroundColor: `${borderColors[statusKey]}10`,
+                                        borderRadius: '10px'
+                                    }}
+                                >
+                                    <div className={classes.tasksList}>
+                                        {groupedTasks[statusKey].map((task) => (
+                                            <TaskCard
+                                                key={task.id}
+                                                task={task}
+                                            />
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            ) : null}
                         </div>
                     ))}
+
+                    {canScrollRight && (
+                        <button className={`${classes.navButton} ${classes.rightControl}`} onClick={() => setStartIndex((prev) => prev + 1)}>
+                            <ChevronRight size={20} />
+                        </button>
+                    )}
+
+                    <button
+                        className={`${classes.sidebarToggleButton} ${isSidebarOpen ? classes.open : ''}`}
+                        onClick={toggleSidebar}
+                        title={isSidebarOpen ? "Закрыть боковую панель" : "Открыть боковую панель"}
+                    >
+                        <img src={arrow_back} alt="Toggle sidebar" />
+                    </button>
                 </div>
-            ) : (
-                <p className={classes.notFound}>Задачи не найдены</p>
-            )}
+            </div>
+
+            <button className={classes.addTaskButton} onClick={() => setIsModalOpen(true)}>
+                Добавить задачу
+            </button>
+
+            {isModalOpen && <AddTaskModal onClose={() => setIsModalOpen(false)} />}
+
+            <SideFunnel isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         </div>
     );
 };

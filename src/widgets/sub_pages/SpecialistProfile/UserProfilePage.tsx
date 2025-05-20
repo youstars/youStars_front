@@ -10,16 +10,20 @@ import { ClientProfile } from "../ClientProfile/ClientProfile";
 import { useUserRole } from "shared/hooks/useUserRole";
 
 const UserProfilePage = ({ isSelf = false }: { isSelf?: boolean }) => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string}>();
   const dispatch = useDispatch<AppDispatch>();
 
   const { data: me } = useSelector(selectMe);
-  const { data: specialist, loading: specialistLoading, error: specialistError } = useSelector(
-    (state: RootState) => state.specialist
-  );
-  const { data: client, loading: clientLoading, error: clientError } = useSelector(
-    (state: RootState) => state.client
-  );
+  const {
+    data: specialist,
+    loading: specialistLoading,
+    error: specialistError,
+  } = useSelector((state: RootState) => state.specialist);
+  const {
+    data: client,
+    loading: clientLoading,
+    error: clientError,
+  } = useSelector((state: RootState) => state.client);
 
   const [localUser, setLocalUser] = useState<any>(null);
   const role = useUserRole();
@@ -32,17 +36,20 @@ const UserProfilePage = ({ isSelf = false }: { isSelf?: boolean }) => {
           setLocalUser(action.payload);
           dispatch(getClientMe());
         }
-      } else if (id) {
-        dispatch(getSpecialistById(Number(id)));
-        dispatch(getClientById(Number(id)));
+      } else if (id && !isNaN(Number(id))) {
+        const numericId = Number(id);
+        dispatch(getSpecialistById(numericId));
+        dispatch(getClientById(numericId));
       }
     };
+
     load();
   }, [dispatch, id, isSelf]);
 
   if (specialistLoading || clientLoading) {
     return <p style={{ color: "white" }}>Загрузка...</p>;
   }
+
   if (specialistError || clientError) {
     return <p style={{ color: "red" }}>Ошибка: {specialistError || clientError}</p>;
   }
@@ -54,8 +61,14 @@ const UserProfilePage = ({ isSelf = false }: { isSelf?: boolean }) => {
   }
 
   if (role === "Specialist") {
-    return <SpecialistCard specialist={isSelf ? localUser : specialist} isSelf={isSelf} />;
-  } else if (role === "Client") {
+    return (
+        specialist && (
+            <SpecialistCard specialist={isSelf ? localUser : specialist} isSelf={isSelf} />
+        )
+    );
+  }
+
+  if (role === "Client") {
     return <ClientProfile />;
   }
 
