@@ -10,7 +10,6 @@ import SpecialistCard from "./sections/SpecialistCardProfile";
 interface SpecialistProfileProps {
   isSelf?: boolean;
 }
-
 const UserProfilePage = ({ isSelf = false }: SpecialistProfileProps) => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
