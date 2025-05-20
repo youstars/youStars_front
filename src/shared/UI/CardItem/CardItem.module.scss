@@ -14,6 +14,10 @@
     font-family: 'Roboto', sans-serif !important;
     overflow: hidden;
     border-left: 2px solid var(--yellow-color);
+    
+    &.cardCompleted {
+    border-left: 2px solid red; 
+  }
     &__name {
         font-weight: bold;
         font-size: 13px;

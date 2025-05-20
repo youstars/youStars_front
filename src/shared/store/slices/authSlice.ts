@@ -35,8 +35,6 @@ interface ErrorType {
   [key: string]: string;
 }
 
-//Login
-
 export const login = createAsyncThunk(
   "auth/login",
   async (
@@ -44,7 +42,7 @@ export const login = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await axiosInstance.post("/auth/token/create/", {
+      const response = await axiosInstance.post("auth/token/create/", {
         username,
         password,
       });
@@ -70,11 +68,30 @@ export const login = createAsyncThunk(
         token,
         user: { id: userId || null, username: response.data.username },
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login failed:", error);
-      return rejectWithValue(
-        error.response?.data || { general: "Invalid credentials" }
-      );
+      return rejectWithValue({
+        general: error.response?.data?.detail || "Invalid credentials",
+      });
+    }
+  }
+);
+
+export const logout = createAsyncThunk(
+  "auth/logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      const refresh = Cookies.get("refresh_token");
+
+      await axiosInstance.post("/auth/token/logout/", { refresh });
+
+      Cookies.remove("access_token");
+      Cookies.remove("refresh_token");
+      Cookies.remove("user_id");
+
+      return true;
+    } catch (error) {
+      return rejectWithValue("Ошибка выхода");
     }
   }
 );
@@ -84,9 +101,16 @@ const authSlice = createSlice({
   initialState: {
     loading: false,
     error: null as ErrorType | null,
-    user: null,
+    user: null as null | { id: string | null; username: string },
+
   },
-  reducers: {},
+  reducers: {
+    logoutUser: (state) => {
+      state.user = null;
+      state.error = null;
+      state.loading = false;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(register.pending, (state) => {
@@ -121,8 +145,22 @@ const authSlice = createSlice({
           typeof action.payload === "object" && action.payload !== null
             ? (action.payload as ErrorType)
             : { general: String(action.payload || "Invalid credentials") };
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.user = null;
+        state.error = null;
+        state.loading = false;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.loading = false;
+        state.error = {
+          general: typeof action.payload === "string"
+            ? action.payload
+            : "Logout failed",
+        };
       });
   },
 });
 
+export const { logoutUser } = authSlice.actions;
 export default authSlice.reducer;

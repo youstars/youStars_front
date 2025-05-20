@@ -1,12 +1,14 @@
 .wrapper {
   display: flex;
   z-index: 100;
-
   align-items: flex-start;
   transition: all 0.3s ease;
-
+  height: 100%;
 }
-
+.main {
+  overflow-y: auto;
+  max-height: calc(100vh - 60px); 
+}
 .all_blocks_and_sidebar {
   display: flex;
   width: 100%;
@@ -159,12 +161,6 @@
 }
 
 
-.img {
-  width: 60px;
-  height: 60px;
-  border-radius: 10px;
-  background: #987707;
-}
 
 .send_message {
   display: flex;

@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "shared/api/api";
 import { getCookie } from "shared/utils/cookies"; 
+import { Specialist } from "shared/types/specialist";
+
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000/";
 console.log("API_BASE_URL:", API_BASE_URL);
@@ -43,34 +45,6 @@ interface CustomUser {
   phone_number: string | null;
 }
 
-export interface Specialist {
-  id: number;
-  age: number | null;
-  before_university: string | null;
-  course: string | null;
-  custom_user: CustomUser;
-  education_status: string | null;
-  faculty: string | null;
-  gender: string | null;
-  hours_per_week: number | null;
-  interest_first: string[];
-  interest_second: string[];
-  interest_third: string[];
-  is_busy: string;
-  manager_status: string | null;
-  other_interest_first: string | null;
-  other_interest_second: string | null;
-  other_interest_third: string | null;
-  position: number;
-  projects_in_progress: number;
-  self_description: string | null;
-  subscription_end_date: string | null;
-  tasks_in_progress: number;
-  telegram_user_id: string | null;
-  tg_nickname: string | null;
-  total_rating: number;
-  university: string | null;
-}
 
 interface SpecialistsState {
   list: Specialist[];

@@ -31,3 +31,16 @@
     color: #888888;
   }
 }
+
+.inputWrapper {
+  position: relative;
+}
+
+.iconWrapper, .eyeIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+}

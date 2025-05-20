@@ -1,5 +1,6 @@
 import axiosInstance from "shared/api/api";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { getCookie } from "shared/utils/cookies";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -7,7 +8,15 @@ export const getProjects = createAsyncThunk(
   "projects/getProjects",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`${API_BASE_URL}projects`);
+      const token = getCookie("access_token");
+      const response = await axiosInstance.get(`${API_BASE_URL}projects`,
+          {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       return response.data.results;
     } catch (error: any) {
       console.error("Error fetching projects:", error);

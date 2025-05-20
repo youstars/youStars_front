@@ -1,8 +1,9 @@
 .tag {
-    border: 1px solid white;
-    padding: 0.25rem 1rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
-    color: white;
-  }
-  
+  border: 1px solid white;
+  padding: 0.25rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  color: white;
+  display: inline-flex; /* Улучшает поведение в flex-контейнере */
+  align-items: center; /* Центрирует текст внутри тега */
+}

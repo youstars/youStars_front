@@ -1,21 +1,18 @@
+
 .specialistCard {
-  background-color: var(--secondary-bg-color);
+  background-color: var(--bg-color);
   border-radius: 0.5rem;
-  padding: 1.5rem;
+  padding: 30px;
+  
 
-  .cardContent {
+  .cardHeader {
     display: flex;
-    gap: 1.5rem;
     align-items: flex-start;
-  }
+    gap: 1.5rem;
+    margin-bottom: 12px; 
 
-  .cardInfo {
-    flex: 1;
-
-    .cardHeader {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+    .headerContent {
+      flex: 1;
 
       .userInfo {
         .nameContainer {
@@ -24,8 +21,9 @@
           gap: 0.5rem;
 
           .name {
-            font-size: 1.125rem;
+            font-size: 12px;
             font-weight: 600;
+            color: white;
           }
 
           .rating {
@@ -40,63 +38,101 @@
         }
 
         .role {
-          font-size: 1.25rem;
-          font-weight: 700;
-          margin-top: 0.25rem;
+          font-size: 29px;
+          font-weight: 600;
+
+          color: white;
         }
-      }
 
-      .actionGroup {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-
-        .buttons {
-          display: flex;
-          gap: 0.5rem;
-
-          .iconButton {
-            all: unset;
-            cursor: pointer;
-          }
-
-          .profileButton {
-            all: unset;
-            padding: 0.5rem 2.5rem;
-            border: 1px solid var(--yellow-color);
-            color: var(--yellow-color);
-            border-radius: var(--border-radius-main);
-            cursor: pointer;
-          }
+        .availability {
+          font-size: 12px;
+          padding: 5px 0;
+          color: #ffc400;
         }
       }
     }
 
+    .actionGroup {
+      display: flex;
+      align-items: flex-start;
+
+      .buttons {
+        display: flex;
+        gap: 0.5rem;
+
+        .iconButton {
+          all: unset;
+          cursor: pointer;
+        }
+
+        .profileButton {
+          all: unset;
+          padding: 0.5rem 2.5rem;
+          border: 1px solid var(--yellow-color);
+          color: var(--yellow-color);
+          border-radius: var(--border-radius-main);
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  .cardDetails {
+   
+
     .description {
-      color: #9ca3af;
-      margin: 1rem 0 1.5rem;
+      color: white;
+      margin: 0 0 0.5rem;
+      font-size: 10px;
     }
 
     .skillList {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
+      margin-bottom: 10px;
+      align-items: center;
 
-      .skill {
-        background-color: #1e1e1e;
-        padding: 0.25rem 1rem;
-        border-radius: 9999px;
+      .label {
+        font-weight: 600;
+        color: white;
         font-size: 0.875rem;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
       }
     }
 
     .metadata {
       display: flex;
       align-items: center;
-      gap: 2rem;
-      margin-top: 1rem;
+      gap: 1rem;
+      margin-top: 0.5rem;
       font-size: 0.875rem;
       color: #9ca3af;
     }
   }
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #9ca3af;
+  
+    div {
+      white-space: nowrap;
+    }
+  
+    strong {
+      color: white;
+      font-weight: 600;
+      margin-right: 0.25rem;
+    }
+  }
+  
 }

@@ -86,3 +86,21 @@
 .tab_link {
     text-decoration: none;
 }
+
+
+.logout_btn {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+
+  svg {
+    stroke: var(--primery-color);
+    transition: stroke 0.2s;
+  }
+
+  &:hover svg {
+    stroke: var(--accent-color, #888); 
+  }
+}
+

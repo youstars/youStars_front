@@ -94,7 +94,6 @@ fieldset {
   width: 270px;
   margin-top: 13px;
   margin-left: -50px;
-
 }
 
 .fieldPassword {
@@ -238,4 +237,14 @@ fieldset {
   justify-content: center;
   align-items: center;
   gap: 6px;
+}
+
+.eyeIcon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
 }

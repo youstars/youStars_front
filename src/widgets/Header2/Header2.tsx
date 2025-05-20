@@ -10,6 +10,11 @@ import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { selectMe } from "shared/store/slices/meSlice";
 import Avatar from "shared/UI/Avatar/Avatar";
+import { useDispatch } from "react-redux";
+import { LogOut } from "lucide-react";
+
+import { useAppDispatch } from "shared/hooks/useAppDispatch";
+import { logout } from "shared/store/slices/authSlice";
 
 export default function Header2() {
   const [dateTime, setDateTime] = useState(new Date());
@@ -17,6 +22,13 @@ export default function Header2() {
   const notificationRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const { data: user } = useSelector(selectMe);
+  const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout()).then(() => {
+      window.location.href = "/";
+    });
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -104,7 +116,11 @@ export default function Header2() {
             <p>{dateTime.toLocaleString()}</p>
           </div>
         </div>
-        <div className={classes.profile}>
+        <button className={classes.logout_btn} onClick={handleLogout}>
+          <LogOut size={18} style={{ marginRight: "8px" }} />
+        </button>
+
+        <div>
           <Link to="/manager/me">
             <Avatar src={user?.avatar || user_icon} alt="Профиль" />
           </Link>

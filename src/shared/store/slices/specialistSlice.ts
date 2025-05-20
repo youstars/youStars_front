@@ -1,12 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../index";
 import axios from "axios";
+import { getCookie } from "shared/utils/cookies";
 
-// Вспомогательная функция для получения токена из куков
-const getCookie = (name: string): string | undefined => {
-  const value = `; ${document.cookie}`;
-  return value.split(`; ${name}=`)[1]?.split(';')[0];
-};
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 export const getSpecialistById = createAsyncThunk(
   "specialist/fetchById",
@@ -15,7 +12,7 @@ export const getSpecialistById = createAsyncThunk(
       const token = getCookie("access_token");
 
       const response = await axios.get(
-        `http://127.0.0.1:8000/users/specialists/${id}/`,
+        `${API_BASE_URL}users/specialist/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -23,10 +20,34 @@ export const getSpecialistById = createAsyncThunk(
           },
         }
       );
-
+      console.log("Специалист", response.data);
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response?.data || "Ошибка запроса");
+    }
+  }
+);
+
+export const updateSpecialistMe = createAsyncThunk(
+  "specialist/updateMe",
+  async (data: any, thunkAPI) => {
+    try {
+      const token = getCookie("access_token");
+
+      const response = await axios.patch(
+        "http://127.0.0.1:8000/users/specialists/me/",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("🔄 Специалист обновлён:", response.data);
+      return response.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response?.data || "Ошибка обновления специалиста");
     }
   }
 );
@@ -60,6 +81,18 @@ const specialistSlice = createSlice({
       .addCase(getSpecialistById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string || "Ошибка загрузки";
+      })
+      .addCase(updateSpecialistMe.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateSpecialistMe.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload; 
+      })
+      .addCase(updateSpecialistMe.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string || "Ошибка обновления";
       });
   },
 });

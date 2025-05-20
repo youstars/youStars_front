@@ -11,7 +11,7 @@ import adminRegistrationReducer from "shared/store/slices/adminRegistrationSlice
 import meReducer from "shared/store/slices/meSlice";
 import tasksSpecialistReducer from "shared/store/slices/tasksSpecialistSlice";
 import clientReducer from "./slices/clientSlice";
-
+import clientsReducer from "./slices/clientsSlice";
 const store = configureStore({
   reducer: {
     projectTasks: projectTasksReducer,
@@ -25,7 +25,8 @@ const store = configureStore({
     specialist: specialistReducer,
     me: meReducer,
     tasksSpecialist: tasksSpecialistReducer,
-    client: clientReducer
+    client: clientReducer,
+    clients: clientsReducer,
   },
 });
 
