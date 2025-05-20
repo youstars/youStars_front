@@ -238,3 +238,13 @@ fieldset {
   align-items: center;
   gap: 6px;
 }
+
+.eyeIcon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+}

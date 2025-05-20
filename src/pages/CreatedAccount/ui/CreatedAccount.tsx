@@ -1,37 +1,36 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import blackApple from "shared/images/blackApple.svg";
 import whiteApple from "shared/images/whiteApple.svg";
 import { useTranslation } from "react-i18next";
 import classes from "./CreatedAccount.module.scss";
-import { Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import google from "shared/images/google.svg";
 import { Button } from "shared/index";
 import { useSelector } from "react-redux";
-import {  RootState } from "shared/store";
+import { RootState } from "shared/store";
 import { register } from "shared/store/slices/authSlice";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { CustomField } from "shared/UI/CustomField/CustomField";
 import { useTheme } from "shared/providers/theme/useTheme";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
-
+import { Eye, EyeOff } from "lucide-react";
 
 const CreateAccount = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const { loading, error } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
 
   const rawRole = localStorage.getItem("role") || "specialists";
   const role = rawRole === "specialists" ? "student" : "business";
 
-
   const icon = useMemo(() => {
     return theme === "dark" ? whiteApple : blackApple;
   }, [theme]);
-
-
 
   const initialValues = {
     username: "",
@@ -39,7 +38,7 @@ const CreateAccount = () => {
     email: "",
     password: "",
     password2: "",
-    terms: false, 
+    terms: false,
   };
 
   const validationSchema = Yup.object({
@@ -50,7 +49,7 @@ const CreateAccount = () => {
     email: Yup.string()
       .email(t("Invalid email address"))
       .required(t("Email is required")),
-      password: Yup.string()
+    password: Yup.string()
       .min(8, t("Password must be at least 8 characters"))
       .test(
         "not-similar-to-username",
@@ -61,21 +60,19 @@ const CreateAccount = () => {
         }
       )
       .required(t("Password is required")),
-      password2: Yup.string()
+    password2: Yup.string()
       .oneOf([Yup.ref("password"), null], t("Passwords must match"))
       .required(t("Password confirmation is required")),
-   
   });
 
-
-return (
+  return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={async (values, { setSubmitting }) => {
         try {
           const resultAction = await dispatch(
-            register({ role, formData: values }) 
+            register({ role, formData: values })
           );
           if (register.fulfilled.match(resultAction)) {
             navigate("/");
@@ -94,16 +91,20 @@ return (
           <div className={classes.blockInputs}>
             <CustomField
               name="username"
-              label="Name"
+              label="User name"
               className={classes.fieldName}
             />
-            
+
             <CustomField
               name="full_name"
-              label="Last name"
+              label="Full name"
               className={classes.fieldLastName}
             />
-            <ErrorMessage name="username" component="div" className={classes.error} />
+            <ErrorMessage
+              name="username"
+              component="div"
+              className={classes.error}
+            />
             <CustomField
               name="email"
               label="Email or phone number"
@@ -113,15 +114,32 @@ return (
             <CustomField
               name="password"
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               className={classes.fieldPassword}
+              icon={
+                <div
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className={classes.eyeIcon}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </div>
+              }
             />
             <CustomField
               name="password2"
               label="Password confirmation"
-              type="password"
+              type={showPassword2 ? "text" : "password"}
               className={classes.fieldPassword}
+              icon={
+                <div
+                  onClick={() => setShowPassword2((prev) => !prev)}
+                  className={classes.eyeIcon}
+                >
+                  {showPassword2 ? <EyeOff size={20} /> : <Eye size={20} />}
+                </div>
+              }
             />
+
             <fieldset className={classes.fieldCheckbox}>
               <Field
                 type="checkbox"
@@ -148,7 +166,8 @@ return (
             <ul className={classes.errorList}>
               {Object.entries(error).map(([key, value]) => (
                 <li key={key} className={classes.errorItem}>
-                  {t(key)}: {typeof value === "string" ? t(value) : t("Unknown error")}
+                  {t(key)}:{" "}
+                  {typeof value === "string" ? t(value) : t("Unknown error")}
                 </li>
               ))}
             </ul>
