@@ -7,18 +7,19 @@
   color: var(--primery-color);
   padding: 2rem;
   transition: margin-right 0.3s ease;
+  //padding-bottom: 200px;
 
   .mainContent {
     flex: 1;
     padding: 20px 20px 60px 20px;
     transition: margin-right 0.3s ease;
     overflow-y: auto;
-  
+
     &.shifted {
       margin-right: 320px;
     }
-  
-  
+
+
 
     .form {
       width: 100%;
@@ -88,6 +89,7 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      margin-bottom: 50px;
     }
   }
 }
