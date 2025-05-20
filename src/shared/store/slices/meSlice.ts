@@ -24,7 +24,7 @@ export const updateMe = createAsyncThunk(
       
       return response.data;
     } catch (error: any) {
-      return thunkAPI.rejectWithValue(error.response?.data || "Ошибка обновления профиля");
+      return thunkAPI.rejectWithValue(error.response?.data.detail || "Ошибка обновления профиля");
     }
   }
 );

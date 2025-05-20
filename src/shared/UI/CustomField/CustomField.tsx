@@ -11,6 +11,7 @@ interface CustomFieldProps {
   className: string;
   nextFieldRef?: React.RefObject<HTMLInputElement>;
   isLast?: boolean;
+  icon?: React.ReactNode; 
 }
 
 export const CustomField = ({
@@ -20,6 +21,7 @@ export const CustomField = ({
   className,
   nextFieldRef,
   isLast,
+  icon
 }: CustomFieldProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
@@ -27,14 +29,18 @@ export const CustomField = ({
   return (
     <fieldset className={`${className} ${classes.fieldContainer}`}>
       <label className={classes.label}>{t(label)}</label>
-      <Field
-        as="input"
-        type={type}
-        name={name}
-        className={classes.input}
-        innerRef={inputRef}
-        onKeyDown={handleKeyDown(nextFieldRef, isLast)}
-      />
+     <div className={classes.inputWrapper}>
+  <Field
+    as="input"
+    type={type}
+    name={name}
+    className={classes.input}
+    innerRef={inputRef}
+    onKeyDown={handleKeyDown(nextFieldRef, isLast)}
+  />
+  {icon && <span className={classes.iconWrapper}>{icon}</span>}
+</div>
+
       <ErrorMessage name={name} component="div" className={classes.error} />
     </fieldset>
   );

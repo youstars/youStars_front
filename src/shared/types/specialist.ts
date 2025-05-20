@@ -45,7 +45,7 @@ export interface Specialist {
   satisfaction_rate?: number;
   overall_client_rating?: number;
   overall_tracker_rating?: number;
-  work_experience?: {
+  work_experiences?: {
     id: number;
     position?: string | null;
     duties?: string | null;

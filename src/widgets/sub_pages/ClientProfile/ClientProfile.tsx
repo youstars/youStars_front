@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./ClientProfile.module.scss";
 import { useChatService } from "shared/hooks/useWebsocket";
 
-/* --- enum-ы ровно как в swagger --- */
+
 const employeeOptions = [
   "Not on the market",
   "1 -5",
@@ -69,16 +69,15 @@ const yearsOptions = [
 export const ClientProfile = (): JSX.Element => {
   const navigate = useNavigate();
   const { chats, setActiveChat } = useChatService();
-
+  const meError = useAppSelector((state) => state.me.error);
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const { data: client, loading } = useAppSelector((s) => s.client);
   console.log("в компоненте client.position =", client?.position);
 
-  /* ---------- state формы ---------- */
   const [edit, setEdit] = useState(false);
   const [form, setForm] = useState({
-    /* business */
+
     position: "",
     business_name: "",
     description: "",
@@ -88,21 +87,20 @@ export const ClientProfile = (): JSX.Element => {
     employee_count: "",
     revenue: "",
     years_on_market: "",
-    professional_areas: "", // csv-строка
+    professional_areas: "", 
 
-    /* контакты (CustomUser) */
     phone_number: "",
     email: "",
     tg_nickname: "",
     full_name: "",
   });
 
-  /* ---------- загрузка профиля ---------- */
+
   useEffect(() => {
     if (id) dispatch(getClientById(+id));
   }, [id, dispatch]);
 
-  /* ---------- инициализация формы после fetch ---------- */
+
   useEffect(() => {
     if (client) console.log("[ClientProfile] получен клиент:", client);
     if (!client) return;
@@ -134,53 +132,51 @@ export const ClientProfile = (): JSX.Element => {
       setForm((p) => ({ ...p, [field]: e.target.value }));
 
   const handleSave = async () => {
-    if (!client) return;
+  if (!client) return;
 
-    /* ---------- diff для CustomUser ---------- */
-    const userDiff: Record<string, any> = {};
-    ["phone_number", "email", "tg_nickname", "full_name"].forEach((f) => {
-      const oldVal =
-        client.custom_user[f as keyof typeof client.custom_user] ?? "";
-      const newVal = form[f as keyof typeof form];
-      if (newVal !== oldVal) userDiff[f] = newVal || null;
-    });
+  const userDiff: Record<string, any> = {};
+  ["phone_number", "email", "tg_nickname", "full_name"].forEach((f) => {
+    const oldVal =
+      client.custom_user[f as keyof typeof client.custom_user] ?? "";
+    const newVal = form[f as keyof typeof form];
+    if (newVal !== oldVal) userDiff[f] = newVal || null;
+  });
 
-    /* ---------- diff для Client ---------- */
-    const clientDiff: Record<string, any> = {};
-    const clientMap = {
-      position: client.position,
-      business_name: client.business_name,
-      description: client.description,
-      problems: client.problems,
-      tasks: client.tasks,
-      geography: client.geography,
-      employee_count: client.employee_count,
-      revenue: client.revenue,
-      years_on_market: client.years_on_market,
-      professional_areas: (client.professional_areas ?? []).join(", "),
-    };
+  const clientDiff: Record<string, any> = {};
+  const clientMap = {
+    position: client.position,
+    business_name: client.business_name,
+    description: client.description,
+    problems: client.problems,
+    tasks: client.tasks,
+    geography: client.geography,
+    employee_count: client.employee_count,
+    revenue: client.revenue,
+    years_on_market: client.years_on_market,
+    professional_areas: (client.professional_areas ?? []).join(","),
+  };
 
-    Object.entries(clientMap).forEach(([key, oldVal]) => {
-      const newVal = (form as any)[key];
-      if (newVal !== oldVal) {
-        clientDiff[key] =
-          key === "professional_areas"
+  Object.entries(clientMap).forEach(([key, oldVal]) => {
+    const newVal = (form as any)[key];
+    if (newVal !== oldVal) {
+      clientDiff[key] =
+        key === "professional_areas"
+          ? newVal
             ? newVal
-              ? newVal
-                  .split(",")
-                  .map((x: string) => Number(x.trim()))
-                  .filter(Boolean)
-              : []
-            : newVal || null;
-      }
-    });
+                .split(",")
+                .map((x: string) => Number(x.trim()))
+                .filter(Boolean)
+            : []
+          : newVal || null;
+    }
+  });
 
-    /* ---------- запросы только при необходимости ---------- */
+  try {
     if (Object.keys(userDiff).length) {
       await dispatch(updateMe(userDiff)).unwrap();
     }
     if (Object.keys(clientDiff).length) {
-      await dispatch(updateClient(clientDiff)).unwrap(); // ← custom_user_id больше НЕ отправляем
+      await dispatch(updateClient(clientDiff)).unwrap();
     }
 
     if (Object.keys(userDiff).length || Object.keys(clientDiff).length) {
@@ -188,7 +184,16 @@ export const ClientProfile = (): JSX.Element => {
     }
 
     setEdit(false);
-  };
+} catch (err: any) {
+  const serverMessage =
+    err?.response?.data?.detail || err?.message || "Неизвестная ошибка";
+
+  console.error("Ошибка обновления профиля клиента:", serverMessage);
+  alert(`Ошибка: ${serverMessage}`);
+}
+
+};
+
 
   if (loading || !client) return <Spinner />;
 
@@ -208,6 +213,11 @@ export const ClientProfile = (): JSX.Element => {
 
   return (
     <div className={styles.main}>
+      {meError && (
+  <div className={styles.errorBox}>
+    <p className={styles.errorMessage}>Ошибка: {meError}</p>
+  </div>
+)}
       <div className={styles.container}>
         {/* ===== карточка клиента ===== */}
         <div className={styles.client}>

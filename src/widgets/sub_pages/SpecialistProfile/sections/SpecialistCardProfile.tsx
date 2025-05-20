@@ -87,8 +87,8 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
   const [workExperiences, setWorkExperiences] = useState<
     WorkExperienceFormData[]
   >(
-    Array.isArray(specialist.work_experience)
-      ? specialist.work_experience.map((item, index) => ({
+    Array.isArray(specialist.work_experiences)
+      ? specialist.work_experiences.map((item, index) => ({
           id: item.id ? String(item.id) : `exp-${index}-${Date.now()}`,
           company_name: item.place_of_work?.company_name || "",
           position: item.position || "",
@@ -197,11 +197,11 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
           place_of_work: {
             company_name: item.company_name,
             ...(item.id &&
-            specialist.work_experience?.find(
+            specialist.work_experiences?.find(
               (exp: any) => String(exp.id) === item.id
             )
               ? {
-                  id: specialist.work_experience.find(
+                  id: specialist.work_experiences.find(
                     (exp: any) => String(exp.id) === item.id
                   ).place_of_work.id,
                 }
@@ -218,7 +218,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
         return experience;
       });
 
-      console.log("Отправляемые work_experience:", filteredExperiences);
+      console.log("Отправляемые work_experiences:", filteredExperiences);
 
       const workExperiencesToSend =
         filteredExperiences.length > 0 ? filteredExperiences : [];
@@ -241,15 +241,15 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
           hours_per_week: formData.hoursPerWeek,
           university: education.university,
           faculty: education.faculty,
-          work_experience: workExperiencesToSend,
+          work_experiences: workExperiencesToSend,
           is_busy: formData.is_busy,
         })
       ).unwrap();
       console.log("Результат updateSpecialistMe:", updateSpecialistMeResult);
 
-      if (updateSpecialistMeResult.work_experience) {
+      if (updateSpecialistMeResult.work_experiences) {
         setWorkExperiences(
-          updateSpecialistMeResult.work_experience.map(
+          updateSpecialistMeResult.work_experiences.map(
             (item: any, index: number) => ({
               id: item.id ? String(item.id) : `exp-${index}-${Date.now()}`,
               company_name: item.place_of_work?.company_name || "",
@@ -684,9 +684,9 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
                 Добавить опыт
               </button>
             </>
-          ) : Array.isArray(specialist.work_experience) &&
-            specialist.work_experience.length > 0 ? (
-            specialist.work_experience.map((job, index) => (
+          ) : Array.isArray(specialist.work_experiences) &&
+            specialist.work_experiences.length > 0 ? (
+            specialist.work_experiences.map((job, index) => (
               <div className={styles.item} key={index}>
                 <p className={styles.label}>
                   {job.place_of_work?.company_name || "Компания не указана"}
