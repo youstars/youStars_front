@@ -79,8 +79,9 @@ const meSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(getMe.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
+          state.loading = false;
+  state.data = null; 
+  state.error = action.payload as string;
       });
   },
 });
