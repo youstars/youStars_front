@@ -2,16 +2,9 @@
 import axios from "axios";
 import { getCookie } from "shared/utils/cookies";
 
-/** Можно грузить файлы как к специалисту, так и к клиенту.
- *
- *  @param entity        `"specialist"` | `"client"`
- *  @param entityId      id специалиста или клиента
- *  @param file          сам File
- *  @param name          отображаемое имя файла
- *  @param description   (необязательно) описание
- */
+
 export const uploadEntityFile = async (
-  entity: "specialist" | "client",
+  entity: "specialist" | "client" | "project" | "order",
   entityId: number,
   file: File,
   name: string,
@@ -19,13 +12,13 @@ export const uploadEntityFile = async (
 ) => {
   const formData = new FormData();
   formData.append("name" , name);
-  formData.append(entity , entityId.toString());   // ключ совпадает с полем модели
+  formData.append(entity , entityId.toString());  
   formData.append("file" , file);
   formData.append("description", description);
 
   const token = getCookie("access_token");
 
-  const url = `http://127.0.0.1:8000/files/${entity}-files/`; // → /files/specialist-files/ или /files/client-files/
+  const url = `http://127.0.0.1:8000/files/${entity}-files/`; 
 
   const { data } = await axios.post(url, formData, {
     headers: {
@@ -35,7 +28,7 @@ export const uploadEntityFile = async (
     withCredentials: true,
   });
 
-  return data;           // ← JSON ответа
+  return data;          
 };
 
 
@@ -52,3 +45,27 @@ export const uploadClientFile = (
   clientId: number,
   description = ""
 ) => uploadEntityFile("client", clientId, file, name, description);
+
+export const uploadProjectFile = (
+  file: File,
+  name: string,
+  projectId: number,
+  description = ""
+) => uploadEntityFile("project", projectId, file, name, description);
+
+
+export const deleteFileById = async (
+  entity: "specialist" | "client" | "project" | "order",
+  fileId: number
+) => {
+  const token = getCookie("access_token");
+
+  const url = `http://127.0.0.1:8000/files/${entity}-files/${fileId}/`;
+
+  await axios.delete(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    withCredentials: true,
+  });
+};

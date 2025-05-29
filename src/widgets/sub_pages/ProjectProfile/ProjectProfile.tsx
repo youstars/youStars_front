@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./ProjectProfile.module.scss";
 import Avatar from "shared/UI/Avatar/Avatar";
-import Checklist from "shared/assets/icons/checklist.svg";
-import Chat from "shared/assets/icons/chat.svg";
-import GroupChat from "shared/assets/icons/groupChat.svg";
+import Checklist from "shared/assets/icons/stripesY.svg";
+import Chat from "shared/assets/icons/chatY.svg";
+import GroupChat from "shared/assets/icons/ChatsY.svg";
 import IconButton from "shared/UI/IconButton/IconButton";
 import ProgressBar from "shared/UI/ProgressBar/ProgressBar";
 import TextAreaField from "shared/UI/TextAreaField/TextAreaField";
@@ -13,6 +13,16 @@ import AvatarWithName from "shared/UI/AvatarWithName/AvatarWithName";
 import { Specialist } from "./types";
 import ProjectFiles from "shared/UI/ProjectFiles/ProjectFiles";
 import CustomTable from "shared/UI/CustomTable/CustomTable";
+import { useParams } from "react-router-dom";
+import { useAppDispatch } from "shared/hooks/useAppDispatch";
+import { useSelector } from "react-redux";
+import {
+  getProjectById,
+  selectProject,
+} from "shared/store/slices/projectSlice";
+import user_icon from "shared/images/user_icon.svg";
+import { TrackerNotes } from "../ClientProfile/components/TrackerNotes/TrackerNotes";
+import { uploadProjectFile } from "shared/api/files";
 
 export default function ProjectProfile() {
   const steps = [
@@ -25,138 +35,188 @@ export default function ProjectProfile() {
     "Отзыв",
   ];
 
-  const specialistData: Specialist[] = [
-    {
-      name: "Специалист Специалистыч",
-      avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-      inWork: 40,
-      inReview: 25,
-      done: 8,
-    },
-    {
-      name: "Специалист Специалистыч",
-      avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-      inWork: 40,
-      inReview: 25,
-      done: 8,
-    },
-    {
-      name: "Специалист Специалистыч",
-      avatar: "https://randomuser.me/api/portraits/men/53.jpg",
-      inWork: 40,
-      inReview: 25,
-      done: 8,
-    },
-    {
-      name: "Специалист Специалистыч",
-      avatar: "https://randomuser.me/api/portraits/men/53.jpg",
-      inWork: 40,
-      inReview: 25,
-      done: 8,
-    },
-  ];
+  const { id } = useParams();
+  const dispatch = useAppDispatch();
 
-  const specialistColumns: TableColumn<Specialist>[] = [
+  const { project } = useSelector(selectProject);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getProjectById(id));
+    }
+  }, [id, dispatch]);
+
+
+const handleFileSelect = async (file: File) => {
+    try {
+      await uploadProjectFile(file, file.name, project.id, "Описание");
+    } catch (error) {
+      console.error("Ошибка загрузки файла:", error);
+    }
+  };
+
+  const specialistColumns: TableColumn<any>[] = [
     {
-      header: "Специалисты",
-      accessor: (row: Specialist) => (
-        <AvatarWithName src={row.avatar} name={row.name} />
+      header: "ФИО",
+      accessor: (row) => (
+        <AvatarWithName src={row.avatar || user_icon} name={row.full_name} />
       ),
     },
-    { header: "В работе", accessor: "inWork" },
-    { header: "На проверке", accessor: "inReview" },
-    { header: "Готово", accessor: "done" },
     {
-      header: "% выполненных задач",
-      accessor: "done",
+      header: "Всего задач",
+      accessor: "tasks_total",
+    },
+    {
+      header: "В работе",
+      accessor: "tasks_in_progress",
+    },
+    {
+      header: "На проверке",
+      accessor: "tasks_in_review",
+    },
+    {
+      header: "Выполнено",
+      accessor: "tasks_completed",
+    },
+    {
+      header: "% выполнено",
+      accessor: "tasks_completed_percent",
     },
   ];
 
-  const trackerData = [
-    {
-      name: "Ольга Трекерова",
-      avatar:
-        "https://images.unsplash.com/photo-1635488640163-e5f6782cda6e?q=80&w=1376&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      inWork: 8,
-      inReview: 3,
-      done: 12,
-    },
-    {
-      name: "Иван Контрольный",
-      avatar:
-        "https://plus.unsplash.com/premium_photo-1671656349322-41de944d259b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Ym95fGVufDB8fDB8fHww",
-      inWork: 5,
-      inReview: 2,
-      done: 9,
-    },
-  ];
-
-  const trackerColumns: TableColumn<Tracker>[] = [
+  const trackerColumns: TableColumn<any>[] = [
     {
       header: "Трекер",
-      accessor: (row) => <AvatarWithName src={row.avatar} name={row.name} />,
+      accessor: (row) => (
+        <AvatarWithName src={row.avatar || user_icon} name={row.full_name} />
+      ),
     },
-    { header: "Задач в работе", accessor: "inWork" },
-    { header: "На проверке", accessor: "inReview" },
-    { header: "Выполнено", accessor: "done" },
+    { header: "Задач в работе", accessor: "tasks_in_progress" },
+    { header: "На проверке", accessor: "tasks_in_review" },
+    { header: "% выполнено", accessor: "tasks_completed_percent" },
   ];
 
   return (
     <div className={styles.main}>
       <div className={styles.header}>
-        <div className={styles.avatar}>
-          <Avatar size="60" />
-          <h1>Project Name</h1>
-        </div>
-        <div className={styles.rank}>
-          <div className={styles.rankHeader}>
-            <div className={styles.alignWrapper}>
-              <p>Стоимомть</p>
-              <p>900000</p>
-            </div>
-            <div className={styles.alignWrapper}>
-              <p>Начало</p>
-              <p>10.05.2025</p>
-            </div>
-            <div className={styles.alignWrapper}>
-              <p>Дедлайн</p>
-              <p>20.06.2025</p>
-            </div>
+        <div className={styles.leftBlock}>
+          <div className={styles.projectIcon}>
+            <Avatar size={"60px"} />
           </div>
-          <div className={styles.progressBar}>
-            <ProgressBar steps={steps} />
+          <div className={styles.projectInfo}>
+            <h2>{project?.name || "Название проекта"}</h2>
+            <p>
+              Начало:{" "}
+              {project?.start_date
+                ? new Date(project.start_date).toLocaleDateString()
+                : "-"}
+            </p>
           </div>
         </div>
+
+        <div className={styles.middleBlock}>
+          <div className={styles.infoGroup}>
+            <p className={styles.label}>Статус:</p>
+            <p className={styles.value}>В работе</p>
+          </div>
+          <div className={styles.infoGroup}>
+            <p className={styles.label}>Начало статуса:</p>
+            <p className={styles.value}>
+              {project?.updated_at
+                ? new Date(project.updated_at).toLocaleDateString()
+                : "-"}
+            </p>
+          </div>
+          <div className={styles.infoGroup}>
+            <p className={styles.label}>Стоимость:</p>
+            <p className={styles.value}>{project?.budget || "—"}</p>
+          </div>
+          <div className={styles.infoGroup}>
+            <p className={styles.label}>Дедлайн:</p>
+            <p className={styles.value}>
+              {project?.deadline
+                ? new Date(project.deadline).toLocaleDateString()
+                : "—"}
+            </p>
+          </div>
+        </div>
+
         <div className={styles.buttons}>
-          <IconButton icon={Checklist} alt="checklist" size={"lg"} />
-          <IconButton icon={GroupChat} alt="checklist" size={"lg"} />
-          <IconButton icon={Chat} alt="checklist" size={"lg"} />
+          <IconButton icon={Checklist} alt="checklist" size="lg"  border="none" />
+          <IconButton icon={GroupChat} alt="group chat" size="lg" border="none" />
+          <IconButton icon={Chat} alt="chat" size="lg" border="none"  />
         </div>
       </div>
+
       <div className={styles.projectDetails}>
-        <TextAreaField label="Задача проекта" />
-        <TextAreaField label="Решаемые проблемы" />
-        <TextAreaField label="Решаемые проблемы" />
-        <TextAreaField label="Дополнительные пожелания" />
+        <div className={styles.clientCard}>
+          <div className={styles.clientHeader}>
+            <Avatar size={"60px"} />
+            <div>
+              <p className={styles.clientLabel}>Клиент</p>
+              <p>{project?.client?.full_name || "—"}</p>
+              <p>{project?.client?.business_name || "—"}</p>
+            </div>
+          </div>
+
+          <div className={styles.clientInfo}>
+            <p>
+              <b>Рейтинг клиента:</b> 4/5
+            </p>
+            <p className="">
+              <b>Активность:</b> TODO
+            </p>
+            <p>
+              <b>Настроение:</b> 4.8/5
+            </p>
+            <p>
+              <b>Последний контакт:</b> TODO
+            </p>
+          </div>
+        </div>
+          
+        <div className={styles.projectFields}>
+          <TextAreaField
+            label="Задача проекта"
+            value={project?.goal || ""}
+            readOnly
+          />
+          <TextAreaField
+            label="Решаемые проблемы"
+            value={project?.solving_problems || ""}
+            readOnly
+          />
+          <TextAreaField
+            label="Продукт или услуга"
+            value={project?.product_or_service || ""}
+            readOnly
+          />
+          <TextAreaField
+            label="Дополнительные пожелания"
+            value={project?.extra_wishes || ""}
+            readOnly
+          />
+        </div>
       </div>
+                <TrackerNotes />
       <div className={styles.teamProject}>
         <h1>Команда проекта</h1>
-        <CustomTable<Tracker>
-          data={trackerData}
+        <CustomTable
+          data={
+            project?.project_team?.tracker ? [project.project_team.tracker] : []
+          }
           columns={trackerColumns}
           initialCount={1}
         />
-        <CustomTable<Specialist>
-          data={specialistData}
+        <CustomTable
+          data={project?.project_team?.specialists || []}
           columns={specialistColumns}
-          initialCount={3}
+          initialCount={2}
         />
       </div>
       <div className={styles.projectFiles}>
-      {/* <ProjectFiles
-        files={[{ name: "NDA" }, { name: "Резюме" }, { name: "Портфолио" }]}
-        onAddClick={() => console.log("Добавить файл")}
-      /> */}
+        <ProjectFiles files={project?.file || []} onFileSelect={handleFileSelect} />
+
       </div>
     </div>
   );

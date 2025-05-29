@@ -21,3 +21,13 @@
   flex-grow: 1;
 }
 
+
+.todo{
+  background-color: rgba(255, 0, 0, 0.6); 
+  color: white;                          
+  font-weight: bold;                     
+  border: 1px solid red;                 
+  border-radius: 6px;
+  padding: 4px;
+  text-align: center;
+}

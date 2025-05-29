@@ -1,10 +1,20 @@
 .block {
-    height: 35px;
-    background-color: var(--bg-color);
-    padding: 10px 20px;
-    display: flex;
-    width: fit-content;
-    align-items: center;
-    gap: 10px;
-    border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background-color: var(--bg-color);
+  color: var(--yellow-color); // <-- жёлтый цвет
+  gap: 8px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.label {
+  color: var(--yellow-color); // дублируем на p
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
 }

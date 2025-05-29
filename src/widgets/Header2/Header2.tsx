@@ -10,11 +10,21 @@ import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { selectMe } from "shared/store/slices/meSlice";
 import Avatar from "shared/UI/Avatar/Avatar";
-import { useDispatch } from "react-redux";
-import { LogOut } from "lucide-react";
-
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { logout } from "shared/store/slices/authSlice";
+import { LogOut } from "lucide-react";
+
+// Иконки из сайдбара
+import overview from "shared/images/sideBarImgs/round.svg";
+import projs from "shared/images/sideBarImgs/projs.svg";
+import task from "shared/images/sideBarImgs/task.svg";
+import specialistsIcon from "shared/images/sideBarImgs/spcialists.svg";
+import clientsIcon from "shared/images/sideBarImgs/contacts.svg";
+
+import funnel from "shared/images/sideBarImgs/funnel.svg";
+import bibl from "shared/images/sideBarImgs/bibl.svg";
+import chat from "shared/images/sideBarImgs/fi-br-envelope.svg";
+import settings from "shared/images/sideBarImgs/settings.svg";
 
 export default function Header2() {
   const [dateTime, setDateTime] = useState(new Date());
@@ -22,6 +32,9 @@ export default function Header2() {
   const notificationRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const { data: user } = useSelector(selectMe);
+  const clients = useSelector((state: any) => state.clients?.list || []);
+  const specialists = useSelector((state: any) => state.specialists?.list || []);
+  const projects = useSelector((state: any) => state.projects?.projects || []);
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
@@ -34,7 +47,6 @@ export default function Header2() {
     const interval = setInterval(() => {
       setDateTime(new Date());
     }, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -47,7 +59,6 @@ export default function Header2() {
         setShowNotifications(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -61,7 +72,7 @@ export default function Header2() {
     tasks: "Задачи",
     specialists: "Специалисты",
     funnel: "Воронка",
-    library: "Библиотека",
+    library: "Библиотека знаний",
     settings: "Настройки",
     overview: "Сводка",
     gantt: "Гант",
@@ -69,25 +80,95 @@ export default function Header2() {
     user_projects: "Проекты",
     clients: "Клиенты",
     chats: "Чаты",
-    specialist: "Специалист",
+    me: "Профиль",
   };
+
+  const iconsMap: { [key: string]: string } = {
+    overview,
+    user_projects: projs,
+    tasks: task,
+    specialists: specialistsIcon,
+    clients: clientsIcon,
+    funnel: funnel,
+    library: bibl,
+    chats: chat,
+    settings,
+  };
+
+  const isClientProfile = pathnames[1] === "clients" && /^\d+$/.test(pathnames[2]);
+  const isSpecialistProfile = pathnames[1] === "specialists" && /^\d+$/.test(pathnames[2]);
+  const isProjectProfile = pathnames[1] === "project" && /^\d+$/.test(pathnames[2]);
+
+  let isFirst = true;
 
   return (
     <div className={classes.upper_block}>
       <div className={classes.left_side}>
-        {filteredPathnames.map((name, index) => {
-          const routeTo = `/${pathnames.slice(0, index + 2).join("/")}`;
-          return (
-            <div key={routeTo} className={classes.breadcrumb_item}>
-              {index > 0 && (
-                <img src={arrow} alt="→" className={classes.arrow_icon} />
-              )}
-              <Link to={routeTo} className={classes.tab_link}>
-                <Tab label={breadcrumbLabels[name] || name} />
+        {isClientProfile ? (
+          <>
+            <div className={classes.breadcrumb_item}>
+              {!isFirst || (isFirst = false)}
+              <Link to="/manager/clients" className={classes.tab_link}>
+                <Tab label="Клиенты" icon={iconsMap["clients"]} />
               </Link>
             </div>
-          );
-        })}
+            <div className={classes.breadcrumb_item}>
+              {!isFirst && <img src={arrow} alt="→" className={classes.arrow_icon} />}
+              <Tab label="Профиль клиента" />
+              {isFirst = false}
+            </div>
+          </>
+        ) : isSpecialistProfile ? (
+          <>
+            <div className={classes.breadcrumb_item}>
+              {!isFirst || (isFirst = false)}
+              <Link to="/manager/specialists" className={classes.tab_link}>
+                <Tab label="Специалисты" icon={iconsMap["specialists"]} />
+              </Link>
+            </div>
+            <div className={classes.breadcrumb_item}>
+              {!isFirst && <img src={arrow} alt="→" className={classes.arrow_icon} />}
+              <Tab label="Профиль специалиста" />
+              {isFirst = false}
+            </div>
+          </>
+        ) : isProjectProfile ? (
+          <>
+            <div className={classes.breadcrumb_item}>
+              {!isFirst || (isFirst = false)}
+              <Link to="/manager/user_projects" className={classes.tab_link}>
+                <Tab label="Проекты" icon={iconsMap["user_projects"]} />
+              </Link>
+            </div>
+            <div className={classes.breadcrumb_item}>
+              {!isFirst && <img src={arrow} alt="→" className={classes.arrow_icon} />}
+              <Tab label="Профиль проекта" />
+              {isFirst = false}
+            </div>
+          </>
+        ) : (
+          filteredPathnames.map((name, index) => {
+            const routeTo = `/${pathnames.slice(0, index + 2).join("/")}`;
+            const current = pathnames[index + 1];
+            const isId = /^\d+$/.test(current);
+            const label =
+              breadcrumbLabels[current] ||
+              (isId && breadcrumbLabels[name]
+                ? breadcrumbLabels[name]
+                : name);
+            const icon = iconsMap[current];
+
+            return (
+              <div key={routeTo} className={classes.breadcrumb_item}>
+                {!isFirst && <img src={arrow} alt="→" className={classes.arrow_icon} />}
+                <Link to={routeTo} className={classes.tab_link}>
+                  <Tab label={label} icon={icon} />
+                </Link>
+                {isFirst = false}
+              </div>
+            );
+          })
+        )}
       </div>
 
       <div className={classes.right_side}>
@@ -97,7 +178,9 @@ export default function Header2() {
             <button
               className={classes.panel_btn}
               onClick={() => setShowNotifications(!showNotifications)}
-            ></button>
+            >
+              <img src={bell} alt="notifications" />
+            </button>
             {showNotifications && (
               <div className={classes.notification_dropdown}>
                 <div className={classes.notification_header}>
@@ -107,10 +190,10 @@ export default function Header2() {
             )}
           </div>
           <button className={classes.panel_btn}>
-            <img src={interrogation} alt="" />
+            <img src={interrogation} alt="Help" />
           </button>
           <button className={classes.panel_btn}>
-            <img src={block} alt="" />
+            <img src={block} alt="Block" />
           </button>
           <div className={classes.time}>
             <p>{dateTime.toLocaleString()}</p>
@@ -122,7 +205,7 @@ export default function Header2() {
 
         <div>
           <Link to="/manager/me">
-            <Avatar src={user?.avatar || user_icon} alt="Профиль" />
+            <Avatar src={user?.avatar || user_icon} alt="Профиль" size="30px"/>
           </Link>
         </div>
       </div>

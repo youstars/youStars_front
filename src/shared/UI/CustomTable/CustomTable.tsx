@@ -54,15 +54,19 @@ const CustomTable = <T,>({
         </div>
       </div>
 
-      {data.length > (initialCount ?? 0) && (
-        <div
-          className={`${styles.expandButton} ${expanded ? styles.rotated : ""}`}
-          onClick={() => setExpanded(!expanded)}
-        > <img src={ArrowDown} alt="arrow" />
-          {expanded ? "Свернуть" : "Смотреть ещё"}
-         
-        </div>
-      )}
+    <div
+  className={`${styles.expandButton} ${expanded ? styles.rotated : ""}`}
+  style={{ visibility: data.length > (initialCount ?? 0) ? "visible" : "hidden" }}
+  onClick={() => {
+    if (data.length > (initialCount ?? 0)) {
+      setExpanded(!expanded);
+    }
+  }}
+>
+  <img src={ArrowDown} alt="arrow" />
+  {expanded ? "Свернуть" : "Смотреть ещё"}
+</div>
+
     </div>
   );
 };

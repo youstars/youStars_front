@@ -1,4 +1,5 @@
 export interface SpecialistFile {
+  id: number;
     name: string;
     file: string;
     description?: string;
@@ -70,4 +71,30 @@ export interface Specialist {
   tasks_per_project_left?: number;
   year_of_birth?: number | null;
 
+}
+
+export interface SpecialistCardProps {
+  specialist: Specialist;
+  isSelf?: boolean;
+}
+
+export interface FormData {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  website: string;
+  description: string;
+  hourlyRate: string;
+  hoursPerWeek: string;
+  is_busy: string;
+}
+
+export interface WorkExperienceFormData {
+  id: string;
+  company_name: string;
+  position: string;
+  started_at: string;
+  left_at: string;
+  duties: string;
 }

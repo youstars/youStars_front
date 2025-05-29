@@ -50,7 +50,7 @@ export const fetchChats = createAsyncThunk<Chat[], ChatType | undefined>(
       if (!response.ok) throw new Error("Ошибка загрузки чатов");
 
       const data = await response.json();
-      console.log("данные чатов!!!", data);
+      // console.log("данные чатов!!!", data);
       
       return data.map((chat: any) => {
         const otherParticipant = chat.participants?.find(

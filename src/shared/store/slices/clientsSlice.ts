@@ -28,7 +28,7 @@ export const getClients = createAsyncThunk(
   }
 );
 
-// Тип данных клиента (можешь уточнить структуру под свой API)
+
 interface Client {
   id: number;
   business_name: string;

@@ -28,6 +28,11 @@ import TaskTable from "widgets/sub_pages/Tasks/ui/Tasks";
 import { getMe } from "shared/store/slices/meSlice";
 import { useEffect } from "react";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { useAppSelector } from "shared/hooks/useAppSelector";
+import { selectMe } from "shared/store/slices/meSlice";
+
+
 
 function App() {
   const { theme } = useTheme();
@@ -38,6 +43,12 @@ function App() {
   useEffect(() => {
     dispatch(getMe());
   }, [dispatch]);
+
+ const me = useAppSelector(selectMe);
+
+if (!me.data) return null;
+
+
   return (
     <div className={`app ${theme}`}>
       <Suspense fallback={""}>
@@ -49,6 +60,8 @@ function App() {
           <Route path={"/steps"} element={<StepsAsync />} />
           <Route path={"/manager"} element={<ManagerPage />}>
             <Route path="user_projects" element={<UserProjects />} />
+            <Route path="project/:id" element={<ProjectProfile />} />
+
             {/* <Route path="me" element={<SpecialistProfile isSelf />} /> */}
             <Route path="tasks" element={<TaskTable />} />
             <Route path="specialists" element={<Specialists />} />

@@ -3,20 +3,23 @@ import Cookies from "js-cookie";
 
 
 const axiosInstance = axios.create({
-  baseURL: "http://127.0.0.1:8000/",
+  baseURL: process.env.REACT_APP_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,  
 });
 
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = Cookies.get('auth_token');
+  const token = Cookies.get('access_token');
   if (token) {
-    config.headers.Authorization = `Token ${token}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
+
+
 
 
 export default axiosInstance;

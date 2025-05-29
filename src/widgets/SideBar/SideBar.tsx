@@ -11,16 +11,21 @@ import funnel from "shared/images/sideBarImgs/funnel.svg";
 import specialists from "shared/images/sideBarImgs/spcialists.svg";
 import task from "shared/images/sideBarImgs/task.svg";
 import arrow from "shared/images/sideBarImgs/arrow.svg";
-import arrow_back from 'shared/images/sideBarImgs/arrow_back.svg'
-
+import arrow_back from "shared/images/sideBarImgs/arrow_back.svg";
+import { useAppSelector } from "shared/hooks/useAppSelector";
+import { selectMe } from "shared/store/slices/meSlice";
 import SearchInput from "shared/UI/SearchInput/SearchInput";
-import clienst from 'shared/images/sideBarImgs/clients.svg'
-import admins from 'shared/images/admins.svg'
-
+import clienst from "shared/images/sideBarImgs/clients.svg";
+import admins from "shared/images/admins.svg";
 
 export default function SideBar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const me = useAppSelector(selectMe);
+const role = me.data?.role?.toLowerCase() || "guest";
+
+console.log("me.data:", me.data);
+console.log("role:", role);
 
   const navItems = [
     { text: "Сводка", image: round, to: "overview" },
@@ -34,6 +39,13 @@ export default function SideBar() {
     { text: "Админы", image: admins, to: "admins" },
     { text: "Настройки", image: settings, to: "settings" },
   ];
+const filteredNavItems = navItems.filter((item) => {
+  if (role === "client") return !["Воронка", "Клиенты", "Специалисты", "Админы"].includes(item.text); 
+  if (role === "specialist") return !["Воронка", "Клиенты", "Специалисты", "Админы"].includes(item.text);
+  if (role === "tracker") return item.text !== "";
+  return true;
+});
+
 
   return (
     <aside
@@ -63,22 +75,24 @@ export default function SideBar() {
           </>
         )}
         {isCollapsed && (
-        <button
-          className={classes.arrow_back}
-          onClick={() => setIsCollapsed(!isCollapsed)}
-        >
-          <img src={arrow_back} alt="Toggle Sidebar" />
-        </button>
+          <button
+            className={classes.arrow_back}
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+            <img src={arrow_back} alt="Toggle Sidebar" />
+          </button>
         )}
       </div>
 
-
-        <div className={classes.search}>
-        <SearchInput value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
-        </div>
+      <div className={classes.search}>
+        <SearchInput
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+        />
+      </div>
 
       <div className={classes.navigation}>
-        {navItems.map((item, index) => (
+        {filteredNavItems.map((item, index) => (
           <SideBarNav
             key={index}
             text={item.text}

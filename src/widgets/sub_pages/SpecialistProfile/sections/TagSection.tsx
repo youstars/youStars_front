@@ -6,7 +6,7 @@ interface TagSectionProps {
   tags: string[];
   className?: string;
   align?: 'left' | 'center' | 'right';
-  onAddClick?: (value: string) => void; // измени тип
+  onAddClick?: (value: string) => void; 
   addIcon?: React.ReactNode;
 }
 
