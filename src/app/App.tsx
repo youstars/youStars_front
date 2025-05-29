@@ -46,7 +46,11 @@ function App() {
 
  const me = useAppSelector(selectMe);
 
-if (!me.data) return null;
+const publicPaths = ["/", "/create-account", "/steps"];
+const isPublic = publicPaths.includes(location.pathname);
+
+if (!me.data && !isPublic) return null;
+
 
 
   return (
