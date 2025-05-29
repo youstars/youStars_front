@@ -33,6 +33,19 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
     }
   };
 
+  const formatValue = (value: any) => {
+    if (
+      value === null ||
+      value === undefined ||
+      value === "0" ||
+      value === 0 ||
+      value === "Not defined"
+    ) {
+      return "—";
+    }
+    return value;
+  };
+
   const handleProfileClick = () => {
     navigate(`/manager/specialists/${specialist.id}`);
   };
@@ -118,26 +131,26 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
         <div className={styles.stats}>
           <div>
             <strong>Проекты в работе:</strong>{" "}
-            {specialist.projects_in_progress_count ?? "—"}
+            {formatValue(specialist.projects_in_progress_count)}
           </div>
 
           <div>
             <strong>Осталось задач:</strong>{" "}
-            {specialist.tasks_in_progress_count ?? "—"}
+            {formatValue(specialist.projects_in_progress_count)}
           </div>
           <div>
-            <strong>Ставка:</strong>{" "}
-            {specialist.appr_hourly_rate
-              ? `${specialist.appr_hourly_rate}₴/ч`
-              : "—"}
+            <strong>Ставка:</strong> {formatValue(specialist.appr_hourly_rate)}
           </div>
+
           <div>
             <strong>Стоимость:</strong>{" "}
-            {specialist.specialist_cost_total ?? "—"}
+            {formatValue(specialist.specialist_cost_total)}
           </div>
           <div>
-            <strong>Занятость:</strong> {specialist.hours_per_week ?? "—"} в
-            неделю
+            <strong>Занятость:</strong>{" "}
+            {formatValue(specialist.hours_per_week) !== "—"
+              ? `${formatValue(specialist.hours_per_week)} в неделю`
+              : "—"}
           </div>
         </div>
       </div>

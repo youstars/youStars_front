@@ -100,29 +100,32 @@ export const getClientById = createAsyncThunk<Client, number>(
 );
 
 
-// 🔹 Обновить клиента
-export const updateClient = createAsyncThunk<Client, any>(
+
+// clientSlice.ts
+export const updateClient = createAsyncThunk<Client, { id?: number, data: any }>(
   "client/updateClient",
-  async (clientData, { rejectWithValue }) => {
+  async ({ id, data }, { rejectWithValue }) => {
     try {
       const token = getCookie("access_token");
 
-      const response = await axios.patch(
-        "http://127.0.0.1:8000/users/clients/me/",
-        clientData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const url = id
+        ? `${API_BASE_URL}users/client/${id}/`   // путь для админа
+        : `${API_BASE_URL}users/clients/me/`;    // путь для клиента
+
+      const response = await axios.patch(url, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Ошибка при обновлении клиента");
     }
   }
 );
+
 
 
 const clientSlice = createSlice({

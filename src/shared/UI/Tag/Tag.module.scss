@@ -4,6 +4,8 @@
   border-radius: 9999px;
   font-size: 0.875rem;
   color: white;
-  display: inline-flex; /* Улучшает поведение в flex-контейнере */
-  align-items: center; /* Центрирует текст внутри тега */
+  display: inline-flex; 
+  align-items: center; 
+  line-height: 1; 
+  padding: 0.15rem 1rem 0.3rem 1rem;
 }

@@ -43,12 +43,18 @@ export const calculateTaskPosition = (task: Task, days: Date[]) => {
     (day) => day.getTime() >= task.start.getTime()
   );
 
-  const endIndex =
-    days.findIndex((day) => day.getTime() > task.end.getTime()) - 1;
+  const rawEndIndex = days.findIndex(
+    (day) => day.getTime() > task.end.getTime()
+  );
+
+  const endIndex = rawEndIndex === -1 ? days.length - 1 : rawEndIndex - 1;
+
+  const start = startIndex === -1 ? 0 : startIndex;
+  const end = Math.max(start, endIndex);
 
   return {
-    start: startIndex + 1,
-    end: endIndex > 0 ? endIndex + 1 : days.length,
+    start: start + 1,
+    end: end + 1,
     visible: true,
   };
 };

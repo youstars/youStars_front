@@ -1,0 +1,46 @@
+.dropdownMenu {
+  background-color: #353A3D;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  position: absolute;
+  right: 0;
+  top: 28px;
+}
+.dropdownItem, .deleteItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+
+  &:hover {
+    background-color: #3a3a3a;
+  }
+}
+
+.deleteItem {
+  color: #ff4d4f;
+}
+
+.label {
+  flex: 1;
+  text-align: left;
+}
+
+.icon {
+  width: 20px;
+  text-align: right;
+  color: #facc15;
+}
+
+.iconPlaceholder {
+  width: 20px;
+}

@@ -3,7 +3,7 @@
     align-items: center;
     gap: 8px;
     margin-left: 22px;
-    color: var(--secondary-font-color);
+ position: relative; 
     text-decoration: none;
     font-size: 14px;
     transition: color 0.3s;
@@ -37,14 +37,12 @@
 
   }
 
-  .leftBoard {
-    position: absolute;
-    left: -30px;
-    margin-top: -5px;
-    width: 3px;
-    height: 34px;
-    background: #ffc400;
-    transition: top 0.3s ease;
-  }
-
+.leftBoard {
+  position: absolute;
+  left: -16px;
+  height: 20px;
+  width: 3px;
+  background-color: #ffc400;
+  border-radius: 1px;
+}
 

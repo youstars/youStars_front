@@ -118,11 +118,11 @@ const Clients = () => {
 
             <div className={classes.payment_block}>
               <div className={classes.payment_text}>
-                <p>
+                <p className="todo">
                   Заказов на сумму:{" "}
                   <span>{client.total_orders_sum || "—"}</span>
                 </p>
-                <p>
+                <p className="todo">
                   Средний чек: <span>{client.avg_check || "—"}</span>
                 </p>
                 <p>
@@ -134,13 +134,13 @@ const Clients = () => {
               </div>
 
               <div className={classes.payment_text}>
-                <p>
+                <p className="todo">
                   Активные заявки: <span>{client.active_projects ?? "—"}</span>
                 </p>
-                <p>
+                <p className="todo">
                   Все проекты: <span>{client.total_projects ?? "—"}</span>
                 </p>
-                <p>
+                <p className="todo">
                   Дата последнего контакта:{" "}
                   <span>
                     {client.last_contact_date

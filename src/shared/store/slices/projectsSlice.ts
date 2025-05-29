@@ -1,7 +1,7 @@
 import axiosInstance from "shared/api/api";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { getCookie } from "shared/utils/cookies";
-
+import { Project } from "shared/types/project";
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 export const getProjects = createAsyncThunk(
@@ -25,19 +25,7 @@ export const getProjects = createAsyncThunk(
   }
 );
 
-export interface Project {
-  id: number;
-  name: string; 
-  description: string;
-  assigned_specialist: string;
-  project: string;
-  project_cost: string;
-  start_date: string;
-  end_date: string;
-  total_tasks?: number;
-  remaining_tasks?: number;
-  is_finished?: boolean;
-}
+
 
 interface ProjectsState {
   projects: Project[];

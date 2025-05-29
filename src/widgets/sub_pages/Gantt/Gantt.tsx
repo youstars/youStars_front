@@ -34,7 +34,7 @@ const Gantt: React.FC = () => {
     id: task.id,
     name: task.title,
     start: new Date(task.start_date),
-    end: new Date(task.end_date),
+end: new Date(task.deadline),
     status: task.status,
     specialist: task.assigned_specialist,
   })) ?? [];

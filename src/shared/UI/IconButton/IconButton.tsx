@@ -8,6 +8,7 @@ interface IconButtonProps {
   title?: string;
   size?: IconButtonSize;
   borderColor?: string;
+  border?: string; 
 }
 
 type IconButtonSize = "sm" | "md" | "lg";
@@ -23,6 +24,7 @@ const IconButton: React.FC<IconButtonProps> = ({
   icon,
   alt,
   onClick,
+  border,
   title,
   size = "md",
   borderColor = "white",
@@ -34,7 +36,7 @@ const IconButton: React.FC<IconButtonProps> = ({
       className={styles.iconButton}
       onClick={onClick}
       title={title}
-      style={{ width: button, height: button, borderColor: borderColor }}
+      style={{ width: button, height: button, borderColor: borderColor, border: border  }}
     >
       <img src={icon} alt={alt} style={{ width: iconSize, height: iconSize }} />
     </button>
