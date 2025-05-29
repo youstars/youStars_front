@@ -21,12 +21,12 @@
     gap: 12px;
 }
 
-.create_order {
-    background-color: var(--bg-button-color);
-    padding: 10px 30px;
-    color: var(--bg-color);
-    border-radius: 12px;
-}
+//.create_order {
+//    background-color: var(--bg-button-color);
+//    padding: 10px 30px;
+//    color: var(--bg-color);
+//    border-radius: 12px;
+//}
 
 .control_panel {
     display: flex;
@@ -100,7 +100,7 @@
   }
 
   &:hover svg {
-    stroke: var(--accent-color, #888); 
+    stroke: var(--accent-color, #888);
   }
 }
 

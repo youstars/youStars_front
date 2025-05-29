@@ -1,49 +1,68 @@
-import {jwtDecode} from "jwt-decode";
 import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
-function getUserIdFromToken(): string | null {
-  const token = Cookies.get("access_token"); 
+interface DecodedToken {
+  user_id?: string;
+  [key: string]: any;
+}
+
+export const setToken = (token: string): void => {
+  Cookies.set("access_token", token, {
+    expires: 7,
+    secure: true,
+    sameSite: "Lax",
+    path: "/",
+  });
+};
+
+export const getToken = (): string | undefined => {
+  return Cookies.get("access_token");
+};
+
+
+export const deleteToken = (): void => {
+  Cookies.remove("access_token", { path: "/" });
+};
+
+export const getUserIdFromToken = (): string | null => {
+  const token = getToken();
   if (!token) return null;
 
   try {
-    const decoded: any = jwtDecode(token); 
-    return decoded.user_id || null; 
+    const decoded = jwtDecode<DecodedToken>(token);
+    return decoded.user_id ?? null;
   } catch (error) {
     console.error("Ошибка декодирования токена:", error);
     return null;
   }
-}
-
-
-const userId = getUserIdFromToken();
-if (userId) {
-  Cookies.set("user_id", userId.toString(), { expires: 7, secure: true, sameSite: "None" });
-  console.log("User ID сохранён в куки:", userId);
-}
-
-export { getUserIdFromToken };
-
-
-
-
- export const getCookie = (name: string): string | undefined => {
-  const value = `; ${document.cookie}`;
-  return value.split(`; ${name}=`)[1]?.split(";")[0];
 };
-  
 
-
-  export function setCookie(name: string, value: string, days?: number): void {
-    let expires = '';
-    if (days) {
-      const date = new Date();
-      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-      expires = `; expires=${date.toUTCString()}`;
-    }
-    document.cookie = `${name}=${value}${expires}; path=/`;
+export const saveUserIdFromToken = (): void => {
+  const userId = getUserIdFromToken();
+  if (userId) {
+    Cookies.set("user_id", userId, {
+      expires: 7,
+      secure: true,
+      sameSite: "Lax",
+      path: "/",
+    });
+    console.log("✅ User ID сохранён в куки:", userId);
   }
-  
+};
 
-  export function deleteCookie(name: string): void {
-    setCookie(name, '', -1);
-  }
+export const getCookie = (name: string): string | undefined => {
+  return Cookies.get(name);
+};
+
+export const setCookie = (name: string, value: string, days = 7): void => {
+  Cookies.set(name, value, {
+    expires: days,
+    secure: true,
+    sameSite: "Lax",
+    path: "/",
+  });
+};
+
+export const deleteCookie = (name: string): void => {
+  Cookies.remove(name, { path: "/" });
+};
