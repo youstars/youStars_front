@@ -15,6 +15,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useTheme } from "shared/providers/theme/useTheme";
 import { Eye, EyeOff } from "lucide-react";
+import { getMe } from "shared/store/slices/meSlice";
 
 const LoginForm = () => {
   const { theme } = useTheme();
@@ -66,7 +67,7 @@ const LoginForm = () => {
         try {
           const resultAction = await dispatch(login(values));
           if (login.fulfilled.match(resultAction)) {
-            navigate("/manager");
+            await dispatch(getMe());
           }
         } catch (error) {
           console.error("Login failed:", error);

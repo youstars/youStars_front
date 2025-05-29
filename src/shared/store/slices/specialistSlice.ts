@@ -116,19 +116,22 @@ interface Option {
   id: number;
   name: string;
 }
-
 interface SpecialistState {
   data: any;
   loading: boolean;
+  loadingGetById: boolean;
   error: string | null;
   professionalAreas: ProfessionalArea[];
+  
 }
+
 
 const initialState: SpecialistState = {
   data: null,
   loading: false,
   error: null,
   professionalAreas: [],
+  loadingGetById: false,
 };
 
 const specialistSlice = createSlice({
@@ -138,17 +141,17 @@ const specialistSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getSpecialistById.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(getSpecialistById.fulfilled, (state, action) => {
-        state.data = action.payload;
-        state.loading = false;
-      })
-      .addCase(getSpecialistById.rejected, (state, action) => {
-        state.loading = false;
-        state.error = (action.payload as string) || "Ошибка загрузки";
-      })
+  state.loadingGetById = true;
+  state.error = null;
+})
+.addCase(getSpecialistById.fulfilled, (state, action) => {
+  state.data = action.payload;
+  state.loadingGetById = false;
+})
+.addCase(getSpecialistById.rejected, (state, action) => {
+  state.loadingGetById = false;
+  state.error = (action.payload as string) || "Ошибка загрузки";
+})
       .addCase(updateSpecialistMe.pending, (state) => {
         state.loading = true;
         state.error = null;
