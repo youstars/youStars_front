@@ -1,6 +1,6 @@
 import "./styles/index.scss";
 import { Suspense } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { CreateAccountAsync } from "../pages/CreatedAccount";
 import { LoginFormAsync } from "../pages/LoginForm";
 import { StepsAsync } from "../pages/Steps";
@@ -44,12 +44,19 @@ function App() {
     dispatch(getMe());
   }, [dispatch]);
 
- const me = useAppSelector(selectMe);
+const me = useAppSelector(selectMe);
+const isLoading = me.loading; 
 
 const publicPaths = ["/", "/create-account", "/steps"];
 const isPublic = publicPaths.includes(location.pathname);
 
-if (!me.data && !isPublic) return null;
+
+if (isLoading) {
+  return <div>Loading...</div>; 
+}
+
+
+if (!me.data && !isPublic) return <Navigate to="/" replace />;
 
 
 
