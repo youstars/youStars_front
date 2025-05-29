@@ -16,26 +16,33 @@ const UserProfilePage = ({ isSelf = false }: UserProfilePageProps) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { data: me } = useSelector(selectMe);
-  const { data: specialist, loading, error } = useSelector(selectSpecialist);
+  const { data: specialist, loadingGetById, error } = useSelector(selectSpecialist);
 
   const meId = me?.id;
   const isClient = me?.role === "Client";
   const isViewingSelf = id && meId === Number(id);
 
-  // Загружаем "себя"
+  // Загружаем "me", если ещё не загружен
   useEffect(() => {
-    dispatch(getMe());
-  }, [dispatch]);
+    if (!me) {
+      dispatch(getMe());
+    }
+  }, [dispatch, me]);
 
-  // Загружаем специалиста, если это не текущий пользователь
+  // Загружаем специалиста по ID, если это не текущий пользователь
   useEffect(() => {
-    if (id && meId !== Number(id)) {
+    if (id && meId !== undefined && Number(id) !== meId) {
       dispatch(getSpecialistById(Number(id)));
     }
   }, [dispatch, id, meId]);
 
-  if (loading) return <p style={{ color: "white" }}>Загрузка...</p>;
-  if (error) return <p style={{ color: "red" }}>Ошибка: {error}</p>;
+  if (loadingGetById && !specialist?.custom_user) {
+    return <p style={{ color: "white" }}>Загрузка...</p>;
+  }
+
+  if (error) {
+    return <p style={{ color: "red" }}>Ошибка: {error}</p>;
+  }
 
   // Заходим на себя по /specialists/:id
   if (id && isViewingSelf) {
@@ -46,12 +53,12 @@ const UserProfilePage = ({ isSelf = false }: UserProfilePageProps) => {
     );
   }
 
-  // Чужой специалист
+  // Просмотр другого специалиста
   if (id && specialist?.id) {
     return <SpecialistCard specialist={specialist} isSelf={false} />;
   }
 
-  // Путь без id или /me
+  // Без ID или /me — показываем текущего пользователя
   if (me?.id) {
     return isClient ? (
       <ClientProfile client={me} isSelf />

@@ -27,7 +27,7 @@
   gap: 10px;
 }
 
-.filter > p {
+.filter>p {
   font-size: 14px;
   width: 11vw;
   height: 40px;
@@ -101,7 +101,7 @@
   //padding-left: 40px;
 }
 
-.status > img {
+.status>img {
   width: 15px;
   height: 15px;
 }
@@ -114,9 +114,11 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  border: 0.5px solid  #272a2d;
+  border: 0.5px solid #272a2d;
   background: #353a3d;
   height: 41px;
+  text-decoration: none;
+
 }
 
 .project_name,
@@ -125,6 +127,7 @@
 .project_students,
 .project_duration,
 .project_chat {
+  text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -136,7 +139,7 @@
 
 .project_name {
   width: 18vw;
-  border-right: 1px solid  #272a2d;
+  border-right: 1px solid #272a2d;
 }
 
 .project_captain {
@@ -166,8 +169,10 @@
 .project_duration p,
 .project_chat p,
 .project_name p {
+
   font-size: 14px;
   font-family: "Myriad Pro", sans-serif;
   margin: 0;
   padding: 0;
+  color: white;
 }

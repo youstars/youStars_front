@@ -1,10 +1,9 @@
 import "./styles/index.scss";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { CreateAccountAsync } from "../pages/CreatedAccount";
 import { LoginFormAsync } from "../pages/LoginForm";
 import { StepsAsync } from "../pages/Steps";
-import Test from "../widgets/Test/Test";
 import { useTheme } from "shared/providers/theme/useTheme";
 import Header from "widgets/Header";
 import UserProjects from "widgets/sub_pages/UserProjects/ui/UserProjects";
@@ -26,77 +25,70 @@ import Overview from "widgets/sub_pages/Overview/Overview";
 import Clients from "widgets/sub_pages/Clients/Clients";
 import TaskTable from "widgets/sub_pages/Tasks/ui/Tasks";
 import { getMe } from "shared/store/slices/meSlice";
-import { useEffect } from "react";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useAppSelector } from "shared/hooks/useAppSelector";
 import { selectMe } from "shared/store/slices/meSlice";
-
-
 
 function App() {
   const { theme } = useTheme();
   const location = useLocation();
+  const dispatch = useAppDispatch();
+  const me = useAppSelector(selectMe);
 
   const isManagerPage = location.pathname.startsWith("/manager");
-  const dispatch = useAppDispatch();
+  const isLoading = me.loading;
+  const isAuthed = !!me.data;
+  const isAdmin = me.data?.role?.toLowerCase() === "admin";
+  const isLoginPage = location.pathname === "/";
+
+  const publicPaths = ["/", "/create-account", "/steps"];
+  const isPublic = publicPaths.some((path) =>
+    location.pathname.startsWith(path)
+  );
+
   useEffect(() => {
     dispatch(getMe());
   }, [dispatch]);
 
-const me = useAppSelector(selectMe);
-const isLoading = me.loading; 
+  if (isLoading) return <div>Loading...</div>;
 
-const publicPaths = ["/", "/create-account", "/steps"];
-const isPublic = publicPaths.includes(location.pathname);
-
-
-if (isLoading) {
-  return <div>Loading...</div>; 
+if (!isAuthed && !isPublic && !isLoading) {
+  return <Navigate to="/" replace />;
 }
 
 
-if (!me.data && !isPublic) return <Navigate to="/" replace />;
-
-
+  if (isAuthed && isLoginPage) {
+    return <Navigate to={isAdmin ? "/manager/auth_admin" : "/steps"} replace />;
+  }
 
   return (
     <div className={`app ${theme}`}>
       <Suspense fallback={""}>
         {!isManagerPage && <Header />}
         <Routes>
-          <Route path={"/"} element={<LoginFormAsync />} />
+          <Route path="/" element={<LoginFormAsync />} />
           <Route path="/create-account" element={<CreateAccountAsync />} />
-          {/* <Route path={"/test"} element={<Test />} /> */}
-          <Route path={"/steps"} element={<StepsAsync />} />
-          <Route path={"/manager"} element={<ManagerPage />}>
+          <Route path="/steps" element={<StepsAsync />} />
+          <Route path="/manager" element={<ManagerPage />}>
             <Route path="user_projects" element={<UserProjects />} />
             <Route path="project/:id" element={<ProjectProfile />} />
-
-            {/* <Route path="me" element={<SpecialistProfile isSelf />} /> */}
             <Route path="tasks" element={<TaskTable />} />
             <Route path="specialists" element={<Specialists />} />
             <Route path="specialists/:id" element={<SpecialistProfile />} />
             <Route path="clients" element={<Clients />} />
             <Route path="clients/:id" element={<ClientProfile />} />
-            <Route path="funnel" element={<Funnel/>} />
+            <Route path="funnel" element={<Funnel />} />
             <Route path="library" element={<Library />} />
             <Route path="admins" element={<AdminsPage />} />
             <Route path="settings" element={<Settings />} />
             <Route path="chats" element={<Chats />} />
             <Route path="auth_admin" element={<FormAuthAdmin />} />
             <Route path="me" element={<SpecialistProfile isSelf />} />
-
-            {/* <Route path="chats" element={<Chats/>} /> */}
             <Route path="overview" element={<Overview />}>
               <Route path="gantt" element={<Gantt />} />
               <Route path="kanban" element={<Kanban />} />
             </Route>
-            {/* not yet in flow */}
-            <Route
-              path="business-application"
-              element={<BusinessApplication />}
-            />
+            <Route path="business-application" element={<BusinessApplication />} />
             <Route path="projectProfile" element={<ProjectProfile />} />
           </Route>
         </Routes>

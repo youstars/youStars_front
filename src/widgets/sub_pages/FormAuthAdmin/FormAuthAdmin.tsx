@@ -1,7 +1,8 @@
 import React from 'react';
 import { useForm, SubmitHandler, Resolver } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup'; import * as yup from 'yup';
-import styles from './FormAuthAdmin.module.scss';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import styles from './FormAuthAdmin.module.scss'
 
 interface IFormInputs {
     fullName: string;
@@ -46,7 +47,7 @@ const FormAuthAdmin: React.FC = () => {
         mode: 'onChange',
     });
 
-    const onSubmit: SubmitHandler<IFormInputs> = (data:any) => {
+    const onSubmit: SubmitHandler<IFormInputs> = (data) => {
         const payload = {
             full_name: data.fullName,
             email: data.email,
