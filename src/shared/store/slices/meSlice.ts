@@ -20,7 +20,7 @@ export const updateMe = createAsyncThunk(
           "Content-Type": "application/json",
         },
       });
-      console.log("Обновленный профиль", response.data);
+      // console.log("Обновленный профиль", response.data);
       
       return response.data;
     } catch (error: any) {
@@ -36,7 +36,7 @@ export const getMe = createAsyncThunk(
     try {
       const token = getCookie("access_token");
 
-      const response = await axios.get("http://127.0.0.1:8000/users/profile/", {
+      const response = await axios.get("http://127.0.0.1:8000/auth/users/me/", {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

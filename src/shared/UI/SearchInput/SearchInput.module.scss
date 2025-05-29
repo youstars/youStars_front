@@ -1,15 +1,8 @@
 .search {
-  flex: 1; 
-  display: flex;
-}
-
-.input_wrapper {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  position: relative;
   width: 100%; 
 }
+
+
 .search_icon {
   position: absolute;
   left: 12px;
@@ -17,8 +10,10 @@
   height: 16px;
   pointer-events: none;
 }
+
 .input {
-  width: 100%;
+  
+  flex: 1;
   height: 30px;
   border-radius: 10px;
   border: none;
@@ -27,4 +22,16 @@
   color: var(--text-input-color);
   padding-left: 40px;
   font-size: 14px;
+
+}
+
+
+.input_wrapper {
+  
+  flex: 1;
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  min-width: 0;
 }

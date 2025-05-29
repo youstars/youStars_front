@@ -83,19 +83,27 @@ export const logout = createAsyncThunk(
     try {
       const refresh = Cookies.get("refresh_token");
 
-      await axiosInstance.post("/auth/token/logout/", { refresh });
+      if (refresh) {
+        await axiosInstance.post("/auth/token/logout/", { refresh });
+      }
 
-      Cookies.remove("access_token");
-      Cookies.remove("refresh_token");
-      Cookies.remove("user_id");
+ 
+      ["access_token", "refresh_token", "user_id"].forEach((key) => {
+        Cookies.remove(key, {
+          path: "/",
+          sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+          secure: process.env.NODE_ENV === "production",
+        });
+        console.log(`${key} after remove:`, Cookies.get(key)); 
+      });
 
       return true;
     } catch (error) {
+      console.error("Logout error:", error);
       return rejectWithValue("Ошибка выхода");
     }
   }
 );
-
 const authSlice = createSlice({
   name: "auth",
   initialState: {

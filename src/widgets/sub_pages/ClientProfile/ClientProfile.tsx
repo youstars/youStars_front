@@ -16,7 +16,10 @@ import Write from "shared/images/clientImgs/Write.svg";
 import { useNavigate } from "react-router-dom";
 import styles from "./ClientProfile.module.scss";
 import { useChatService } from "shared/hooks/useWebsocket";
-
+import { useClientProfileData } from "shared/hooks/useClientProfileData";
+import { Project } from "shared/types/project";
+import ProjectFiles from "shared/UI/ProjectFiles/ProjectFiles";
+import { uploadClientFile } from "shared/api/files";
 
 const employeeOptions = [
   "Not on the market",
@@ -66,18 +69,32 @@ const yearsOptions = [
   "Over 30",
 ];
 
-export const ClientProfile = (): JSX.Element => {
+interface ClientProfileProps {
+  client?: any;
+  isSelf?: boolean;
+}
+
+export const ClientProfile: React.FC<ClientProfileProps> = ({
+  client: externalClient,
+  isSelf,
+}) => {
+
+
+  const me = useAppSelector((state) => state.me.data); 
+const isAdmin = me?.role === "Admin";
+
+
+
   const navigate = useNavigate();
   const { chats, setActiveChat } = useChatService();
   const meError = useAppSelector((state) => state.me.error);
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
-  const { data: client, loading } = useAppSelector((s) => s.client);
+  const { client, loading, error } = useClientProfileData(externalClient);
   console.log("в компоненте client.position =", client?.position);
 
   const [edit, setEdit] = useState(false);
   const [form, setForm] = useState({
-
     position: "",
     business_name: "",
     description: "",
@@ -87,19 +104,34 @@ export const ClientProfile = (): JSX.Element => {
     employee_count: "",
     revenue: "",
     years_on_market: "",
-    professional_areas: "", 
-
+    professional_areas: "",
     phone_number: "",
     email: "",
     tg_nickname: "",
     full_name: "",
   });
 
+const handleFileSelect = async (file: File) => {
+  if (!client?.id) {
+    console.error("Client ID отсутствует");
+    alert("Невозможно загрузить файл: ID клиента не найден.");
+    return;
+  }
+
+  try {
+await uploadClientFile(file, file.name, client.id);
+
+    dispatch(getClientById(+id!));
+  } catch (error) {
+    console.error("Ошибка загрузки файла клиента:", error);
+    alert("Не удалось загрузить файл. Попробуйте снова.");
+  }
+};
+
 
   useEffect(() => {
     if (id) dispatch(getClientById(+id));
   }, [id, dispatch]);
-
 
   useEffect(() => {
     if (client) console.log("[ClientProfile] получен клиент:", client);
@@ -115,10 +147,10 @@ export const ClientProfile = (): JSX.Element => {
       revenue: client.revenue ?? "",
       years_on_market: client.years_on_market ?? "",
       professional_areas: (client.professional_areas ?? []).join(", "),
-      phone_number: client.custom_user.phone_number ?? "",
-      email: client.custom_user.email ?? "",
-      tg_nickname: client.custom_user.tg_nickname ?? "",
-      full_name: client.custom_user.full_name ?? "",
+      phone_number: client.custom_user?.phone_number ?? "",
+      email: client.custom_user?.email ?? "",
+      tg_nickname: client.custom_user?.tg_nickname ?? "",
+      full_name: client.custom_user?.full_name ?? "",
     });
   }, [client]);
 
@@ -131,16 +163,23 @@ export const ClientProfile = (): JSX.Element => {
     ) =>
       setForm((p) => ({ ...p, [field]: e.target.value }));
 
-  const handleSave = async () => {
+const handleSave = async () => {
   if (!client) return;
 
   const userDiff: Record<string, any> = {};
   ["phone_number", "email", "tg_nickname", "full_name"].forEach((f) => {
-    const oldVal =
-      client.custom_user[f as keyof typeof client.custom_user] ?? "";
+    const oldVal = client.custom_user?.[f] ?? "";
     const newVal = form[f as keyof typeof form];
-    if (newVal !== oldVal) userDiff[f] = newVal || null;
+    if (newVal !== oldVal) {
+      userDiff[f] = newVal !== undefined ? newVal : null;
+    }
   });
+
+  const allowedValues = {
+    employee_count: employeeOptions,
+    revenue: revenueOptions,
+    years_on_market: yearsOptions,
+  };
 
   const clientDiff: Record<string, any> = {};
   const clientMap = {
@@ -158,7 +197,17 @@ export const ClientProfile = (): JSX.Element => {
 
   Object.entries(clientMap).forEach(([key, oldVal]) => {
     const newVal = (form as any)[key];
+
     if (newVal !== oldVal) {
+      if (
+        (key === "employee_count" ||
+          key === "revenue" ||
+          key === "years_on_market") &&
+        (!newVal || !allowedValues[key as keyof typeof allowedValues].includes(newVal))
+      ) {
+        return;
+      }
+
       clientDiff[key] =
         key === "professional_areas"
           ? newVal
@@ -167,37 +216,48 @@ export const ClientProfile = (): JSX.Element => {
                 .map((x: string) => Number(x.trim()))
                 .filter(Boolean)
             : []
-          : newVal || null;
+          : newVal !== undefined
+          ? newVal
+          : null;
     }
   });
+
+  if (!Object.keys(userDiff).length && !Object.keys(clientDiff).length) {
+    console.log("Ничего не изменилось — запрос не отправляется");
+    setEdit(false);
+    return;
+  }
 
   try {
     if (Object.keys(userDiff).length) {
       await dispatch(updateMe(userDiff)).unwrap();
     }
+
     if (Object.keys(clientDiff).length) {
-      await dispatch(updateClient(clientDiff)).unwrap();
+const updateId = client?.custom_user?.id;
+await dispatch(updateClient({
+  id: isAdmin ? updateId : undefined,
+  data: clientDiff
+})).unwrap();
+
+
     }
 
-    if (Object.keys(userDiff).length || Object.keys(clientDiff).length) {
-      dispatch(getClientById(+id!));
-    }
-
+    dispatch(getClientById(+id!));
     setEdit(false);
-} catch (err: any) {
-  const serverMessage =
-    err?.response?.data?.detail || err?.message || "Неизвестная ошибка";
-
-  console.error("Ошибка обновления профиля клиента:", serverMessage);
-  alert(`Ошибка: ${serverMessage}`);
-}
-
+  } catch (err: any) {
+    const serverMessage =
+      err?.response?.data?.detail || err?.message || "Неизвестная ошибка";
+    console.error("Ошибка обновления профиля клиента:", serverMessage);
+    alert(`Ошибка: ${serverMessage}`);
+  }
 };
 
 
   if (loading || !client) return <Spinner />;
 
-  const u = client.custom_user;
+  const u = client.custom_user || client;
+
   const handleChatClick = () => {
     const clientUserId = String(client.custom_user.id);
     const chat = chats.find((chat) =>
@@ -214,10 +274,10 @@ export const ClientProfile = (): JSX.Element => {
   return (
     <div className={styles.main}>
       {meError && (
-  <div className={styles.errorBox}>
-    <p className={styles.errorMessage}>Ошибка: {meError}</p>
-  </div>
-)}
+        <div className={styles.errorBox}>
+          <p className={styles.errorMessage}>Ошибка: {meError}</p>
+        </div>
+      )}
       <div className={styles.container}>
         {/* ===== карточка клиента ===== */}
         <div className={styles.client}>
@@ -353,7 +413,7 @@ export const ClientProfile = (): JSX.Element => {
             <h4 className={styles.businessTitle}>Описание бизнеса</h4>
             {edit ? (
               <textarea
-                className={styles.inputField}
+                className={styles.inputFieldBottom}
                 value={form.description}
                 onChange={onChange("description")}
               />
@@ -369,7 +429,7 @@ export const ClientProfile = (): JSX.Element => {
             <h4 className={styles.businessTitle}>Проблемы бизнеса</h4>
             {edit ? (
               <textarea
-                className={styles.inputField}
+                className={styles.inputFieldBottom}
                 value={form.problems}
                 onChange={onChange("problems")}
               />
@@ -385,7 +445,7 @@ export const ClientProfile = (): JSX.Element => {
             <h4 className={styles.businessTitle}>Задачи бизнеса</h4>
             {edit ? (
               <textarea
-                className={styles.inputField}
+                className={styles.inputFieldBottom}
                 value={form.tasks}
                 onChange={onChange("tasks")}
               />
@@ -405,7 +465,7 @@ export const ClientProfile = (): JSX.Element => {
             <h4 className={styles.businessTitle}>География</h4>
             {edit ? (
               <input
-                className={styles.inputField}
+                className={styles.inputFieldBottom}
                 value={form.geography}
                 onChange={onChange("geography")}
                 placeholder="География"
@@ -422,7 +482,7 @@ export const ClientProfile = (): JSX.Element => {
             <h4 className={styles.businessTitle}>Количество сотрудников</h4>
             {edit ? (
               <select
-                className={styles.inputField}
+                className={styles.inputFieldBottom}
                 value={form.employee_count}
                 onChange={onChange("employee_count")}
               >
@@ -442,7 +502,7 @@ export const ClientProfile = (): JSX.Element => {
             <h4 className={styles.businessTitle}>Годовая выручка</h4>
             {edit ? (
               <select
-                className={styles.inputField}
+                className={styles.inputFieldBottom}
                 value={form.revenue}
                 onChange={onChange("revenue")}
               >
@@ -462,7 +522,7 @@ export const ClientProfile = (): JSX.Element => {
             <h4 className={styles.businessTitle}>Лет на рынке</h4>
             {edit ? (
               <select
-                className={styles.inputField}
+                className={styles.inputFieldBottom}
                 value={form.years_on_market}
                 onChange={onChange("years_on_market")}
               >
@@ -484,15 +544,23 @@ export const ClientProfile = (): JSX.Element => {
       {/* <ProjectBlock /> */}
 
       <ProjectBlock
-        title="Проекты в обработке"
-        projects={client.projects.filter((p) => p.status !== "completed")}
+        title="Проекты в работе"
+        projects={(client.projects || []).filter(
+          (p: Project) => p.status !== "completed"
+        )}
       />
+
       <div className={styles.projects}>
         <ProjectBlock
           title="Завершённые проекты"
-          projects={client.projects.filter((p) => p.status === "completed")}
+          projects={(client.projects || []).filter(
+            (p: Project) => p.status === "completed"
+          )}
         />
       </div>
+
+      <ProjectFiles files={client?.files} onFileSelect={handleFileSelect} />
+
     </div>
   );
 };

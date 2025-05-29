@@ -12,6 +12,7 @@ import ModalCalendar from "widgets/Modals/ModalCalendar/ModalCalendar";
 import StatusModal from "widgets/Modals/StatusModal/StatusModal";
 import ModalSpecialist from "widgets/Modals/ModalSpecialist/ModalSpecialist";
 import CustomerModal from "widgets/Modals/CustomerModal/CustomerModal"; // ✅ Импорт `CustomerModal`
+import { Link } from "react-router-dom";
 
 export default function UserProjects() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -136,7 +137,7 @@ export default function UserProjects() {
             src={status}
             alt="Заказчик"
           />{" "}
-          {/* ✅ Добавлен вызов */}
+  
         </div>
         <div className={classes.status}>
           <p>Чаты проектов</p>
@@ -146,7 +147,11 @@ export default function UserProjects() {
       <section className={classes.projects_list}>
         {filteredProjects && filteredProjects.length > 0 ? (
           filteredProjects.map((project: any, index: number) => (
-            <div key={index} className={classes.project_card}>
+            <Link
+              to={`/manager/project/${project.id}`}
+              key={project.id}
+              className={classes.project_card}
+            >
               <div className={classes.project_name}>
                 <p>{project.name || "Без названия"}</p>
               </div>
@@ -165,7 +170,7 @@ export default function UserProjects() {
               <div className={classes.project_chat}>
                 <img src={message} />
               </div>
-            </div>
+            </Link>
           ))
         ) : (
           <div className={classes.project_card}>

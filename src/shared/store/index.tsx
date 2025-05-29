@@ -11,13 +11,20 @@ import adminRegistrationReducer from "shared/store/slices/adminRegistrationSlice
 import meReducer from "shared/store/slices/meSlice";
 import tasksSpecialistReducer from "shared/store/slices/tasksSpecialistSlice";
 import clientReducer from "./slices/clientSlice";
+import projectFilesReducer from "./slices/projectFilesSlice";
 import clientsReducer from "./slices/clientsSlice";
+import knowledgeBaseReducer from "./slices/librarySlice";
+import { foldersReducer } from "./slices/foldersSlice";
+import { projectReducer } from "./slices/projectSlice";
+
+
 const store = configureStore({
   reducer: {
     projectTasks: projectTasksReducer,
     auth: authReducer,
     tasks: tasksSlice,
     projects: projectsSlice,
+    project: projectReducer,
     funnel: funnelSlice,
     specialists: specialistsReducer,
     chat: chatReducer,
@@ -27,6 +34,9 @@ const store = configureStore({
     tasksSpecialist: tasksSpecialistReducer,
     client: clientReducer,
     clients: clientsReducer,
+    projectFiles: projectFilesReducer,
+    knowledgeBase: knowledgeBaseReducer,
+    folders: foldersReducer, 
   },
 });
 

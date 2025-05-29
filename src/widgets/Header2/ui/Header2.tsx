@@ -7,6 +7,7 @@ import interrogation from "shared/images/interrogation.svg";
 import block from "shared/images/block.svg";
 import user_icon from "shared/images/user_icon.svg";
 import { useState, useEffect, useRef } from "react";
+import Avatar from "shared/UI/Avatar/Avatar";
 
 
 
@@ -102,7 +103,7 @@ export default function Header2() {
           </div>
         </div>
         <div className={classes.profile}>
-          <img src={user_icon} alt="" />
+          <Avatar size="20px"/>
         </div>
       </div>
     </div>
