@@ -1,108 +1,70 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getOrders, selectFunnel } from "shared/store/slices/funnelSlice";
+import { getFunnelData, selectFunnel } from "shared/store/slices/funnelSlice";
 import { AppDispatch } from "shared/store";
+import { Order } from "shared/types/orders";
 import styles from "./Funnel.module.scss";
-import search from "shared/images/sideBarImgs/search.svg";
-import settingsIcon from "shared/images/setingsIcon.svg";
-import addIcon from "shared/images/addIcon.svg";
-import correctIcon from "shared/images/corectIcon.svg";
-import kubikIcon from "shared/images/kubikIcon.svg";
-import saveIcon from "shared/images/saveIcon.svg";
-import chatIcon from "shared/images/chatIcon.svg";
-import SideFunnel from "widgets/SideBar/SideFunnel/SideFunnel";
+import searchIcon from "shared/images/sideBarImgs/search.svg";
+import chatIcons from "shared/images/chats.svg";
+import chatIcon from "shared/images/chat.svg";
+import ModalOrders from "widgets/Modals/ModalOrder/ModalOrder";
 
-interface Funnel {
-    amount: string;
-    creation_date: string;
-    description: string;
-    id: number;
-    payment_status: boolean;
-    student: number;
-    status: number;
-}
-
-const statusTitles: { [key: number]: string } = {
-    0: "Новая заявка",
-    1: "Обработка",
-    2: "Утверждение специалиста",
-    3: "Оплачено",
+const statusLabels: Record<string, string> = {
+    new: "Новая заявка",
+    in_progress: "Обработка",
+    matching: "Метчинг",
+    prepayment: "Предоплата",
+    working: "В работе",
+    postpayment: "Постоплата",
+    postprocessing: "Постобработка",
+    done: "Завершен",
+    canceled: "Отмена",
 };
 
-const borderColors = ["#FF4E4E", "#FFC400", "#3AFAE5"];
-const getRandomBorderColor = () => borderColors[Math.floor(Math.random() * borderColors.length)];
-const formatDate = (dateString: string) => {
-    if (!dateString) return "Не указана";
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "Не указана";
-    return date.toLocaleDateString("ru-RU");
+const formatDate = (dateStr: string | null): string => {
+    if (!dateStr) return "Дата не указана";
+    const date = new Date(dateStr);
+    return isNaN(date.getTime()) ? "Неверная дата" : date.toLocaleDateString("ru-RU");
 };
-
-const OrderCard = React.memo(({ order }: { order: Funnel }) => (
-    <div className={styles.taskCard}>
-        <div
-            className={styles.taskContent}
-            style={{ borderLeft: `2px solid ${getRandomBorderColor()}` }}
-        >
-            <p className={styles.description}>{order.description || "Без описания"}</p>
-            <p className={styles.amount}>
-                {order.amount ? `${Math.round(parseFloat(order.amount))} ₽` : "Не указано"}
-            </p>
-            <p className={styles.date}>{formatDate(order.creation_date)}</p>
-            <p className={styles.student}>Студент: {order.student || "Не назначен"}</p>
-            <p className={styles.payment}>
-                {order.payment_status ? "Оплачено" : "Не оплачено"}
-            </p>
-        </div>
-        <div className={styles.content_icons}>
-            <img src={kubikIcon} alt=""/>
-            <img src={saveIcon} alt=""/>
-            <img src={chatIcon} alt=""/>
-        </div>
-    </div>
-));
 
 const Funnel = () => {
-    const [searchTerm, setSearchTerm] = useState<string>("");
     const dispatch = useDispatch<AppDispatch>();
     const funnelData = useSelector(selectFunnel);
-    const [selected, setSelected] = useState<number>(0);
-    const [selectedSubOption, setSelectedSubOption] = useState<number>(0);
-    const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-    const subHandleSelect = useCallback((index: number) => {
-        setSelectedSubOption(index);
-    }, []);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        dispatch(getOrders());
+        dispatch(getFunnelData());
     }, [dispatch]);
 
-    const filteredData = useMemo(() => {
-        return funnelData?.filter((order: Funnel) =>
-            order.description.toLowerCase().includes(searchTerm.toLowerCase())
-        ) || [];
+    const filteredOrders = useMemo(() => {
+        return funnelData.filter((order) =>
+            (order.order_goal || "").toLowerCase().includes(searchTerm.toLowerCase())
+        );
     }, [funnelData, searchTerm]);
 
-    const ordersByStatus = useMemo(() => {
-        const groupedOrders: { [key: number]: Funnel[] } = { 0: [], 1: [], 2: [], 3: [] };
-        let index = 0;
-        filteredData.forEach((order) => {
-            const status = index % 4;
-            groupedOrders[status].push(order);
-            index++;
+    console.log(filteredOrders);
+    const groupedOrders = useMemo(() => {
+        const groups: Record<string, Order[]> = {};
+        Object.keys(statusLabels).forEach((status) => {
+            groups[status] = [];
         });
-        return groupedOrders;
-    }, [filteredData]);
 
-    const handleSelect = useCallback((index: number) => {
-        setSelected(index);
-    }, []);
+        filteredOrders.forEach((order) => {
+            if (groups.hasOwnProperty(order.status)) {
+                groups[order.status].push(order);
+            }
+        });
 
-    const toggleSidebar = () => {
-        setIsSidebarOpen((prev) => !prev);
+        return groups;
+    }, [filteredOrders]);
+
+    const calculateTotalBudget = (orders: Order[]) => {
+        return orders.reduce((acc, cur) => acc + parseFloat(cur.estimated_budget || "0"), 0);
     };
+
+    const clientId = funnelData.length > 0 ? funnelData[0].client : 0;
 
     return (
         <div className={styles.container} style={{ marginRight: isSidebarOpen ? "16%" : "0" }}>
@@ -115,66 +77,117 @@ const Funnel = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <img src={search} alt=""/>
+                    <img src={searchIcon} alt="Поиск" className={styles.searchIcon} />
                 </div>
-                <div className={styles.icons}>
-                    <img src={settingsIcon} alt="" style={{cursor: 'pointer'}}/>
-                    <img src={addIcon} alt=""/>
-                    {/* При клике на correctIcon открываем модалку */}
-                    <img
-                        src={correctIcon}
-                        alt=""
-                        style={{cursor: 'pointer'}}
-                        onClick={() => setIsModalOpen(true)}
-                    />
-                </div>
-            </div>
 
-            <div className={styles.options}>
-                <div className={styles.options_items}>
-                    {["Все", "Новые", "По сроку", "По количеству задач", "По бюджету"].map((item, index) => (
-                        <p
-                            key={index}
-                            className={selected === index ? styles.selected : ""}
-                            onClick={() => handleSelect(index)}
-                        >
-                            {item}
-                        </p>
-                    ))}
-                </div>
-                <div>
-                    <img src={settingsIcon} alt="Настройки"/>
-                </div>
-            </div>
 
-            <div className={styles.sub_options}>
-                <div className={styles.sub_options_items}>
-                    {["Канбан", "Список", "Таймлайн", "Отчеты"].map((item, index) => (
-                        <p
-                            key={index}
-                            className={`${styles.sub_option} ${selectedSubOption === index ? styles.selected_sub_option : ""}`}
-                            onClick={() => subHandleSelect(index)}
-                        >
-                            {item}
-                        </p>
-                    ))}
-                </div>
+                <button className={styles.create_order} onClick={() => setIsModalOpen(true)}>
+                    Создать заказ
+                </button>
             </div>
 
             <div className={styles.statusColumns}>
-                {Object.keys(statusTitles).map((statusKey) => {
-                    const status = parseInt(statusKey);
-                    const statusOrders = ordersByStatus[status];
+                {Object.entries(statusLabels).map(([statusKey, label]) => {
+                    const items = groupedOrders[statusKey] || [];
+                    const totalBudget = calculateTotalBudget(items);
 
                     return (
-                        <div key={status} className={styles.statusColumn}>
+                        <div key={statusKey} className={styles.statusColumn}>
                             <div className={styles.statusHeader}>
-                                <h3>{statusTitles[status]}</h3>
+                                <h3>
+                                    ({items.length}) <b>{label}</b>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <span className={styles.statusAmount}>
+                                        {totalBudget > 0
+                                            ? `${Math.round(totalBudget).toLocaleString("ru-RU")} ₽`
+                                            : "—"}
+                                    </span>
+                                </h3>
                             </div>
+
                             <div className={styles.tasksList}>
-                                {statusOrders.length > 0 ? (
-                                    statusOrders.map((order) => (
-                                        <OrderCard key={order.id} order={order}/>
+                                {items.length > 0 ? (
+                                    items.map((order) => (
+                                        <div className={styles.taskCard} key={order.id}>
+                                            <div className={styles.taskContent}>
+                                                <div className={styles.taskHeader}>
+                                                    <div>
+                                                        <h3 className={styles.taskTitle}>
+                                                            {`Заявка №${order.id}`}
+                                                        </h3>
+                                                        <p className={styles.description}>
+                                                            {`Клиент ${order.client}`}
+                                                        </p>
+                                                    </div>
+                                                    <div className={styles.taskActions}>
+                                                        <button className={styles.taskActionButton}>
+                                                            <img src={chatIcon} alt="чат" />
+                                                        </button>
+                                                        <button className={styles.taskActionButton}>
+                                                            <img src={chatIcons} alt="чаты" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <p className={styles.amount}>
+                                                    {order.estimated_budget
+                                                        ? `${Math.round(
+                                                            parseFloat(order.estimated_budget)
+                                                        ).toLocaleString("ru-RU")} ₽`
+                                                        : "Бюджет не указан"}
+                                                </p>
+
+                                                <div className={styles.taskDetails}>
+                                                    <div className={styles.taskDetailItem}>
+                                                        <span className={styles.taskDetailLabel}>
+                                                            Начало статуса:
+                                                        </span>
+                                                        <span className={styles.taskDetailValue}>
+                                                            {formatDate(order.created_at)}
+                                                        </span>
+                                                    </div>
+                                                    <div className={styles.taskDetailItem}>
+                                                        <span className={styles.taskDetailLabel}>
+                                                            Посл. контакт:
+                                                        </span>
+                                                        <span className={styles.taskDetailValue}>
+                                                            <u>{formatDate(order.updated_at)}</u>
+                                                        </span>
+                                                    </div>
+                                                    <div className={styles.taskDetailItem}>
+                                                        <span className={styles.taskDetailLabel}>
+                                                            Трекер:
+                                                        </span>
+                                                        <span className={styles.taskDetailValue}>
+                                                            <span className={styles.avatarCircle}>
+                                                                {order.tracker ?? "–"}
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    <div className={styles.taskDetailItem}>
+                                                        <span className={styles.taskDetailLabel}>
+                                                            Специалисты:
+                                                        </span>
+                                                        <span className={styles.taskDetailValue}>
+                                                            {(order.approved_specialists || [])
+                                                                .slice(0, 2)
+                                                                .map((id) => (
+                                                                    <span
+                                                                        key={id}
+                                                                        className={styles.avatarCircle}
+                                                                    >
+                                                                        ID {id}
+                                                                    </span>
+                                                                ))}
+                                                            {order.approved_specialists &&
+                                                                order.approved_specialists.length > 2 && (
+                                                                    <span className={styles.avatarMore}>...</span>
+                                                                )}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     ))
                                 ) : (
                                     <p className={styles.noOrders}>Нет заявок</p>
@@ -184,19 +197,12 @@ const Funnel = () => {
                     );
                 })}
             </div>
-            <SideFunnel isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
-            {/* Модальное окно */}
             {isModalOpen && (
-                <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
-                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-                        <button className={styles.modalClose} onClick={() => setIsModalOpen(false)}>
-                            X
-                        </button>
-                        <h2>Модальное окно</h2>
-                        <p>Здесь находится содержимое модального окна.</p>
-                    </div>
-                </div>
+                <ModalOrders
+                    closeModal={() => setIsModalOpen(false)}
+                    // clientId={clientId}
+                />
             )}
         </div>
     );

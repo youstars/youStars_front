@@ -68,7 +68,7 @@ if (!me.data) return null;
             <Route path="specialists/:id" element={<SpecialistProfile />} />
             <Route path="clients" element={<Clients />} />
             <Route path="clients/:id" element={<ClientProfile />} />
-            <Route path="funnel" element={<Funnel />} />
+            <Route path="funnel" element={<Funnel/>} />
             <Route path="library" element={<Library />} />
             <Route path="admins" element={<AdminsPage />} />
             <Route path="settings" element={<Settings />} />

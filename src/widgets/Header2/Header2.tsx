@@ -172,7 +172,7 @@ export default function Header2() {
       </div>
 
       <div className={classes.right_side}>
-        <button className={classes.create_order}>Создать заказ</button>
+        {/*<button className={classes.create_order}>Создать заказ</button>*/}
         <div className={classes.control_panel}>
           <div className={classes.notification_container} ref={notificationRef}>
             <button
