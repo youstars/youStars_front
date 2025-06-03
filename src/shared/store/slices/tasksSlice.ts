@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { Task, TaskStatus } from "widgets/sub_pages/Kanban/types";
+import { Task, TaskStatus } from "shared/types/tasks";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 

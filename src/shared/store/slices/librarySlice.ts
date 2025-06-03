@@ -1,18 +1,9 @@
-// shared/store/slices/knowledgeBaseSlice.ts
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 import { RootState } from "../index";
 import { getCookie } from "shared/utils/cookies";
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
-export interface KnowledgeFile {
-  id: number;
-  name: string;
-  folder: number;
-  audience: number;
-  description?: string;
-}
+import { API_KNOWLEDGE } from "shared/api/endpoints";
+import { KnowledgeFile } from "shared/types/library";
+import axiosInstance from "shared/api/api";
 
 interface KnowledgeBaseState {
   items: KnowledgeFile[];
@@ -31,7 +22,7 @@ export const fetchKnowledgeFiles = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const token = getCookie("access_token");
-      const response = await axios.get(`${API_BASE_URL}files/knowledge-files/`, {
+      const response = await axiosInstance.get(API_KNOWLEDGE.getAll, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -46,7 +37,7 @@ export const fetchKnowledgeFilesByFolder = createAsyncThunk(
   async (folderId: number, thunkAPI) => {
     try {
       const token = getCookie("access_token");
-      const response = await axios.get(`${API_BASE_URL}files/knowledge-files/?folder=${folderId}`, {
+      const response = await axiosInstance.get(API_KNOWLEDGE.getByFolder(folderId), {
         headers: { Authorization: `Bearer ${token}` },
       });
       return { folderId, files: response.data.results || response.data };
@@ -61,7 +52,7 @@ export const deleteKnowledgeFile = createAsyncThunk(
   async (id: number, thunkAPI) => {
     try {
       const token = getCookie("access_token");
-      await axios.delete(`${API_BASE_URL}files/knowledge-files/${id}/`, {
+      await axiosInstance.delete(API_KNOWLEDGE.delete(id), {
         headers: { Authorization: `Bearer ${token}` },
       });
       return id;
@@ -81,20 +72,16 @@ export const uploadKnowledgeFile = createAsyncThunk(
       const token = getCookie("access_token");
       const formData = new FormData();
       formData.append("file", data.file);
-      formData.append("name", data.file.name); 
+      formData.append("name", data.file.name);
       formData.append("folder", data.folder.toString());
       formData.append("audience", (data.audience || 1).toString());
 
-      const response = await axios.post(
-        `${API_BASE_URL}files/knowledge-files/`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axiosInstance.post(API_KNOWLEDGE.upload, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       return response.data;
     } catch (error: any) {
@@ -102,7 +89,6 @@ export const uploadKnowledgeFile = createAsyncThunk(
     }
   }
 );
-
 
 const knowledgeBaseSlice = createSlice({
   name: "knowledgeBase",
@@ -121,15 +107,13 @@ const knowledgeBaseSlice = createSlice({
       .addCase(fetchKnowledgeFiles.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      }).addCase(deleteKnowledgeFile.fulfilled, (state, action) => {
-  state.items = state.items.filter(file => file.id !== action.payload);
-})
-
+      })
+      .addCase(deleteKnowledgeFile.fulfilled, (state, action) => {
+        state.items = state.items.filter((file) => file.id !== action.payload);
+      })
       .addCase(uploadKnowledgeFile.fulfilled, (state, action) => {
-  state.items.push(action.payload);
-  
-})
-
+        state.items.push(action.payload);
+      });
   },
 });
 

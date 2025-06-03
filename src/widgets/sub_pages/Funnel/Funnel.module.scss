@@ -3,6 +3,7 @@
   height: auto;
   padding: 20px;
   transition: margin-right 0.3s ease;
+  
 }
 
 .create_order {
@@ -164,8 +165,9 @@
   display: flex;
   gap: 20px;
   overflow-x: auto;
+  overflow-y: hidden; 
   padding-bottom: 20px;
-  height: auto;
+  height: calc(100vh - 120px); 
 
   &::-webkit-scrollbar {
     height: 8px;
@@ -187,11 +189,25 @@
 }
 
 .statusColumn {
-  min-width: 220px;
-  //background-color: #2b2d31;
-  border-radius: 10px;
-  overflow: hidden;
-  flex-shrink: 0;
+  min-width: 280px;
+  max-width: 300px;
+  flex: 0 0 auto;
+
+  display: flex;
+  flex-direction: column;
+
+  max-height: calc(100vh - 180px); 
+  overflow-y: auto;
+  padding-right: 4px; 
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
 }
 
 .statusHeader {
@@ -234,8 +250,8 @@
   flex-direction: column;
   padding: 0;
   gap: 5px;
-  max-height: calc(100vh - 200px);
-  overflow-y: auto;
+
+  overflow-y: visible; 
 
   border-radius: 10px;
   //border-left: 2px solid #3D3535;

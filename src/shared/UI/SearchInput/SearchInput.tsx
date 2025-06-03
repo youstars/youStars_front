@@ -11,20 +11,21 @@ interface SearchInputProps {
 const SearchInput: React.FC<SearchInputProps> = ({ value, onChange, placeholder = "Поиск..." }) => {
   return (
     <div className={styles.search}>
-      <div className={styles.input_wrapper}>
-        <input
-          className={styles.input}
-          type="text"
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-        />
-        <img
-          src={searchIcon}
-          alt="Search Icon"
-          className={styles.search_icon}
-        />
-      </div>
+     <div className={styles.input_wrapper}>
+  <img
+    src={searchIcon}
+    alt="Search Icon"
+    className={styles.search_icon}
+  />
+  <input
+    className={styles.input}
+    type="text"
+    value={value}
+    onChange={onChange}
+    placeholder={placeholder}
+  />
+</div>
+
     </div>
   );
 };

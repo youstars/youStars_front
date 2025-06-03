@@ -16,7 +16,7 @@ import clientsReducer from "./slices/clientsSlice";
 import knowledgeBaseReducer from "./slices/librarySlice";
 import { foldersReducer } from "./slices/foldersSlice";
 import { projectReducer } from "./slices/projectSlice";
-
+import trackerReducer from "./slices/trackersSlice"
 
 const store = configureStore({
   reducer: {
@@ -37,6 +37,7 @@ const store = configureStore({
     projectFiles: projectFilesReducer,
     knowledgeBase: knowledgeBaseReducer,
     folders: foldersReducer, 
+    trackers: trackerReducer
   },
 });
 

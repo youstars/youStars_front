@@ -813,3 +813,23 @@
   background: rgba(255, 255, 255, 0.05);
   transform: translateY(-2px);
 }
+
+
+//стили кнопки трекера
+.submitButton {
+  background: #ffc400;
+  color: #333;
+  font-weight: 600;
+  font-size: 14px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+
+  &:hover {
+    background: #e6b000;
+  }
+}

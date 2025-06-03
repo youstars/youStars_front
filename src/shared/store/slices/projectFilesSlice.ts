@@ -1,4 +1,3 @@
-// shared/store/slices/projectFilesSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface FileItem {

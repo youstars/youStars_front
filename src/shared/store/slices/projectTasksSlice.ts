@@ -1,56 +1,77 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+// shared/store/slices/projectTasksSlice.ts
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../index";
+import axiosInstance from "shared/api/api";
+import { getCookie } from "shared/utils/cookies";
+import { API_PROJECT_TASKS } from "shared/api/endpoints";
+import { SpecialistShort } from "shared/types/tasks";
+
+
+
+export interface ProjectTask {
+  id: number;
+  title: string;
+  start_date: string;
+  deadline: string;
+  status: string;
+  assigned_specialist: SpecialistShort[];
+
+}
+
+interface ProjectTasksState {
+  tasks: ProjectTask[];
+  status: "idle" | "pending" | "succeeded" | "rejected";
+  error: string | null;
+}
+
+const initialState: ProjectTasksState = {
+  tasks: [],
+  status: "idle",
+  error: null,
+};
 
 export const getProjectTasks = createAsyncThunk(
-  'projectTasks/fetch',
+  "projectTasks/fetch",
   async (projectId: number, thunkAPI) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/projects/${projectId}/tasks/`);
-      const data = await response.json();
-      return data;  
+      const token = getCookie("access_token");
+      const response = await axiosInstance.get(
+        API_PROJECT_TASKS.getByProjectId(projectId),
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data.results;
     } catch (error: any) {
-      return thunkAPI.rejectWithValue(error.message);
+      return thunkAPI.rejectWithValue("Ошибка при загрузке задач проекта");
     }
   }
 );
 
-
-
 const projectTasksSlice = createSlice({
-  name: 'projectTasks',
-  initialState: {
-    tasks: [], 
-    status: 'idle',
-    error: null,
-  },
-  reducers: {
-    clearProjectTasks(state) {
-      state.tasks = [];
-      state.status = 'idle';
-      state.error = null;
-    },
-  },
+  name: "projectTasks",
+  initialState,
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(getProjectTasks.pending, (state) => {
-        state.status = 'loading';
+        state.status = "pending";
+        state.error = null;
       })
       .addCase(getProjectTasks.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.tasks = action.payload.results || []; 
+        state.status = "succeeded";
+        state.tasks = action.payload;
       })
-      
       .addCase(getProjectTasks.rejected, (state, action) => {
-        state.status = 'failed';
+        state.status = "rejected";
         state.error = action.payload as string;
       });
   },
 });
 
-export const { clearProjectTasks } = projectTasksSlice.actions;
+export const selectProjectTasks = (state: RootState) => state.projectTasks.tasks;
+export const selectProjectTasksStatus = (state: RootState) => state.projectTasks.status;
+export const selectProjectTasksError = (state: RootState) => state.projectTasks.error;
 
-// ✅ Селекторы:
-export const selectProjectTasks = (state: any) => state.projectTasks.tasks;
-export const selectProjectTasksStatus = (state: any) => state.projectTasks.status;
-export const selectProjectTasksError = (state: any) => state.projectTasks.error;
-
-export default projectTasksSlice.reducer;
+export const projectTasksReducer = projectTasksSlice.reducer;
+export default projectTasksReducer;

@@ -20,7 +20,6 @@ export const getSpecialistById = createAsyncThunk(
           },
         }
       );
-      // console.log("Специалист", response.data);
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response?.data || "Ошибка запроса");
@@ -54,27 +53,40 @@ export const getProfessionalAreas = createAsyncThunk(
   }
 );
 
-export const updateSpecialistMe = createAsyncThunk(
-  "specialist/updateMe",
+export const updateSpecialist = createAsyncThunk(
+  "specialist/update",
   async (data: any, thunkAPI) => {
     try {
       const token = getCookie("access_token");
+      const state = thunkAPI.getState() as RootState;
+      const me = state.me.data;
+      const isAdmin = me?.role?.toLowerCase() === "admin";
 
-      const response = await axios.patch(
-        "http://127.0.0.1:8000/users/specialists/me/",
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+      let url = `${API_BASE_URL}users/specialists/me/`;
+
+      if (data instanceof FormData) {
+        const id = data.get("id");
+        if (isAdmin && id && id !== me?.id?.toString()) {
+          url = `${API_BASE_URL}users/specialist/${id}`;
         }
-      );
-      console.log("🔄 Специалист обновлён:", response.data);
+      } else if (isAdmin && data.id && data.id !== me?.id) {
+        url = `${API_BASE_URL}users/specialist/${data.id}`;
+      }
+
+      const isFormData = data instanceof FormData;
+
+      const response = await axios.patch(url, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          ...(isFormData ? {} : { "Content-Type": "application/json" }),
+        },
+      });
+
+      console.log("🔄 Профиль специалиста обновлён:", response.data);
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Ошибка обновления специалиста"
+        error.response?.data || "Ошибка обновления профиля"
       );
     }
   }
@@ -82,13 +94,15 @@ export const updateSpecialistMe = createAsyncThunk(
 
 export const updateProfessionalProfile = createAsyncThunk(
   "specialist/updateProfessionalProfile",
-  async (    data: {
-
+  async (
+    data: {
       specialist: number;
       professional_area: number;
       profession: number;
       services: number[];
-    }, thunkAPI) => {
+    },
+    thunkAPI
+  ) => {
     try {
       const token = getCookie("access_token");
 
@@ -116,15 +130,14 @@ interface Option {
   id: number;
   name: string;
 }
+
 interface SpecialistState {
   data: any;
   loading: boolean;
   loadingGetById: boolean;
   error: string | null;
   professionalAreas: ProfessionalArea[];
-  
 }
-
 
 const initialState: SpecialistState = {
   data: null,
@@ -141,26 +154,26 @@ const specialistSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getSpecialistById.pending, (state) => {
-  state.loadingGetById = true;
-  state.error = null;
-})
-.addCase(getSpecialistById.fulfilled, (state, action) => {
-  state.data = action.payload;
-  state.loadingGetById = false;
-})
-.addCase(getSpecialistById.rejected, (state, action) => {
-  state.loadingGetById = false;
-  state.error = (action.payload as string) || "Ошибка загрузки";
-})
-      .addCase(updateSpecialistMe.pending, (state) => {
+        state.loadingGetById = true;
+        state.error = null;
+      })
+      .addCase(getSpecialistById.fulfilled, (state, action) => {
+        state.data = action.payload;
+        state.loadingGetById = false;
+      })
+      .addCase(getSpecialistById.rejected, (state, action) => {
+        state.loadingGetById = false;
+        state.error = (action.payload as string) || "Ошибка загрузки";
+      })
+      .addCase(updateSpecialist.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateSpecialistMe.fulfilled, (state, action) => {
+      .addCase(updateSpecialist.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
       })
-      .addCase(updateSpecialistMe.rejected, (state, action) => {
+      .addCase(updateSpecialist.rejected, (state, action) => {
         state.loading = false;
         state.error = (action.payload as string) || "Ошибка обновления";
       })
@@ -172,16 +185,16 @@ const specialistSlice = createSlice({
         state.loading = false;
         state.professionalAreas = action.payload;
       })
-
       .addCase(getProfessionalAreas.rejected, (state, action) => {
         state.loading = false;
-        state.error = (action.payload as string) || "Ошибка загрузки профессий";
+        state.error =
+          (action.payload as string) || "Ошибка загрузки профессий";
       })
       .addCase(updateProfessionalProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateProfessionalProfile.fulfilled, (state, action) => {
+      .addCase(updateProfessionalProfile.fulfilled, (state) => {
         state.loading = false;
       })
       .addCase(updateProfessionalProfile.rejected, (state, action) => {

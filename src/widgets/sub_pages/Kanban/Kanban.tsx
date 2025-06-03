@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getTasks, updateTaskStatus, optimisticUpdateTaskStatus } from "shared/store/slices/tasksSlice";
 import { AppDispatch, RootState } from "shared/store";
-import { Task, TaskStatus } from "./types";
 import AddTaskModal from "./AddTaskModal/AddTaskModal";
 import classes from "./Kanban.module.scss";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import SideFunnel from "widgets/SideBar/SideFunnel/SideFunnel";
 import arrow_back from 'shared/images/sideBarImgs/arrow_back.svg'
-
+import { SpecialistShort } from "shared/types/tasks";
+import { Task, TaskStatus } from "shared/types/tasks";
 const orderedStatusKeys: TaskStatus[] = [
     "to_do", "in_progress", "completed", "help", "pending", "review", "canceled"
 ];
@@ -54,12 +54,28 @@ const TaskCard: React.FC<{ task: Task }> = ({ task }) => (
         <div
             className={classes.taskContent}
             style={{
-                borderLeft: `3px solid ${borderColors[task.status]}`
+               borderLeft: `3px solid ${borderColors[task.status as TaskStatus]}`
+
             }}
         >
             <p className={classes.title}><strong>{task.title}</strong></p>
             <p className={classes.description}><span>Дедлайн</span> {new Date(task.deadline).toLocaleDateString()}</p>
-            <p className={classes.material}><strong>Исполнители</strong> {task.assigned_specialist?.length || 0}</p>
+            <div className={classes.specialists}>
+{(task.assigned_specialist as SpecialistShort[])?.map((s) => (
+  <div key={s.id} className={classes.specialist}>
+    {s.avatar ? (
+      <img src={s.avatar} alt={s.full_name} />
+    ) : (
+      <div className={classes.avatarPlaceholder}>{s.full_name?.[0]}</div>
+    )}
+    <span>{s.full_name}</span>
+  </div>
+))}
+
+
+</div>
+
+
             <p className={classes.notice}><strong>Оценка времени</strong> {task.execution_period || "—"} часов</p>
             <p className={classes.dates_paragraph}><strong>Начало статуса</strong> {new Date(task.start_date).toLocaleDateString()}</p>
             <p className={classes.dates_paragraph}><strong>Подзадачи</strong> {task.subtasks_count}</p>
@@ -87,9 +103,11 @@ const Kanban: React.FC = () => {
     };
 
     tasks.forEach((task) => {
-        if (groupedTasks[task.status]) {
-            groupedTasks[task.status].push(task);
-        }
+        const statusKey = task.status as TaskStatus;
+if (groupedTasks[statusKey]) {
+    groupedTasks[statusKey].push(task);
+}
+
     });
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>, status: TaskStatus) => {
@@ -196,7 +214,7 @@ const Kanban: React.FC = () => {
 
             {isModalOpen && <AddTaskModal onClose={() => setIsModalOpen(false)} />}
 
-            <SideFunnel isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+            {/* <SideFunnel isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} /> */}
         </div>
     );
 };

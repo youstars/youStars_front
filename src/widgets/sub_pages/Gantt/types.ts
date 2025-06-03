@@ -1,3 +1,5 @@
+import { SpecialistShort } from "shared/types/tasks";
+
 export type TaskPosition = {
     start: number;
     end: number;
@@ -16,4 +18,11 @@ export type TaskPosition = {
     status: string;
     specialist: string;
   };
-  
+  export type GanttTask = {
+  id: string | number;
+  name: string;
+  start: Date;
+  end: Date;
+  status: string | number;
+  specialist: SpecialistShort[];
+};

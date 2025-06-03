@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "shared/api/api";
 import { getCookie } from "shared/utils/cookies";
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000/";
+import { API_CLIENTS } from "shared/api/endpoints";
+import { Client } from "shared/types/client";
 
 export const getClients = createAsyncThunk(
   "clients/getClients",
@@ -10,37 +10,24 @@ export const getClients = createAsyncThunk(
     try {
       const token = getCookie("access_token");
 
-      const response = await axiosInstance.get(
-        `${API_BASE_URL}users/clients/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axiosInstance.get(API_CLIENTS.getAll, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       console.log("Полученные клиенты:", response.data);
       return response.data.results;
     } catch (error: any) {
       console.error("Ошибка при получении клиентов:", error);
-      return rejectWithValue(error.response?.data?.detail || "Произошла ошибка при загрузке клиентов");
+      return rejectWithValue(
+        error.response?.data?.detail || "Произошла ошибка при загрузке клиентов"
+      );
     }
   }
 );
 
 
-interface Client {
-  id: number;
-  business_name: string;
-  custom_user: {
-    id: number;
-    full_name: string;
-    username: string;
-    email: string;
-    phone_number: string | null;
-    avatar: string | null;
-  };
-}
 
 interface ClientsState {
   list: Client[];

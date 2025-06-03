@@ -8,204 +8,231 @@ import searchIcon from "shared/images/sideBarImgs/search.svg";
 import chatIcons from "shared/images/chats.svg";
 import chatIcon from "shared/images/chat.svg";
 import ModalOrders from "widgets/Modals/ModalOrder/ModalOrder";
+import SideFunnel from "widgets/SideBar/SideFunnel/SideFunnel";
 
 const statusLabels: Record<string, string> = {
-    new: "Новая заявка",
-    in_progress: "Обработка",
-    matching: "Метчинг",
-    prepayment: "Предоплата",
-    working: "В работе",
-    postpayment: "Постоплата",
-    postprocessing: "Постобработка",
-    done: "Завершен",
-    canceled: "Отмена",
+  new: "Новая заявка",
+  in_progress: "Обработка",
+  matching: "Метчинг",
+  prepayment: "Предоплата",
+  working: "В работе",
+  postpayment: "Постоплата",
+  postprocessing: "Постобработка",
+  done: "Завершен",
+  canceled: "Отмена",
 };
 
 const formatDate = (dateStr: string | null): string => {
-    if (!dateStr) return "Дата не указана";
-    const date = new Date(dateStr);
-    return isNaN(date.getTime()) ? "Неверная дата" : date.toLocaleDateString("ru-RU");
+  if (!dateStr) return "Дата не указана";
+  const date = new Date(dateStr);
+  return isNaN(date.getTime())
+    ? "Неверная дата"
+    : date.toLocaleDateString("ru-RU");
 };
 
 const Funnel = () => {
-    const dispatch = useDispatch<AppDispatch>();
-    const funnelData = useSelector(selectFunnel);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const funnelData = useSelector(selectFunnel);
+  const [searchTerm, setSearchTerm] = useState("");
 
-    useEffect(() => {
-        dispatch(getFunnelData());
-    }, [dispatch]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const filteredOrders = useMemo(() => {
-        return funnelData.filter((order) =>
-            (order.order_goal || "").toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [funnelData, searchTerm]);
+  useEffect(() => {
+    dispatch(getFunnelData());
+  }, [dispatch]);
 
-    console.log(filteredOrders);
-    const groupedOrders = useMemo(() => {
-        const groups: Record<string, Order[]> = {};
-        Object.keys(statusLabels).forEach((status) => {
-            groups[status] = [];
-        });
-
-        filteredOrders.forEach((order) => {
-            if (groups.hasOwnProperty(order.status)) {
-                groups[order.status].push(order);
-            }
-        });
-
-        return groups;
-    }, [filteredOrders]);
-
-    const calculateTotalBudget = (orders: Order[]) => {
-        return orders.reduce((acc, cur) => acc + parseFloat(cur.estimated_budget || "0"), 0);
-    };
-
-    const clientId = funnelData.length > 0 ? funnelData[0].client : 0;
-
-    return (
-        <div className={styles.container} style={{ marginRight: isSidebarOpen ? "16%" : "0" }}>
-            <div className={styles.search}>
-                <div className={styles.input_wrapper}>
-                    <input
-                        className={styles.input}
-                        type="text"
-                        placeholder="Поиск"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <img src={searchIcon} alt="Поиск" className={styles.searchIcon} />
-                </div>
-
-
-                <button className={styles.create_order} onClick={() => setIsModalOpen(true)}>
-                    Создать заказ
-                </button>
-            </div>
-
-            <div className={styles.statusColumns}>
-                {Object.entries(statusLabels).map(([statusKey, label]) => {
-                    const items = groupedOrders[statusKey] || [];
-                    const totalBudget = calculateTotalBudget(items);
-
-                    return (
-                        <div key={statusKey} className={styles.statusColumn}>
-                            <div className={styles.statusHeader}>
-                                <h3>
-                                    ({items.length}) <b>{label}</b>
-                                    &nbsp;&nbsp;&nbsp;
-                                    <span className={styles.statusAmount}>
-                                        {totalBudget > 0
-                                            ? `${Math.round(totalBudget).toLocaleString("ru-RU")} ₽`
-                                            : "—"}
-                                    </span>
-                                </h3>
-                            </div>
-
-                            <div className={styles.tasksList}>
-                                {items.length > 0 ? (
-                                    items.map((order) => (
-                                        <div className={styles.taskCard} key={order.id}>
-                                            <div className={styles.taskContent}>
-                                                <div className={styles.taskHeader}>
-                                                    <div>
-                                                        <h3 className={styles.taskTitle}>
-                                                            {`Заявка №${order.id}`}
-                                                        </h3>
-                                                        <p className={styles.description}>
-                                                            {`Клиент ${order.client}`}
-                                                        </p>
-                                                    </div>
-                                                    <div className={styles.taskActions}>
-                                                        <button className={styles.taskActionButton}>
-                                                            <img src={chatIcon} alt="чат" />
-                                                        </button>
-                                                        <button className={styles.taskActionButton}>
-                                                            <img src={chatIcons} alt="чаты" />
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                                <p className={styles.amount}>
-                                                    {order.estimated_budget
-                                                        ? `${Math.round(
-                                                            parseFloat(order.estimated_budget)
-                                                        ).toLocaleString("ru-RU")} ₽`
-                                                        : "Бюджет не указан"}
-                                                </p>
-
-                                                <div className={styles.taskDetails}>
-                                                    <div className={styles.taskDetailItem}>
-                                                        <span className={styles.taskDetailLabel}>
-                                                            Начало статуса:
-                                                        </span>
-                                                        <span className={styles.taskDetailValue}>
-                                                            {formatDate(order.created_at)}
-                                                        </span>
-                                                    </div>
-                                                    <div className={styles.taskDetailItem}>
-                                                        <span className={styles.taskDetailLabel}>
-                                                            Посл. контакт:
-                                                        </span>
-                                                        <span className={styles.taskDetailValue}>
-                                                            <u>{formatDate(order.updated_at)}</u>
-                                                        </span>
-                                                    </div>
-                                                    <div className={styles.taskDetailItem}>
-                                                        <span className={styles.taskDetailLabel}>
-                                                            Трекер:
-                                                        </span>
-                                                        <span className={styles.taskDetailValue}>
-                                                            <span className={styles.avatarCircle}>
-                                                                {order.tracker ?? "–"}
-                                                            </span>
-                                                        </span>
-                                                    </div>
-                                                    <div className={styles.taskDetailItem}>
-                                                        <span className={styles.taskDetailLabel}>
-                                                            Специалисты:
-                                                        </span>
-                                                        <span className={styles.taskDetailValue}>
-                                                            {(order.approved_specialists || [])
-                                                                .slice(0, 2)
-                                                                .map((id) => (
-                                                                    <span
-                                                                        key={id}
-                                                                        className={styles.avatarCircle}
-                                                                    >
-                                                                        ID {id}
-                                                                    </span>
-                                                                ))}
-                                                            {order.approved_specialists &&
-                                                                order.approved_specialists.length > 2 && (
-                                                                    <span className={styles.avatarMore}>...</span>
-                                                                )}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p className={styles.noOrders}>Нет заявок</p>
-                                )}
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-
-            {isModalOpen && (
-                <ModalOrders
-                    closeModal={() => setIsModalOpen(false)}
-                    // clientId={clientId}
-                />
-            )}
-        </div>
+  const filteredOrders = useMemo(() => {
+    return funnelData.filter((order) =>
+      (order.order_goal || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
+  }, [funnelData, searchTerm]);
+
+  console.log(filteredOrders);
+  const groupedOrders = useMemo(() => {
+    const groups: Record<string, Order[]> = {};
+    Object.keys(statusLabels).forEach((status) => {
+      groups[status] = [];
+    });
+
+    filteredOrders.forEach((order) => {
+      if (groups.hasOwnProperty(order.status)) {
+        groups[order.status].push(order);
+      }
+    });
+
+    return groups;
+  }, [filteredOrders]);
+
+  const calculateTotalBudget = (orders: Order[]) => {
+    return orders.reduce(
+      (acc, cur) => acc + parseFloat(cur.estimated_budget || "0"),
+      0
+    );
+  };
+
+  const clientId = funnelData.length > 0 ? funnelData[0].client : 0;
+
+  return (
+    <div
+      className={styles.container}
+      style={{ marginRight: isSidebarOpen ? "16%" : "0" }}
+    >
+      <div className={styles.search}>
+        <div className={styles.input_wrapper}>
+          <input
+            className={styles.input}
+            type="text"
+            placeholder="Поиск"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <img src={searchIcon} alt="Поиск" className={styles.searchIcon} />
+        </div>
+
+        <button
+          className={styles.create_order}
+          onClick={() => setIsModalOpen(true)}
+        >
+          Создать заказ
+        </button>
+      </div>
+
+      <div className={styles.statusColumns}>
+        {Object.entries(statusLabels).map(([statusKey, label]) => {
+          const items = groupedOrders[statusKey] || [];
+          const totalBudget = calculateTotalBudget(items);
+
+          return (
+            <div key={statusKey} className={styles.statusColumn}>
+              <div className={styles.statusHeader}>
+                <h3>
+                  ({items.length}) <b>{label}</b>
+                  &nbsp;&nbsp;&nbsp;
+                  <span className={styles.statusAmount}>
+                    {totalBudget > 0
+                      ? `${Math.round(totalBudget).toLocaleString("ru-RU")} ₽`
+                      : "—"}
+                  </span>
+                </h3>
+              </div>
+
+              <div className={styles.tasksList}>
+                {items.length > 0 ? (
+                  items.map((order) => (
+                    <div
+                      className={styles.taskCard}
+                      key={order.id}
+                      onClick={() => {
+                        setSelectedOrderId(order.id);
+                        setIsSidebarOpen(true);
+                      }}
+                    >
+                      <div className={styles.taskContent}>
+                        <div className={styles.taskHeader}>
+                          <div>
+                            <h3 className={styles.taskTitle}>
+                              {`Заявка №${order.id}`}
+                            </h3>
+                            <p className={styles.description}>
+                              {`Клиент ${order.client}`}
+                            </p>
+                          </div>
+                          <div className={styles.taskActions}>
+                            <button className={styles.taskActionButton}>
+                              <img src={chatIcon} alt="чат" />
+                            </button>
+                            <button className={styles.taskActionButton}>
+                              <img src={chatIcons} alt="чаты" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <p className={styles.amount}>
+                          {order.estimated_budget
+                            ? `${Math.round(
+                                parseFloat(order.estimated_budget)
+                              ).toLocaleString("ru-RU")} ₽`
+                            : "Бюджет не указан"}
+                        </p>
+
+                        <div className={styles.taskDetails}>
+                          <div className={styles.taskDetailItem}>
+                            <span className={styles.taskDetailLabel}>
+                              Начало статуса:
+                            </span>
+                            <span className={styles.taskDetailValue}>
+                              {formatDate(order.created_at)}
+                            </span>
+                          </div>
+                          <div className={styles.taskDetailItem}>
+                            <span className={styles.taskDetailLabel}>
+                              Посл. контакт:
+                            </span>
+                            <span className={styles.taskDetailValue}>
+                              <u>{formatDate(order.updated_at)}</u>
+                            </span>
+                          </div>
+                          <div className={styles.taskDetailItem}>
+                            <span className={styles.taskDetailLabel}>
+                              Трекер:
+                            </span>
+                            <span className={styles.taskDetailValue}>
+                              <span className={styles.avatarCircle}>
+                                {order.tracker ?? "–"}
+                              </span>
+                            </span>
+                          </div>
+                          <div className={styles.taskDetailItem}>
+                            <span className={styles.taskDetailLabel}>
+                              Специалисты:
+                            </span>
+                            <span className={styles.taskDetailValue}>
+                              {(order.approved_specialists || [])
+                                .slice(0, 2)
+                                .map((id) => (
+                                  <span
+                                    key={id}
+                                    className={styles.avatarCircle}
+                                  >
+                                    ID {id}
+                                  </span>
+                                ))}
+                              {order.approved_specialists &&
+                                order.approved_specialists.length > 2 && (
+                                  <span className={styles.avatarMore}>...</span>
+                                )}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className={styles.noOrders}>Нет заявок</p>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {isModalOpen && (
+        <ModalOrders
+          closeModal={() => setIsModalOpen(false)}
+          // clientId={clientId}
+        />
+      )}
+      {isSidebarOpen && (
+        <SideFunnel
+          isOpen={isSidebarOpen}
+          toggleSidebar={() => setIsSidebarOpen(false)}
+          orderId={selectedOrderId?.toString() ?? ""}
+        />
+      )}
+    </div>
+  );
 };
 
 export default React.memo(Funnel);

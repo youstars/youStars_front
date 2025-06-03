@@ -33,6 +33,8 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
     }
   };
 
+
+  
   const formatValue = (value: any) => {
     if (
       value === null ||
@@ -47,6 +49,8 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
   };
 
   const handleProfileClick = () => {
+    console.log(specialist, "при переходе")
+    
     navigate(`/manager/specialists/${specialist.id}`);
   };
 

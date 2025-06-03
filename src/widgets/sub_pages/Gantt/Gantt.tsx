@@ -1,75 +1,48 @@
 import React, { useEffect, useRef, useState } from "react";
-import { MONTHS, OPEN_STATUSES, CLOSED_STATUSES } from "./constants";
+import { MONTHS } from "./constants";
 import { isToday, isWeekend, calculateTaskPosition } from "./utils";
 import "./Gantt.scss";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { useAppSelector } from "shared/hooks/useAppSelector";
-import { Task } from "./types";
-import { useOutletContext } from "react-router-dom";
-
 import {
   getProjectTasks,
   selectProjectTasks,
   selectProjectTasksStatus,
   selectProjectTasksError
 } from "shared/store/slices/projectTasksSlice";
-
+import { useOutletContext } from "react-router-dom";
+import { GanttTask } from "./types";
 
 const Gantt: React.FC = () => {
-  const dispatch = useAppDispatch();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [currentDate] = useState<Date>(new Date());
-  const [visibleMonth, setVisibleMonth] = useState<number>(currentDate.getMonth());
+  const [currentDate] = useState(new Date());
+  const [visibleMonth, setVisibleMonth] = useState(currentDate.getMonth());
   const [scrolling, setScrolling] = useState(false);
-  const { currentProjectId } = useOutletContext<{ currentProjectId: number | null }>();
-  const tasksData = useAppSelector(selectProjectTasks);
 
+  const dispatch = useAppDispatch();
+  const { currentProjectId } = useOutletContext<{ currentProjectId: number | null }>();
+
+  const tasksData = useAppSelector(selectProjectTasks);
   const status = useAppSelector(selectProjectTasksStatus);
   const error = useAppSelector(selectProjectTasksError);
 
-  console.log("currentProjectId", currentProjectId);
-  console.log("tasksData", tasksData);
+  useEffect(() => {
+    if (currentProjectId) {
+      dispatch(getProjectTasks(currentProjectId));
+    }
+  }, [dispatch, currentProjectId]);
 
-  const tasks: Task[] = tasksData?.map((task: any) => ({
+
+
+  const tasks: GanttTask[] = tasksData.map((task) => ({
     id: task.id,
     name: task.title,
     start: new Date(task.start_date),
-end: new Date(task.deadline),
+end: new Date(task.deadline || task.start_date),
+
     status: task.status,
-    specialist: task.assigned_specialist,
-  })) ?? [];
-
-
-  useEffect(() => {
-    if (currentProjectId) {
-      dispatch(getProjectTasks(currentProjectId));
-    }
-  
-
-    const scrollToCurrentMonth = () => {
-      if (scrollContainerRef.current) {
-        const currentMonth = currentDate.getMonth();
-        const dayWidth = 30;
-        const daysBefore = Array.from({ length: currentMonth }, (_, i) =>
-          new Date(currentDate.getFullYear(), i + 1, 0).getDate()
-        ).reduce((sum, days) => sum + days, 0);
-  
-        scrollContainerRef.current.scrollLeft = daysBefore * dayWidth;
-      }
-    };
-  
-    setTimeout(scrollToCurrentMonth, 0); 
-  }, [dispatch, currentProjectId]);
-  
-
-  useEffect(() => {
-    if (currentProjectId) {
-      dispatch(getProjectTasks(currentProjectId));
-    }
-  }, [dispatch, currentProjectId]);
-
-  if (!currentProjectId) return <p>Выберите проект</p>;
-
+    specialist: task.assigned_specialist || [],
+  }));
 
   const handleScroll = () => {
     if (scrollContainerRef.current && !scrolling) {
@@ -86,90 +59,95 @@ end: new Date(task.deadline),
       setScrolling(true);
       const dayWidth = 30;
       const currentScroll = scrollContainerRef.current.scrollLeft;
-      const daysInCurrentMonth = new Date(currentDate.getFullYear(), visibleMonth + 1, 0).getDate();
-
-      const targetScroll = direction === "next"
-        ? currentScroll + daysInCurrentMonth * dayWidth
-        : currentScroll - daysInCurrentMonth * dayWidth;
+      const daysInMonth = new Date(currentDate.getFullYear(), visibleMonth + 1, 0).getDate();
+      const offset = daysInMonth * dayWidth;
+      const targetScroll = direction === "next" ? currentScroll + offset : currentScroll - offset;
 
       scrollContainerRef.current.scrollTo({ left: targetScroll, behavior: "smooth" });
 
       setTimeout(() => {
         setScrolling(false);
-        const newMonth = direction === "next"
-          ? (visibleMonth + 1) % 12
-          : (visibleMonth - 1 + 12) % 12;
-        setVisibleMonth(newMonth);
+        setVisibleMonth((prev) => (direction === "next" ? (prev + 1) % 12 : (prev - 1 + 12) % 12));
       }, 300);
     }
   };
 
-  const handleNextMonth = () => scrollToMonth("next");
-  const handlePreviousMonth = () => scrollToMonth("prev");
-
   const getDaysArray = () => {
-    const startDate = new Date(currentDate.getFullYear(), 0, 1);
-    const endDate = new Date(currentDate.getFullYear(), 11, 31);
-    const days: Date[] = [];
-    let currentDay = new Date(startDate);
-
-    while (currentDay <= endDate) {
-      days.push(new Date(currentDay));
-      currentDay.setDate(currentDay.getDate() + 1);
+    const start = new Date(currentDate.getFullYear(), 0, 1);
+    const end = new Date(currentDate.getFullYear(), 11, 31);
+    const days = [];
+    let day = new Date(start);
+    while (day <= end) {
+      days.push(new Date(day));
+      day.setDate(day.getDate() + 1);
     }
     return days;
   };
 
-  const getStatusLabel = (status: string): string => {
-    const openStatuses = ["to_do", "in_progress", "review"];
-    return openStatuses.includes(status) ? "Статус открыт" : "Статус закрыт";
+  const getStatusLabel = (status: string) => {
+    return ["to_do", "in_progress", "review"].includes(status) ? "Статус открыт" : "Статус закрыт";
   };
-  
 
   const days = getDaysArray();
+useEffect(() => {
+  if (scrollContainerRef.current && tasks.length > 0) {
+    const firstTaskStart = tasks.reduce((earliest, task) =>
+      task.start < earliest.start ? task : earliest
+    ).start;
 
+    const dayWidth = 30;
+    const startIndex = days.findIndex(
+      (day) => day.toDateString() === firstTaskStart.toDateString()
+    );
+
+    if (startIndex !== -1) {
+      scrollContainerRef.current.scrollLeft = startIndex * dayWidth;
+    }
+  }
+}, [tasks, days]);
+
+  if (!currentProjectId) return <p>Выберите проект</p>;
   if (status === "pending") return <p>Загрузка задач...</p>;
   if (status === "rejected") return <p>Ошибка: {error}</p>;
+  if (tasks.length === 0) return <p>Нет задач для проекта</p>;
 
   return (
     <div className="gantt-container">
       <div className="gantt-header">
         <div className="gantt-month-navigation">
-          <button onClick={handlePreviousMonth} className="gantt-arrow">{"<"}</button>
+          <button onClick={() => scrollToMonth("prev")} className="gantt-arrow">{"<"}</button>
           <span className="gantt-month">{MONTHS[visibleMonth]} {currentDate.getFullYear()}</span>
-          <button onClick={handleNextMonth} className="gantt-arrow">{">"}</button>
+          <button onClick={() => scrollToMonth("next")} className="gantt-arrow">{">"}</button>
         </div>
       </div>
 
       <div className="gantt-content">
         <div className="gantt-status-table">
           <p className="graph">График времени</p>
-          {tasks.map((task, index) => (
-  <div key={task.id || `task-${index}`} className="gantt-status-row">
-    <span>{task.specialist[0]}</span>
-    <span>{getStatusLabel(task.status)}</span>
-  </div>
-))}
+          {tasks.map((task, i) => (
+            <div key={task.id || `task-${i}`} className="gantt-status-row">
+              <span>{task.specialist?.[0]?.full_name || "Без специалиста"}</span>
+              <span>{getStatusLabel(String(task.status))}</span>
+            </div>
+          ))}
         </div>
 
         <div ref={scrollContainerRef} className="gantt-calendar-container" onScroll={handleScroll}>
           <div className="gantt-timeline">
             <div className="gantt-calendar">
-              {days.map((day, index) => (
+              {days.map((day, i) => (
                 <div
                   key={day.toISOString()}
                   className={`gantt-day ${isWeekend(day) ? "weekend" : ""} ${isToday(day) ? "today" : ""}`}
                 >
                   <div className="gantt-day-header">
-                    {day.getDate() === 1 && (
-                      <div className="gantt-month-label">{MONTHS[day.getMonth()]}</div>
-                    )}
+                    {day.getDate() === 1 && <div className="gantt-month-label">{MONTHS[day.getMonth()]}</div>}
                     {day.getDate()}
                   </div>
                   {isToday(day) && (
                     <>
                       <div className="gantt-today-label">Сегодня</div>
-                      <div className="gantt-today-line"></div>
+                      <div className="gantt-today-line" />
                     </>
                   )}
                 </div>
@@ -177,31 +155,31 @@ end: new Date(task.deadline),
             </div>
 
             <div className="gantt-tasks">
-              {days.map((day, index) => (
+              {days.map((day, i) => (
                 <div
-                  key={`bg-${index}`}
+                  key={`bg-${i}`}
                   className={`gantt-task-background ${isWeekend(day) ? "weekend" : ""}`}
                   style={{
-                    gridColumnStart: index + 1,
-                    gridColumnEnd: index + 2,
+                    gridColumnStart: i + 1,
+                    gridColumnEnd: i + 2,
                     gridRowStart: 1,
                     gridRowEnd: tasks.length + 2,
                   }}
                 />
               ))}
 
-              {tasks.map((task, taskIndex) => {
-                const position = calculateTaskPosition(task, days);
-                if (!position.visible) return null;
+              {tasks.map((task, i) => {
+                const pos = calculateTaskPosition(task, days);
+                if (!pos.visible) return null;
                 return (
                   <div
                     key={task.id}
                     className="gantt-task"
                     style={{
-                      gridColumnStart: position.start,
-                      gridColumnEnd: position.end + 1,
-                      gridRowStart: taskIndex + 1,
-                      gridRowEnd: taskIndex + 2,
+                      gridColumnStart: pos.start,
+                      gridColumnEnd: pos.end + 1,
+                      gridRowStart: i + 1,
+                      gridRowEnd: i + 2,
                     }}
                     title={`${task.name} (${task.start.toLocaleDateString()} - ${task.end.toLocaleDateString()})`}
                   >

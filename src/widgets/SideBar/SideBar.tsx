@@ -28,9 +28,9 @@ console.log("me.data:", me.data);
 console.log("role:", role);
 
   const navItems = [
-    { text: "Сводка", image: round, to: "overview" },
+    { text: "Задачи", image: round, to: "overview" },
     { text: "Проекты", image: projs, to: "user_projects" },
-    { text: "Задачи", image: task, to: "tasks" },
+    // { text: "Задачи", image: task, to: "tasks" },
     { text: "Специалисты", image: specialists, to: "specialists" },
     { text: "Клиенты", image: contacts, to: "clients" },
     { text: "Воронка", image: funnel, to: "funnel" },
@@ -40,7 +40,7 @@ console.log("role:", role);
     { text: "Настройки", image: settings, to: "settings" },
   ];
 const filteredNavItems = navItems.filter((item) => {
-  if (role === "client") return !["Воронка", "Клиенты", "Специалисты", "Админы"].includes(item.text); 
+  if (role === "client") return !["Клиенты", "Специалисты", "Админы"].includes(item.text); 
   if (role === "specialist") return !["Воронка", "Клиенты", "Специалисты", "Админы"].includes(item.text);
   if (role === "tracker") return item.text !== "";
   return true;
