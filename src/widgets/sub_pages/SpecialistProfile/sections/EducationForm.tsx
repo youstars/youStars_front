@@ -44,10 +44,11 @@ const EducationForm: React.FC<EducationFormProps> = ({ value, onChange }) => {
 
   return (
     <div className={styles.form}>
-      <label>Образование (введите вуз)</label>
+     <label className={styles.label}>Образование (введите вуз)</label>
      <div className={styles.inputWrapper}>
   <input
     type="text"
+     className={styles.input}
     value={query}
     onChange={(e) => {
       setQuery(e.target.value);
@@ -69,9 +70,10 @@ const EducationForm: React.FC<EducationFormProps> = ({ value, onChange }) => {
 </div>
 
 
-      <label>Факультет / специальность</label>
+  <label className={styles.label}>Факультет / специальность</label>
       <input
         type="text"
+           className={styles.input}
         value={value.faculty}
         onChange={(e) => onChange({ university: value.university, faculty: e.target.value })}
         placeholder="Например, юриспруденция"

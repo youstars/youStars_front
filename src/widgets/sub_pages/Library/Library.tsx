@@ -8,7 +8,7 @@ import { useAppSelector } from "shared/hooks/useAppSelector";
 import { fetchFolders } from "shared/store/slices/foldersSlice";
 import { selectFolders } from "shared/store/slices/foldersSlice";
 import { addFolder } from "shared/store/slices/foldersSlice";
-import { FolderItem } from "shared/store/slices/foldersSlice";
+import { FolderItem } from "shared/types/folders";
 import { FoldersState } from "shared/store/slices/foldersSlice";
 import { FileItem } from "./libraryTypes";
 import { fetchKnowledgeFiles } from "shared/store/slices/librarySlice";

@@ -1,16 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 import { RootState } from "../index";
 import { getCookie } from "shared/utils/cookies";
+import { API_FOLDERS } from "shared/api/endpoints";
+import { FolderItem } from "shared/types/folders";
+import axiosInstance from "shared/api/api";
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
-export interface FolderItem {
-  id: number;
-  name: string;
-  parent?: number | null;
-  children?: FolderItem[];
-}
 
 interface FoldersState {
   folders: FolderItem[];
@@ -29,7 +23,7 @@ export const fetchFolders = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const token = getCookie("access_token");
-      const response = await axios.get(`${API_BASE_URL}files/folders/`, {
+      const response = await axiosInstance.get(API_FOLDERS.getAll, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -46,7 +40,7 @@ export const addFolder = createAsyncThunk(
   async (data: { name: string; parent?: number | null }, thunkAPI) => {
     try {
       const token = getCookie("access_token");
-      const response = await axios.post(`${API_BASE_URL}files/folders/`, data, {
+      const response = await axiosInstance.post(API_FOLDERS.add, data, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -63,7 +57,7 @@ export const deleteFolder = createAsyncThunk(
   async (id: number, thunkAPI) => {
     try {
       const token = getCookie("access_token");
-      await axios.delete(`${API_BASE_URL}files/client-files/${id}/`, {
+      await axiosInstance.delete(API_FOLDERS.delete(id), {
         headers: { Authorization: `Bearer ${token}` },
       });
       return id;
@@ -80,13 +74,11 @@ export const renameFolder = createAsyncThunk(
   async (data: { id: number; name: string }, thunkAPI) => {
     try {
       const token = getCookie("access_token");
-      const response = await axios.patch(
-        `${API_BASE_URL}files/folders/${data.id}/`,
+      const response = await axiosInstance.patch(
+        API_FOLDERS.rename(data.id),
         { name: data.name },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       return response.data;
@@ -95,7 +87,6 @@ export const renameFolder = createAsyncThunk(
     }
   }
 );
-
 
 export const foldersSlice = createSlice({
   name: "folders",
@@ -115,33 +106,33 @@ export const foldersSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-   .addCase(addFolder.fulfilled, (state, action) => {
-  const newFolder = { ...action.payload, children: [] };
+      .addCase(addFolder.fulfilled, (state, action) => {
+        const newFolder = { ...action.payload, children: [] };
 
-  const insertIntoTree = (folders: FolderItem[]): boolean => {
-    for (const folder of folders) {
-      if (folder.id === newFolder.parent) {
-        if (!folder.children) folder.children = [];
-        folder.children.push(newFolder);
-        return true;
-      }
-      if (folder.children && insertIntoTree(folder.children)) {
-        return true;
-      }
-    }
-    return false;
-  };
+        const insertIntoTree = (folders: FolderItem[]): boolean => {
+          for (const folder of folders) {
+            if (folder.id === newFolder.parent) {
+              if (!folder.children) folder.children = [];
+              folder.children.push(newFolder);
+              return true;
+            }
+            if (folder.children && insertIntoTree(folder.children)) {
+              return true;
+            }
+          }
+          return false;
+        };
 
-  if (newFolder.parent) {
-    const inserted = insertIntoTree(state.folders);
-    if (!inserted) {
-      console.warn("Родительская папка не найдена, добавляем в корень");
-      state.folders.push(newFolder);
-    }
-  } else {
-    state.folders.push(newFolder);
-  }
-})
+        if (newFolder.parent) {
+          const inserted = insertIntoTree(state.folders);
+          if (!inserted) {
+            console.warn("Родительская папка не найдена, добавляем в корень");
+            state.folders.push(newFolder);
+          }
+        } else {
+          state.folders.push(newFolder);
+        }
+      })
       .addCase(deleteFolder.fulfilled, (state, action) => {
         const idToDelete = action.payload;
 
@@ -162,22 +153,21 @@ export const foldersSlice = createSlice({
         state.error = action.payload as string;
       })
       .addCase(renameFolder.fulfilled, (state, action) => {
-  const updated = action.payload;
-  const updateRecursively = (folders: FolderItem[]): FolderItem[] =>
-    folders.map((folder) =>
-      folder.id === updated.id
-        ? { ...folder, name: updated.name }
-        : {
-            ...folder,
-            children: folder.children
-              ? updateRecursively(folder.children)
-              : [],
-          }
-    );
+        const updated = action.payload;
+        const updateRecursively = (folders: FolderItem[]): FolderItem[] =>
+          folders.map((folder) =>
+            folder.id === updated.id
+              ? { ...folder, name: updated.name }
+              : {
+                  ...folder,
+                  children: folder.children
+                    ? updateRecursively(folder.children)
+                    : [],
+                }
+          );
 
-  state.folders = updateRecursively(state.folders);
-})
-
+        state.folders = updateRecursively(state.folders);
+      });
   },
 });
 

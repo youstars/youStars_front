@@ -22,17 +22,16 @@ import { useChatService } from "shared/hooks/useWebsocket";
 import IconButton from "shared/UI/IconButton/IconButton";
 import Plus from "shared/assets/icons/plus.svg";
 import type { FileItem } from "shared/UI/ProjectFiles/ProjectFiles";
-
 import {
   updateProfessionalProfile,
-  updateSpecialistMe,
+  updateSpecialist,
 } from "shared/store/slices/specialistSlice";
 import EducationForm from "./EducationForm";
 import { selectMe } from "shared/store/slices/meSlice";
 import { getProfessionalAreas } from "shared/store/slices/specialistSlice";
 import { Service } from "shared/types/professionalArea";
 import {
-  FormData,
+  SpecialistFormData,
   WorkExperienceFormData,
   SpecialistCardProps,
 } from "shared/types/specialist";
@@ -65,12 +64,25 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
   const navigate = useNavigate();
   const { chats, setActiveChat } = useChatService();
   const { data: me } = useAppSelector(selectMe);
+  const meId = me?.id;
+  const isAdmin = me?.role?.toLowerCase() === "admin";
+  const isSelfViewing = meId && specialist?.id === meId;
 
   const [selectedServices, setSelectedServices] = useState<Service[]>([]);
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [showEduForm, setShowEduForm] = useState(false);
-  const [formData, setFormData] = useState<FormData | null>(null);
+  const [formData, setFormData] = useState<SpecialistFormData | null>(null);
+
+  // console.log("ID из useParams:", id);
+  // console.log("Список специалистов:", specialistsList);
+  // console.log("Найденный специалист:", specialist);
+  console.log(" Me:", me);
+  console.log(" Role:", me?.role);
+  console.log(" Me ID:", me?.id);
+  console.log(" Specialist ID:", specialist?.id);
+  console.log(" Is Admin:", isAdmin);
+  console.log(" Is Self Viewing:", isSelfViewing);
 
   useEffect(() => {
     if (specialist?.custom_user) {
@@ -124,10 +136,11 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
   };
 
   const addExperience = () => {
+    const uniqueId = `new-${Date.now()}`;
     setWorkExperiences([
       ...workExperiences,
       {
-        id: "",
+        id: uniqueId,
         company_name: "",
         position: "",
         started_at: "",
@@ -185,9 +198,11 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
       alert("Чат с этим специалистом не найден.");
     }
   };
-
-  const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleInputChange = (
+    field: keyof SpecialistFormData,
+    value: string
+  ) => {
+    setFormData((prev) => (prev ? { ...prev, [field]: value } : null));
   };
 
   const handleSave = async () => {
@@ -202,6 +217,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
         return;
       }
 
+      // Сборка опыта работы
       const filteredExperiences = workExperiences.map((item) => {
         const experience = {
           place_of_work: {
@@ -222,17 +238,9 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
           left_at: item.left_at || null,
           duties: item.duties || null,
         };
-        if (item.id) {
-          return { ...experience, id: parseInt(item.id) };
-        }
-        return experience;
+        return item.id ? { ...experience, id: parseInt(item.id) } : experience;
       });
 
-      const workExperiencesToSend =
-        filteredExperiences.length > 0 ? filteredExperiences : [];
-
-      // Фильтрация пустых значений
-      const cleanedMeData: any = {};
       const meFields = {
         phone_number: formData.phone,
         first_name: formData.firstName,
@@ -240,14 +248,56 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
         email: formData.email,
         tg_nickname: formData.website,
       };
-      Object.entries(meFields).forEach(([key, value]) => {
-        if (value && value.trim() !== "") {
-          cleanedMeData[key] = value;
-        }
-      });
+      if (
+        formData.website &&
+        formData.website.trim() !== "" &&
+        formData.website.trim() !== (specialist.custom_user.tg_nickname || "")
+      ) {
+        meFields.tg_nickname = formData.website.trim();
+      }
+      const cleanedMeData: any = {};
+
+      if (
+        formData.phone &&
+        formData.phone.trim() !== "" &&
+        formData.phone.trim() !== (specialist.custom_user.phone_number || "")
+      ) {
+        cleanedMeData.phone_number = formData.phone.trim();
+      }
+
+      if (
+        formData.firstName &&
+        formData.firstName.trim() !== "" &&
+        formData.firstName.trim() !== (specialist.custom_user.first_name || "")
+      ) {
+        cleanedMeData.first_name = formData.firstName.trim();
+      }
+
+      if (
+        formData.lastName &&
+        formData.lastName.trim() !== "" &&
+        formData.lastName.trim() !== (specialist.custom_user.last_name || "")
+      ) {
+        cleanedMeData.last_name = formData.lastName.trim();
+      }
+
+      if (
+        formData.email &&
+        formData.email.trim() !== "" &&
+        formData.email.trim() !== (specialist.custom_user.email || "")
+      ) {
+        cleanedMeData.email = formData.email.trim();
+      }
+
+      if (
+        formData.website &&
+        formData.website.trim() !== "" &&
+        formData.website.trim() !== (specialist.custom_user.tg_nickname || "")
+      ) {
+        cleanedMeData.tg_nickname = formData.website.trim();
+      }
 
       const cleanedSpecialistData: any = {};
-
       const specialistFields = {
         self_description: formData.description,
         appr_hourly_rate: formData.hourlyRate,
@@ -255,7 +305,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
         university: education.university,
         faculty: education.faculty,
         is_busy: formData.is_busy,
-        work_experiences: workExperiencesToSend,
+        work_experiences: filteredExperiences,
       };
       Object.entries(specialistFields).forEach(([key, value]) => {
         if (value !== "" && !(Array.isArray(value) && value.length === 0)) {
@@ -263,49 +313,64 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
         }
       });
 
+      const findProfessionAndAreaByService = (selectedServiceId: number) => {
+        for (const area of professionalAreas) {
+          for (const profession of area.professions) {
+            const service = profession.services.find(
+              (s) => s.id === selectedServiceId
+            );
+            if (service) {
+              return {
+                areaId: area.id,
+                professionId: profession.id,
+                serviceId: selectedServiceId,
+              };
+            }
+          }
+        }
+        return null;
+      };
+
       if (selectedService) {
-        cleanedSpecialistData.services = [selectedService.id];
-      }
+        const selected = findProfessionAndAreaByService(selectedService.id);
 
-      console.log("📤 updateMe:", cleanedMeData);
-      console.log("📤 updateSpecialistMe:", cleanedSpecialistData);
-
-      const updateMeResult = await dispatch(updateMe(cleanedMeData)).unwrap();
-      const updateSpecialistMeResult = await dispatch(
-        updateSpecialistMe(cleanedSpecialistData)
-      ).unwrap();
-
-      // Обновление local state
-      if (updateSpecialistMeResult.work_experiences) {
-        setWorkExperiences(
-          updateSpecialistMeResult.work_experiences.map(
-            (item: any, index: number) => ({
-              id: item.id ? String(item.id) : `exp-${index}-${Date.now()}`,
-              company_name: item.place_of_work?.company_name || "",
-              position: item.position || "",
-              started_at: item.started_at || "",
-              left_at: item.left_at || "",
-              duties: item.duties || "",
+        if (selected) {
+          console.log("📦 Отправляем профиль:", selected);
+          await dispatch(
+            updateProfessionalProfile({
+              specialist: specialist.id,
+              professional_area: selected.areaId,
+              profession: selected.professionId,
+              services: [selected.serviceId],
             })
-          )
-        );
+          );
+        } else {
+          console.error("❌ Не удалось найти услугу в professionalAreas");
+        }
       }
-      if (selectedService) {
-        console.log("⏳ Отправка профессионального профиля...");
+
+      console.log("📤 Отправка админом:", {
+        ...cleanedSpecialistData,
+        id: specialist.id,
+        custom_user: cleanedMeData,
+      });
+
+      if (isAdmin && !isSelfViewing) {
         await dispatch(
-          updateProfessionalProfile({
-            professional_area: selectedService.profession,
-            profession: selectedService.profession,
-            services: [selectedService.id],
-            specialist: specialist.id,
+          updateSpecialist({
+            ...cleanedSpecialistData,
+            id: specialist.id,
+            custom_user: cleanedMeData,
           })
-        );
-
-        console.log("✅ Профиль отправлен, переходим на перезагрузку...");
-        await new Promise((res) => setTimeout(res, 100000));
+        ).unwrap();
+      } else {
+        if (Object.keys(cleanedMeData).length > 0) {
+          await dispatch(updateMe(cleanedMeData)).unwrap();
+        }
+        if (Object.keys(cleanedSpecialistData).length > 0) {
+          await dispatch(updateSpecialist(cleanedSpecialistData)).unwrap();
+        }
       }
-
-      navigate(0);
 
       setIsEditMode(false);
       navigate(0);
@@ -313,14 +378,19 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
       console.error("Ошибка при сохранении:", error);
     }
   };
+  const handleAvatarUpload = (file: File) => {
+    const formData = new FormData();
+    formData.append("custom_user.avatar", file);
+    formData.append("id", specialist.id.toString()); // обязательно, если бэк ожидает id
+
+    dispatch(updateSpecialist(formData));
+  };
 
   const handleAddService = async (newService: string) => {
     if (!newService.trim()) return;
     const updatedServices = [...(specialist.services || []), newService];
     try {
-      await dispatch(
-        updateSpecialistMe({ services: updatedServices })
-      ).unwrap();
+      await dispatch(updateSpecialist({ services: updatedServices })).unwrap();
     } catch (error) {
       console.error("Ошибка при добавлении услуги:", error);
     }
@@ -329,7 +399,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
   const handleAddScope = async (newScope: string) => {
     const updated = [...(specialist.business_scopes || []), newScope];
     try {
-      await dispatch(updateSpecialistMe({ business_scopes: updated })).unwrap();
+      await dispatch(updateSpecialist({ business_scopes: updated })).unwrap();
     } catch (error) {
       console.error("Ошибка при обновлении ниш:", error);
     }
@@ -360,7 +430,12 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
         <div className={styles.client}>
           <div className={styles.info}>
             <div className={styles.avatar}>
-              <Avatar src={custom_user.avatar} size="52" />
+              <Avatar
+                src={specialist.custom_user?.avatar}
+                size="52px"
+                onUpload={handleAvatarUpload}
+              />
+
               <p className={styles.days}>3 дня</p>
             </div>
             <div className={styles.text}>
@@ -411,14 +486,12 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
                 )}
               </p>
 
-             
-                <button
-                  className={styles.editButton}
-                  onClick={isEditMode ? handleSave : () => setIsEditMode(true)}
-                >
-                  {isEditMode ? "Сохранить изменения" : "Изм. профиль"}
-                </button>
-              
+              <button
+                className={styles.editButton}
+                onClick={isEditMode ? handleSave : () => setIsEditMode(true)}
+              >
+                {isEditMode ? "Сохранить изменения" : "Изм. профиль"}
+              </button>
             </div>
           </div>
           <div className={styles.contacts}>
@@ -508,36 +581,48 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
             <div className={styles.container}>
               <div className={styles.header}>
                 <h3 className={styles.title}>Оказываемые услуги</h3>
-                {isEditMode ? (
-                  <ProfessionalServiceSelect
-                    areas={professionalAreas}
-                    onSelect={setSelectedService}
-                    selectedService={selectedService}
-                  />
-                ) : (
-                  <IconButton
-                    alt="Добавить"
-                    borderColor="#353a3d"
-                    icon={Plus}
-                    border="none"
-                    onClick={() => setIsEditMode(true)}
-                  />
-                )}
               </div>
+
+              {!isEditMode && (
+                <div className={styles.column}>
+                  <div className={styles.tagRow}>
+                    <TagSection
+                      title=""
+                      tags={
+                        specialist.professional_profiles
+                          ?.flatMap(
+                            (profile) =>
+                              profile.services?.map((s) => s.name) || []
+                          )
+                          .filter(Boolean) || []
+                      }
+                      className={styles.tags}
+                      align="center"
+                    />
+                    <IconButton
+                      alt="Добавить"
+                      borderColor="#353a3d"
+                      icon={Plus}
+                      border="none"
+                      onClick={() => setIsEditMode(true)}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
             <div className={styles.wishes}>
-            <TagSection
-              title="Пожелания"
-              tags={[
-                "От 30 000",
-                "Только оказываемые услуги",
-                "Одиночная работа",
-                "От 2 недель",
-              ]}
-              className={styles.column}
-              onAddClick={() => console.log("Добавить пожелание")}
-              addIcon={<img src={Plus} alt="Добавить" />}
-            />
+              <TagSection
+                title="Пожелания"
+                tags={[
+                  "От 30 000",
+                  "Только оказываемые услуги",
+                  "Одиночная работа",
+                  "От 2 недель",
+                ]}
+                className={styles.column}
+                onAddClick={() => console.log("Добавить пожелание")}
+                addIcon={<img src={Plus} alt="Добавить" />}
+              />
             </div>
           </div>
         </div>
@@ -554,11 +639,13 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
 
           <TagSection
             title="Опыт в нишах"
-            tags={specialist.business_scopes || []}
+            tags={
+              specialist.professional_profiles
+                ?.map((p) => p.profession?.name)
+                .filter(Boolean) || []
+            }
             align="center"
             className={styles.column}
-            onAddClick={handleAddScope}
-            addIcon={<img src={Plus} alt="Добавить" />}
           />
         </div>
         <div className={styles.rateBlock}>
@@ -785,7 +872,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
             <IconButton
               alt="Добавить"
               border="none"
-              
               icon={Plus}
               onClick={() => setIsEditMode(true)}
             />

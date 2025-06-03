@@ -1,5 +1,5 @@
-import { Task } from "./types";
-
+import { Task } from "shared/types/tasks";
+import { GanttTask } from "./types";
 export const isWeekend = (date: Date): boolean => {
   const dayOfWeek = date.getDay();
   return dayOfWeek === 0 || dayOfWeek === 6;
@@ -38,7 +38,7 @@ export const getStatusLabel = (status: string): string => {
   return "Неизвестный статус";
 };
 
-export const calculateTaskPosition = (task: Task, days: Date[]) => {
+export const calculateTaskPosition = (task: GanttTask, days: Date[]) => {
   const startIndex = days.findIndex(
     (day) => day.getTime() >= task.start.getTime()
   );

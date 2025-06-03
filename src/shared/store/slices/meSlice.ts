@@ -1,12 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../index";
-import axios from "axios";
 
-
-const getCookie = (name: string): string | undefined => {
-  const value = `; ${document.cookie}`;
-  return value.split(`; ${name}=`)[1]?.split(";")[0];
-};
+import { getCookie } from "shared/utils/cookies";
+import { API_ME } from "shared/api/endpoints";
+import axiosInstance from "shared/api/api";
 
 export const updateMe = createAsyncThunk(
   "me/update",
@@ -14,21 +11,21 @@ export const updateMe = createAsyncThunk(
     try {
       const token = getCookie("access_token");
 
-      const response = await axios.patch("http://127.0.0.1:8000/auth/users/me/", data, {
+      const response = await axiosInstance.patch(API_ME.update, data, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
-      // console.log("Обновленный профиль", response.data);
-      
+
       return response.data;
     } catch (error: any) {
-      return thunkAPI.rejectWithValue(error.response?.data.detail || "Ошибка обновления профиля");
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.detail || "Ошибка обновления профиля"
+      );
     }
   }
 );
-
 
 export const getMe = createAsyncThunk(
   "me/fetch",
@@ -36,21 +33,21 @@ export const getMe = createAsyncThunk(
     try {
       const token = getCookie("access_token");
 
-      const response = await axios.get("http://127.0.0.1:8000/auth/users/me/", {
+      const response = await axiosInstance.get(API_ME.get, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
-console.log("Полученный профиль", response.data);
 
       return response.data;
     } catch (error: any) {
-      return thunkAPI.rejectWithValue(error.response?.data || "Ошибка запроса");
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Ошибка запроса"
+      );
     }
   }
 );
-
 
 interface MeState {
   data: any;
@@ -79,9 +76,9 @@ const meSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(getMe.rejected, (state, action) => {
-          state.loading = false;
-  state.data = null; 
-  state.error = action.payload as string;
+        state.loading = false;
+        state.data = null;
+        state.error = action.payload as string;
       });
   },
 });

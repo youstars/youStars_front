@@ -28,6 +28,8 @@ import { getMe } from "shared/store/slices/meSlice";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { useAppSelector } from "shared/hooks/useAppSelector";
 import { selectMe } from "shared/store/slices/meSlice";
+import CreateAccountClient from "pages/CreateAccountClient/CreateAccountClient";
+import CreateAccount from "pages/CreatedAccount/ui/CreatedAccount";
 
 function App() {
   const { theme } = useTheme();
@@ -58,7 +60,7 @@ if (!isAuthed && !isPublic && !isLoading) {
 
 
   if (isAuthed && isLoginPage) {
-    return <Navigate to={isAdmin ? "/manager/auth_admin" : "/steps"} replace />;
+    return <Navigate to={isAdmin ? "/manager/overview" : "/manager/overview"} replace />;
   }
 
   return (
@@ -67,7 +69,7 @@ if (!isAuthed && !isPublic && !isLoading) {
         {!isManagerPage && <Header />}
         <Routes>
           <Route path="/" element={<LoginFormAsync />} />
-          <Route path="/create-account" element={<CreateAccountAsync />} />
+          <Route path="/create-account" element={<CreateAccount />} />
           <Route path="/steps" element={<StepsAsync />} />
           <Route path="/manager" element={<ManagerPage />}>
             <Route path="user_projects" element={<UserProjects />} />
@@ -83,7 +85,7 @@ if (!isAuthed && !isPublic && !isLoading) {
             <Route path="settings" element={<Settings />} />
             <Route path="chats" element={<Chats />} />
             <Route path="auth_admin" element={<FormAuthAdmin />} />
-            <Route path="me" element={<SpecialistProfile isSelf />} />
+            <Route path="me" element={<SpecialistProfile  />} />
             <Route path="overview" element={<Overview />}>
               <Route path="gantt" element={<Gantt />} />
               <Route path="kanban" element={<Kanban />} />

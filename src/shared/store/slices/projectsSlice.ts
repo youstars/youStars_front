@@ -9,7 +9,7 @@ export const getProjects = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = getCookie("access_token");
-      const response = await axiosInstance.get(`${API_BASE_URL}projects`,
+      const response = await axiosInstance.get(`${API_BASE_URL}projects/`,
           {
           headers: {
             Authorization: `Bearer ${token}`,

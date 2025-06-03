@@ -9,12 +9,7 @@ export interface Option {
   name: string;
   services: Service[];
 }
-export interface ProfessionalArea {
-  id: number;
-  name: string;
-  services: Service[];
 
-}
 export interface ProfessionalAreaSelectProps {
   value: Option | null;
   onChange: (value: Option | null) => void;
@@ -35,14 +30,30 @@ export interface Service {
   profession: number;
 }
 
-export interface ProfessionalArea {
+export interface Profession {
   id: number;
   name: string;
   services: Service[];
 }
 
+export interface ProfessionalArea {
+  id: number;
+  name: string;
+  professions: Profession[]; 
+  services: Service[];
+
+}
+
+
 export interface ProfessionalServiceSelectProps {
   areas: ProfessionalArea[];
   onSelect: (service: Service) => void;
   selectedService: Service | null;
+}
+
+export interface ProfessionalProfile {
+  id: number;
+  professional_area: ProfessionalArea;
+  profession: Profession;
+  services: Service[];
 }

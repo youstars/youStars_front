@@ -2,7 +2,6 @@ import { useState } from "react";
 import styles from "../../../widgets/sub_pages/SpecialistProfile/sections/EducationForm.module.scss";
 import { ProfessionalServiceSelectProps } from "shared/types/professionalArea";
 
-
 const ProfessionalServiceSelect: React.FC<ProfessionalServiceSelectProps> = ({
   areas,
   onSelect,
@@ -12,10 +11,10 @@ const ProfessionalServiceSelect: React.FC<ProfessionalServiceSelectProps> = ({
 
   return (
     <div className={styles.form}>
-      <label>Оказываемая услуга</label>
+      <label className={styles.label}>Оказываемая услуга</label>
       <div className={styles.inputWrapper}>
         <ul className={styles.dropdown}>
-          {areas.map((area) => (
+          {areas?.map((area) => (
             <li key={area.id}>
               <div
                 className={styles.areaItem}
@@ -25,19 +24,22 @@ const ProfessionalServiceSelect: React.FC<ProfessionalServiceSelectProps> = ({
               >
                 <strong>{area.name}</strong>
               </div>
-              {openAreaId === area.id && (
-                <ul className={styles.subDropdown}>
-                  {area.services.map((service) => (
+              {openAreaId === area.id && area.professions?.map((profession) => (
+                <ul key={profession.id} className={styles.subDropdown}>
+                  {profession.services?.map((service) => (
                     <li
                       key={service.id}
                       className={styles.serviceItem}
-                      onClick={() => onSelect(service)}
+                      onClick={() => {
+                        onSelect(service);
+                        setOpenAreaId(null); // Закрыть после выбора
+                      }}
                     >
                       {service.name}
                     </li>
                   ))}
                 </ul>
-              )}
+              ))}
             </li>
           ))}
         </ul>

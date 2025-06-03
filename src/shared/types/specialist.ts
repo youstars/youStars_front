@@ -1,5 +1,6 @@
+import { ProfessionalProfile } from "./professionalArea";
 export interface SpecialistFile {
-  id: number;
+    id: number;
     name: string;
     file: string;
     description?: string;
@@ -24,6 +25,7 @@ export interface Specialist {
     time_zone?: string | null;
     tg_nickname?: string | null;
   };
+  professional_profiles?: ProfessionalProfile[];
   proj_per_quarter_count?: number;
   faculty?: string | null;
   self_description?: string;
@@ -78,7 +80,7 @@ export interface SpecialistCardProps {
   isSelf?: boolean;
 }
 
-export interface FormData {
+export interface SpecialistFormData {
   firstName: string;
   lastName: string;
   phone: string;

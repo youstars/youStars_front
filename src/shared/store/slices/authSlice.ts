@@ -2,8 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "shared/api/api";
 import Cookies from "js-cookie";
 import { getUserIdFromToken } from "shared/utils/cookies";
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import { API_ENDPOINTS } from "shared/api/endpoints";
 
 export const register = createAsyncThunk(
   "auth/register",
@@ -14,13 +13,10 @@ export const register = createAsyncThunk(
     try {
       const endpoint =
         role === "student"
-          ? "auth/users/specialist/registration/"
-          : "auth/users/client/registration/";
+          ? API_ENDPOINTS.auth.registerSpecialist
+          : API_ENDPOINTS.auth.registerClient;
 
-      const response = await axiosInstance.post(
-        `${API_BASE_URL}${endpoint}`,
-        formData
-      );
+      const response = await axiosInstance.post(endpoint, formData);
 
       return response.data;
     } catch (error: any) {
@@ -42,7 +38,7 @@ export const login = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await axiosInstance.post("auth/token/create/", {
+      const response = await axiosInstance.post(API_ENDPOINTS.auth.login, {
         username,
         password,
       });
@@ -84,17 +80,16 @@ export const logout = createAsyncThunk(
       const refresh = Cookies.get("refresh_token");
 
       if (refresh) {
-        await axiosInstance.post("/auth/token/logout/", { refresh });
+        await axiosInstance.post(API_ENDPOINTS.auth.logout, { refresh });
       }
 
- 
       ["access_token", "refresh_token", "user_id"].forEach((key) => {
         Cookies.remove(key, {
           path: "/",
           sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
           secure: process.env.NODE_ENV === "production",
         });
-        console.log(`${key} after remove:`, Cookies.get(key)); 
+        console.log(`${key} after remove:`, Cookies.get(key));
       });
 
       return true;
@@ -110,7 +105,6 @@ const authSlice = createSlice({
     loading: false,
     error: null as ErrorType | null,
     user: null as null | { id: string | null; username: string },
-
   },
   reducers: {
     logoutUser: (state) => {
@@ -162,9 +156,10 @@ const authSlice = createSlice({
       .addCase(logout.rejected, (state, action) => {
         state.loading = false;
         state.error = {
-          general: typeof action.payload === "string"
-            ? action.payload
-            : "Logout failed",
+          general:
+            typeof action.payload === "string"
+              ? action.payload
+              : "Logout failed",
         };
       });
   },

@@ -243,3 +243,45 @@
     background: #e6b000;
   }
 }
+
+
+.inputGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #888888;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  textarea,
+  select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    background: #2d3134;
+    color: #888888;
+
+    &:focus {
+      outline: none;
+      border-color: #e5dd46;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.4);
+    }
+  }
+
+  select {
+    appearance: none;
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 18px;
+    cursor: pointer;
+  }
+}

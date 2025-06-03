@@ -19,7 +19,7 @@ export const getOrders = createAsyncThunk<Order[], void, { rejectValue: string }
             const token = getToken();
             if (!token) return rejectWithValue("Токен отсутствует");
 
-            const response = await axiosInstance.get<GetOrdersResponse>(`${API_BASE_URL}orders`, {
+            const response = await axiosInstance.get<GetOrdersResponse>(`${API_BASE_URL}orders/`, {
                 headers: {Authorization: `Bearer ${token}`},
             });
 
@@ -38,7 +38,7 @@ export const createOrder = createAsyncThunk<void, Partial<Order>, { rejectValue:
             const token = getToken();
             if (!token) return rejectWithValue("Токен отсутствует");
 
-            await axiosInstance.post(`${API_BASE_URL}orders`, orderData, {
+            await axiosInstance.post(`${API_BASE_URL}orders/`, orderData, {
                 headers: {Authorization: `Bearer ${token}`},
             });
         } catch (error: any) {
@@ -47,6 +47,30 @@ export const createOrder = createAsyncThunk<void, Partial<Order>, { rejectValue:
         }
     }
 );
+
+
+
+export const assignTrackerToOrder = createAsyncThunk<
+  void,
+  { orderId: string; trackerId: string },
+  { rejectValue: string }
+>('funnel/assignTrackerToOrder', async ({ orderId, trackerId }, { rejectWithValue }) => {
+  try {
+    const token = getToken();
+    if (!token) return rejectWithValue('Нет токена');
+
+    await axiosInstance.patch(`/order/${orderId}/`, {
+      tracker: trackerId,
+      
+    }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error: any) {
+    console.error('Ошибка назначения трекера:', error);
+    return rejectWithValue(error.response?.data || 'Ошибка при назначении трекера');
+  }
+});
+
 
 interface FunnelState {
     funnel: Order[];
