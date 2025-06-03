@@ -22,4 +22,5 @@ export interface Order {
     updated_at: string;
     is_archived: boolean;
     file_terms_of_reference: any[];
+    specialists?: { id: number }[];
 }

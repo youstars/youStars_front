@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./SpecialistCard.module.scss";
 import PaperPlane from "shared/assets/icons/paperPlane.svg";
 import Plus from "shared/assets/icons/plus.svg";
@@ -10,15 +10,26 @@ import { useChatService } from "shared/hooks/useWebsocket";
 import IconButton from "shared/UI/IconButton/IconButton";
 
 import { Specialist } from "shared/types/specialist";
+import { Order } from "shared/types/orders";
+import { useAppSelector } from "shared/hooks/useAppSelector";
+import { useAppDispatch } from "shared/hooks/useAppDispatch";
+import { getFunnelData } from "shared/store/slices/funnelSlice";
+
 
 interface SpecialistCardProps {
   specialist: Specialist;
+
 }
 
-const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
+const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist,  }) => {
   const { chats, setActiveChat } = useChatService();
   const navigate = useNavigate();
-
+   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
+const toggleOrders = () => {
+  setIsOrdersOpen(prev => !prev);
+};
+const allOrders = useAppSelector(state => state.funnel.funnel);
+const dispatch = useAppDispatch()
   const handleChatClick = () => {
     const specialistUserId = String(specialist.custom_user?.id);
     const chat = chats.find((chat: Chat) =>
@@ -34,7 +45,17 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
   };
 
 
-  
+const handlePlusClick = (e: React.MouseEvent) => {
+  e.stopPropagation();
+  if (isOrdersOpen) {
+    setIsOrdersOpen(false);
+  } else {
+    dispatch(getFunnelData());
+    setIsOrdersOpen(true);
+  }
+};
+
+
   const formatValue = (value: any) => {
     if (
       value === null ||
@@ -89,22 +110,46 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
           </div>
         </div>
         <div className={styles.actionGroup}>
-          <div className={styles.buttons}>
-            <IconButton
-              icon={PaperPlane}
-              alt="Chat"
-              onClick={handleChatClick}
-              title="Начать чат"
-            />
-            <IconButton icon={Plus} alt="Add" onClick={handleChatClick} />
-            <button
-              className={styles.profileButton}
-              onClick={handleProfileClick}
-            >
-              Профиль
-            </button>
-          </div>
+<div className={styles.buttons}>
+  <IconButton
+    icon={PaperPlane}
+    alt="Chat"
+    onClick={handleChatClick}
+    title="Начать чат"
+  />
+ <IconButton
+  icon={Plus}
+  alt="Toggle Orders"
+  onClick={handlePlusClick}
+  title="Показать заказы"
+/>
+
+
+
+  <button
+    className={styles.profileButton}
+    onClick={handleProfileClick}
+  >
+    Профиль
+  </button>
+   {isOrdersOpen && (
+  <div className={styles.ordersDropdown}>
+    {allOrders.length > 0 ? (
+      allOrders.map(order => (
+        <div key={order.id} className={styles.orderItem}>
+          {order.project_name || order.order_name}
         </div>
+      ))
+    ) : (
+      <div>Нет заказов</div>
+    )}
+  </div>
+)}
+</div>
+
+
+        </div>
+       
       </div>
       <div className={styles.cardDetails}>
         <p className={styles.description}>

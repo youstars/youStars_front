@@ -19,6 +19,8 @@ import {
 } from "shared/store/slices/funnelSlice";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { getUserIdFromToken } from "shared/utils/cookies";
+import { useNavigate } from "react-router-dom";
+import Plus from "shared/assets/icons/plus.svg";
 
 interface SideFunnelProps {
   isOpen: boolean;
@@ -109,6 +111,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
       setIsEditingTitle(false);
     }
   };
+const navigate = useNavigate();
 
   const handleBecomeTracker = async () => {
     if (!orderId || !userId) return;
@@ -137,6 +140,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
   if (!order) return null;
   console.log("orderId:", orderId);
   console.log("currentUser:", userId);
+  console.log("Current status:", order.status);
 
   return (
     <div
@@ -256,6 +260,45 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                 <p>{order.extra_wishes || "Комментариев нет"}</p>
               </div>
             </div>
+            {String(order.status) === "matching" && (
+              <>
+                {/* Приглашённые специалисты */}
+<div className={classes.title}>
+  Приглашённые специалисты
+  <img
+    src={Plus}
+    alt="Добавить"
+    className={classes.plusIcon}
+    onClick={() => navigate("/manager/specialists")}
+    title="Добавить специалиста"
+  />
+</div>
+
+
+                {/* Утверждённые специалисты */}
+                <div className={classes.title}>Утверждённые специалисты</div>
+                <div className={classes.project_card}>
+                  тут список утверждённых
+                </div>
+
+                {/* Файлы */}
+                <div className={classes.uploadWrapper}>
+                  <div className={classes.uploadHeader}>
+                    <p>Файлы заявки</p>
+                    <div className={classes.uploadIcon}>
+                      <Upload size={16} className={classes.icon} />
+                    </div>
+                  </div>
+                  <div className={classes.uploadBody}>
+                    <ul className={classes.fileList}>
+                      <li className={classes.fileItem}>📎 КП</li>
+                      <li className={classes.fileItem}>📎 ТЗ</li>
+                      <li className={classes.fileItem}>📎 Договор</li>
+                    </ul>
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* SUBTASKS */}
             <div className={classes.subtasksWrapper}>
@@ -299,6 +342,8 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
               {String(
                 String(order.status) === "in_progress"
                   ? "Мэтчинг"
+                  : String(order.status) === "matching"
+                  ? "Утвердить специалистов"
                   : "Стать трекером"
               )}
             </button>

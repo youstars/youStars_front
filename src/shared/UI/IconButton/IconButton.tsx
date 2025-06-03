@@ -4,7 +4,7 @@ import styles from "./IconButton.module.scss";
 interface IconButtonProps {
   icon: string;
   alt: string;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   title?: string;
   size?: IconButtonSize;
   borderColor?: string;
