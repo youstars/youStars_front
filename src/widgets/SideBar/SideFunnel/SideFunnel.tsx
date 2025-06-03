@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   MessageCircle,
   MessagesSquare,
@@ -6,13 +6,19 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
-  Upload, CheckSquare, PlusSquare,
-} from 'lucide-react';
-import classes from './SideFunnel.module.scss';
-import { useAppSelector } from 'shared/hooks/useAppSelector';
-import { assignTrackerToOrder, getFunnelData } from 'shared/store/slices/funnelSlice';
-import { useAppDispatch } from 'shared/hooks/useAppDispatch';
-import { getUserIdFromToken } from 'shared/utils/cookies';
+  Upload,
+  CheckSquare,
+  PlusSquare,
+} from "lucide-react";
+import classes from "./SideFunnel.module.scss";
+import { useAppSelector } from "shared/hooks/useAppSelector";
+import {
+  assignTrackerToOrder,
+  getFunnelData,
+  updateOrderTitle,
+} from "shared/store/slices/funnelSlice";
+import { useAppDispatch } from "shared/hooks/useAppDispatch";
+import { getUserIdFromToken } from "shared/utils/cookies";
 
 interface SideFunnelProps {
   isOpen: boolean;
@@ -38,8 +44,12 @@ const ExpandableText: React.FC<{ text: string; maxLength?: number }> = ({
       <p className={classes.expandableText}>
         {expanded || !isLong ? text : `${text.slice(0, maxLength)}... `}
         {isLong && (
-          <button className={classes.toggleLink} onClick={toggleExpanded} type="button">
-            {expanded ? 'Скрыть' : 'Дальше'}
+          <button
+            className={classes.toggleLink}
+            onClick={toggleExpanded}
+            type="button"
+          >
+            {expanded ? "Скрыть" : "Дальше"}
           </button>
         )}
       </p>
@@ -48,38 +58,96 @@ const ExpandableText: React.FC<{ text: string; maxLength?: number }> = ({
 };
 
 const formatDate = (dateStr: string | null | undefined): string => {
-  if (!dateStr) return 'Не указано';
+  if (!dateStr) return "Не указано";
   try {
-    return new Date(dateStr).toLocaleDateString('ru-RU');
+    return new Date(dateStr).toLocaleDateString("ru-RU");
   } catch {
-    return 'Неверная дата';
+    return "Неверная дата";
   }
 };
-const SideFunnel: React.FC<SideFunnelProps> = ({ isOpen, toggleSidebar, orderId }) => {
+const SideFunnel: React.FC<SideFunnelProps> = ({
+  isOpen,
+  toggleSidebar,
+  orderId,
+}) => {
+  const sidebarRef = React.useRef<HTMLDivElement>(null);
+
   const [isInfoOpen, setIsInfoOpen] = useState(true);
   const [isSubtasksOpen, setIsSubtasksOpen] = useState(true);
 
-  const orders = useAppSelector(state => state.funnel.funnel);
-const order = orders.find(o => o.id.toString() === orderId);
-const userId = getUserIdFromToken();
+  const orders = useAppSelector((state) => state.funnel.funnel);
+  const order = orders.find((o) => o.id.toString() === orderId);
+  const userId = getUserIdFromToken();
+  const [editableTitle, setEditableTitle] = useState(
+    order?.project_name || order?.order_name || ""
+  );
+  React.useEffect(() => {
+    if (order) {
+      setEditableTitle(order.project_name || order.order_name || "");
+    }
+  }, [order]);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
 
-const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-const handleBecomeTracker = async () => {
-  if (!orderId || !userId) return;
-console.log('CLICK — хочу стать трекером');
-  await dispatch(assignTrackerToOrder({ orderId, trackerId: userId }));
-  await dispatch(getFunnelData()); 
-  toggleSidebar(); 
-};
+  const handleTitleSave = async () => {
+    if (!editableTitle.trim() || editableTitle === order.project_name) return;
+
+    try {
+      await dispatch(
+        updateOrderTitle({
+          orderId: order.id.toString(),
+          projectName: editableTitle,
+          currentStatus: String(order.status),
+        })
+      );
+
+      await dispatch(getFunnelData());
+    } catch (error) {
+      console.error("Ошибка при сохранении:", error);
+    } finally {
+      setIsEditingTitle(false);
+    }
+  };
+
+  const handleBecomeTracker = async () => {
+    if (!orderId || !userId) return;
+    console.log("CLICK — хочу стать трекером");
+    await dispatch(assignTrackerToOrder({ orderId, trackerId: userId }));
+    await dispatch(getFunnelData());
+    toggleSidebar();
+  };
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node) &&
+        isOpen
+      ) {
+        toggleSidebar();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, toggleSidebar]);
 
   if (!order) return null;
-console.log('orderId:', orderId);
-console.log('currentUser:', userId);
+  console.log("orderId:", orderId);
+  console.log("currentUser:", userId);
 
   return (
-    <div className={`${classes.sidebarContainer} ${isOpen ? classes.containerOpen : ''}`}>
-      <div className={`${classes.sidebar} ${isOpen ? classes.open : ''}`}>
+    <div
+      className={`${classes.sidebarContainer} ${
+        isOpen ? classes.containerOpen : ""
+      }`}
+    >
+      <div
+        ref={sidebarRef}
+        className={`${classes.sidebar} ${isOpen ? classes.open : ""}`}
+      >
         <button className={classes.toggleButton} onClick={toggleSidebar}>
           {isOpen ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
         </button>
@@ -102,7 +170,31 @@ console.log('currentUser:', userId);
             </header>
 
             {/* TITLE */}
-            <div className={classes.title}>Название Заявки</div>
+            <div className={classes.title}>
+              {String(order.status) === "in_progress" && isEditingTitle ? (
+                <input
+                  value={editableTitle}
+                  onChange={(e) => setEditableTitle(e.target.value)}
+                  onBlur={() => setIsEditingTitle(false)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleTitleSave();
+                    }
+                  }}
+                  autoFocus
+                  className={classes.titleInput}
+                />
+              ) : (
+                <span
+                  onClick={() => {
+                    if (String(order.status) === "in_progress")
+                      setIsEditingTitle(true);
+                  }}
+                >
+                  {editableTitle || order?.order_name || "Без названия"}
+                </span>
+              )}
+            </div>
 
             {/* DEADLINES */}
             <div className={classes.time_block}>
@@ -140,15 +232,15 @@ console.log('currentUser:', userId);
             <div className={classes.title}>
               Информация по заявке
               <span
-                className={`${classes.arrow} ${isInfoOpen ? classes.up : ''}`}
-                onClick={() => setIsInfoOpen(prev => !prev)}
+                className={`${classes.arrow} ${isInfoOpen ? classes.up : ""}`}
+                onClick={() => setIsInfoOpen((prev) => !prev)}
               />
             </div>
             {isInfoOpen && (
               <div className={classes.funnelInfo}>
                 <div className={classes.sum}>
                   <p>Бюджет</p>
-                  <span>{order.estimated_budget || '—'}</span>
+                  <span>{order.estimated_budget || "—"}</span>
                 </div>
                 <div className={classes.sum}>
                   <p>Трекер</p>
@@ -161,7 +253,7 @@ console.log('currentUser:', userId);
             <div className={classes.blok_paragraph}>
               <h3>Заметка по заявке</h3>
               <div className={classes.paragraph}>
-                <p>{order.extra_wishes || 'Комментариев нет'}</p>
+                <p>{order.extra_wishes || "Комментариев нет"}</p>
               </div>
             </div>
 
@@ -169,10 +261,14 @@ console.log('currentUser:', userId);
             <div className={classes.subtasksWrapper}>
               <div
                 className={classes.subtasksHeader}
-                onClick={() => setIsSubtasksOpen(prev => !prev)}
+                onClick={() => setIsSubtasksOpen((prev) => !prev)}
               >
                 <h3>Подзадачи</h3>
-                <span className={`${classes.arrow} ${isSubtasksOpen ? classes.up : ''}`} />
+                <span
+                  className={`${classes.arrow} ${
+                    isSubtasksOpen ? classes.up : ""
+                  }`}
+                />
               </div>
 
               {isSubtasksOpen && (
@@ -190,10 +286,22 @@ console.log('currentUser:', userId);
             </div>
 
             {/* BUTTON */}
-            <button className={classes.submitButton} onClick={handleBecomeTracker}>
-  Стать трекером
-</button>
-
+            <button
+              className={classes.submitButton}
+              onClick={() => {
+                if (String(order.status) === "in_progress") {
+                  handleTitleSave();
+                } else {
+                  handleBecomeTracker();
+                }
+              }}
+            >
+              {String(
+                String(order.status) === "in_progress"
+                  ? "Мэтчинг"
+                  : "Стать трекером"
+              )}
+            </button>
           </div>
         </div>
       </div>

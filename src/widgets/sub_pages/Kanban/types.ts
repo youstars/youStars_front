@@ -20,7 +20,7 @@ export type TaskStatus =
 //   start?: Date;
 //   end?: Date;
 //   specialist?: string;
-//   assigned_specialist: SpecialistShort[]; // Исправлено с string[] на SpecialistShort[]
+//   assigned_specialist: SpecialistShort[]; 
 //   subtasks_count?: number;
 //   [key: string]: any;
 // };
