@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MessageCircle,
   MessagesSquare,
@@ -12,15 +12,28 @@ import {
 } from "lucide-react";
 import classes from "./SideFunnel.module.scss";
 import { useAppSelector } from "shared/hooks/useAppSelector";
-import {
-  assignTrackerToOrder,
-  getFunnelData,
-  updateOrderTitle,
-} from "shared/store/slices/funnelSlice";
+import { getFunnelData } from "shared/store/slices/funnelSlice";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { getUserIdFromToken } from "shared/utils/cookies";
 import { useNavigate } from "react-router-dom";
 import Plus from "shared/assets/icons/plus.svg";
+import {
+  updateOrderTitle,
+  assignTrackerToOrder,
+  getOrderById,
+} from "shared/store/slices/orderSlice";
+import {
+  approveInvitation,
+  rejectInvitation,
+} from "shared/store/slices/invitationSlice";
+import { updateOrderStatus } from "shared/store/slices/orderSlice";
+import { formatDate, getInitials } from "shared/helpers/userUtils";
+import Approve from "shared/images/sideBarImgs/fi-br-checkbox.svg";
+import Decline from "shared/images/sideBarImgs/Checkbox.svg";
+import { useChatService } from "shared/hooks/useWebsocket";
+import { findChatByParticipantId } from "shared/helpers/chatUtils";
+import ChatsIcon from "shared/assets/icons/ChatsY.svg";
+import ChatIcon from "shared/assets/icons/chatY.svg";
 
 interface SideFunnelProps {
   isOpen: boolean;
@@ -59,26 +72,32 @@ const ExpandableText: React.FC<{ text: string; maxLength?: number }> = ({
   );
 };
 
-const formatDate = (dateStr: string | null | undefined): string => {
-  if (!dateStr) return "Не указано";
-  try {
-    return new Date(dateStr).toLocaleDateString("ru-RU");
-  } catch {
-    return "Неверная дата";
-  }
-};
 const SideFunnel: React.FC<SideFunnelProps> = ({
   isOpen,
   toggleSidebar,
   orderId,
 }) => {
+  const { chats, setActiveChat } = useChatService();
+
+  const handleClientChat = () => {
+    const clientUserId = order.client?.custom_user?.id;
+    const chat = findChatByParticipantId(chats, clientUserId);
+
+    if (chat) {
+      setActiveChat(chat.id);
+      navigate("/manager/chats");
+    } else {
+      alert("Чат с этим клиентом не найден.");
+    }
+  };
+
   const sidebarRef = React.useRef<HTMLDivElement>(null);
 
   const [isInfoOpen, setIsInfoOpen] = useState(true);
   const [isSubtasksOpen, setIsSubtasksOpen] = useState(true);
 
-  const orders = useAppSelector((state) => state.funnel.funnel);
-  const order = orders.find((o) => o.id.toString() === orderId);
+  const order = useAppSelector((state) => state.order.current);
+
   const userId = getUserIdFromToken();
   const [editableTitle, setEditableTitle] = useState(
     order?.project_name || order?.order_name || ""
@@ -104,6 +123,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
         })
       );
 
+      await dispatch(getOrderById(order.id.toString()));
       await dispatch(getFunnelData());
     } catch (error) {
       console.error("Ошибка при сохранении:", error);
@@ -111,7 +131,14 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
       setIsEditingTitle(false);
     }
   };
-const navigate = useNavigate();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (orderId) {
+      dispatch(getOrderById(orderId));
+    }
+  }, [orderId, dispatch]);
 
   const handleBecomeTracker = async () => {
     if (!orderId || !userId) return;
@@ -138,9 +165,11 @@ const navigate = useNavigate();
   }, [isOpen, toggleSidebar]);
 
   if (!order) return null;
-  console.log("orderId:", orderId);
-  console.log("currentUser:", userId);
-  console.log("Current status:", order.status);
+
+  const clientUser = order.client?.custom_user;
+  const clientName =
+    clientUser?.full_name || (order.client ? `ID ${order.client.id}` : "—");
+  const clientInitials = getInitials(clientName);
 
   return (
     <div
@@ -161,14 +190,40 @@ const navigate = useNavigate();
             {/* HEADER */}
             <header className={classes.header}>
               <div className={classes.bloks}>
-                <div className={classes.user_img} />
-                <div className={classes.user_name}>
-                  <p>Иван Соколов</p>
-                  <p>ООО "Ratter"</p>
+                <div className={classes.user_img}>
+                  {clientUser?.avatar ? (
+                    <img
+                      src={clientUser.avatar}
+                      alt={clientName}
+                      className={classes.avatarImg}
+                    />
+                  ) : (
+                    <div className={classes.avatarCircle}>{clientInitials}</div>
+                  )}
                 </div>
+                <div className={classes.user_name}>
+                  <p>{clientName}</p>
+                  <p>{order.client?.business_name || "Без компании"}</p>
+                </div>
+
                 <div className={classes.chats}>
-                  <MessageCircle size={18} className={classes.icon} />
-                  <MessagesSquare size={18} className={classes.icon} />
+                  <button
+                    onClick={handleClientChat}
+                    className={classes.chatButton}
+                    title="Чат с клиентом"
+                  >
+                    <img
+                      src={ChatIcon}
+                      alt="Чат с клиентом"
+                      className={classes.chatIcon}
+                    />
+                  </button>
+
+                  <img
+                    src={ChatsIcon}
+                    alt="Чат с клиентом"
+                    className={classes.chatIcon}
+                  />
                 </div>
               </div>
             </header>
@@ -195,7 +250,7 @@ const navigate = useNavigate();
                       setIsEditingTitle(true);
                   }}
                 >
-                  {editableTitle || order?.order_name || "Без названия"}
+                  {editableTitle || `Заявка № ${order?.id}` || "Без названия"}
                 </span>
               )}
             </div>
@@ -263,22 +318,96 @@ const navigate = useNavigate();
             {String(order.status) === "matching" && (
               <>
                 {/* Приглашённые специалисты */}
-<div className={classes.title}>
-  Приглашённые специалисты
-  <img
-    src={Plus}
-    alt="Добавить"
-    className={classes.plusIcon}
-    onClick={() => navigate("/manager/specialists")}
-    title="Добавить специалиста"
-  />
-</div>
+                <div className={classes.invitedHeader}>
+                  <h4>Приглашённые специалисты</h4>
+                  <div className={classes.actions}>
+                    <span>принять</span>
+                    <span>оплата</span>
+                  </div>
+                </div>
+                <div className={classes.plusWrapper}>
+                  <img
+                    src={Plus}
+                    alt="Добавить"
+                    className={classes.plusIcon}
+                    onClick={() => navigate("/manager/specialists")}
+                    title="Добавить специалиста"
+                  />
+                </div>
 
+                <div className={classes.invitedList}>
+                  {order.invited_specialists.map((entry, index) => {
+                    const user = entry.specialist?.custom_user;
+                    const statusIcon =
+                      entry.is_approved === true
+                        ? "✅"
+                        : entry.status === "REJECTED"
+                        ? "❌"
+                        : "⏳";
+
+                    return (
+                      <div key={index} className={classes.invitedItem}>
+                        <div className={classes.statusIcon}>{statusIcon}</div>
+                        <div className={classes.avatar} />
+                        <div className={classes.name}>
+                          {user?.full_name || "Без имени"}
+                        </div>
+                        <div className={classes.actionIcons}>
+                          <button
+                            className={classes.approve}
+                            onClick={async () => {
+                              await dispatch(approveInvitation(entry.id));
+                              await dispatch(getOrderById(orderId));
+                            }}
+                            disabled={entry.is_approved}
+                            title="Подтвердить"
+                          >
+                            <img src={Approve} alt="Подтвердить" />
+                          </button>
+                          <button
+                            className={classes.reject}
+                            onClick={() => {
+                              dispatch(rejectInvitation(entry.id)).then(() =>
+                                dispatch(getOrderById(orderId))
+                              );
+                            }}
+                            title="Отклонить"
+                          >
+                            <img src={Decline} alt="Отклонить" />
+                          </button>
+                        </div>
+
+                        <div className={classes.payment}>
+                          {entry.proposed_payment || "—"}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
 
                 {/* Утверждённые специалисты */}
+                {/* Утверждённые специалисты */}
                 <div className={classes.title}>Утверждённые специалисты</div>
-                <div className={classes.project_card}>
-                  тут список утверждённых
+                <div className={classes.invitedList}>
+                  {order.approved_specialists?.length ? (
+                    order.approved_specialists.map((spec, index) => {
+                      const user = spec.custom_user;
+                      return (
+                        <div key={index} className={classes.invitedItem}>
+                          <div className={classes.statusIcon}>✅</div>
+                          <div className={classes.avatar} />
+                          <div className={classes.name}>
+                            {user?.full_name || "Без имени"}
+                          </div>
+                          <div className={classes.payment}>—</div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className={classes.project_card}>
+                      Нет утверждённых специалистов
+                    </div>
+                  )}
                 </div>
 
                 {/* Файлы */}
@@ -331,21 +460,35 @@ const navigate = useNavigate();
             {/* BUTTON */}
             <button
               className={classes.submitButton}
-              onClick={() => {
+              onClick={async () => {
                 if (String(order.status) === "in_progress") {
-                  handleTitleSave();
+                  await handleTitleSave();
+                  await dispatch(getOrderById(orderId));
+                  await dispatch(getFunnelData());
+                } else if (String(order.status) === "matching") {
+                  await dispatch(
+                    updateOrderStatus({ orderId, newStatus: "prepayment" })
+                  );
+                  await dispatch(getOrderById(orderId));
+                  await dispatch(getFunnelData());
                 } else {
-                  handleBecomeTracker();
+                  await handleBecomeTracker();
+                  await dispatch(getOrderById(orderId));
                 }
               }}
+              disabled={
+                (String(order.status) === "matching" &&
+                  (!order.approved_specialists ||
+                    order.approved_specialists.length === 0)) ||
+                (String(order.status) === "in_progress" &&
+                  order.order_name === `Заявка № ${order.id}`)
+              }
             >
-              {String(
-                String(order.status) === "in_progress"
-                  ? "Мэтчинг"
-                  : String(order.status) === "matching"
-                  ? "Утвердить специалистов"
-                  : "Стать трекером"
-              )}
+              {String(order.status) === "in_progress"
+                ? "Мэтчинг"
+                : String(order.status) === "matching"
+                ? "Утвердить специалистов"
+                : "Стать трекером"}
             </button>
           </div>
         </div>

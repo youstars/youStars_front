@@ -92,7 +92,7 @@ const Chats: React.FC = () => {
         <div className={styles.searchContainer}>
           <SearchInput />
         </div>
-        <Notifications />
+
 
         <div className={styles.tabs}>
   {["all", "specialists", "businesses", "projects"].map((tab) => (

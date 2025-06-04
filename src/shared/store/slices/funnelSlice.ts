@@ -50,66 +50,6 @@ export const createOrder = createAsyncThunk<void, Partial<Order>, { rejectValue:
 
 
 
-export const assignTrackerToOrder = createAsyncThunk<
-  void,
-  { orderId: string; trackerId: string },
-  { rejectValue: string }
->('funnel/assignTrackerToOrder', async ({ orderId, trackerId }, { rejectWithValue }) => {
-  try {
-    const token = getToken();
-    if (!token) return rejectWithValue('Нет токена');
-
-    await axiosInstance.patch(`/order/${orderId}/`, {
-      tracker: trackerId,
-      
-    }, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-  } catch (error: any) {
-    console.error('Ошибка назначения трекера:', error);
-    return rejectWithValue(error.response?.data || 'Ошибка при назначении трекера');
-  }
-});
-
-
-export const updateOrderTitle = createAsyncThunk<
-  void,
-  { orderId: string; projectName: string; currentStatus: string },
-  { rejectValue: string }
->
-("funnel/updateOrderTitle", async ({ orderId, projectName }, { rejectWithValue }) => {
-  try {
-    const token = getToken();
-    if (!token) return rejectWithValue("Нет токена");
-
-    // Сначала PATCH только project_name
-    await axiosInstance.patch(`/order/${orderId}/`, {
-      project_name: projectName,
-    }, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json; charset=utf-8",
-        "Accept": "application/json"
-      },
-    });
-
-    // Затем PATCH статус отдельно
-    await axiosInstance.patch(`/order/${orderId}/`, {
-      status: "matching",
-    }, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json; charset=utf-8",
-        "Accept": "application/json"
-      },
-    });
-
-  } catch (error: any) {
-    console.error("Ошибка при обновлении названия и статуса:", error);
-    return rejectWithValue(error.response?.data || "Ошибка при обновлении");
-  }
-});
-
 
 
 interface FunnelState {
@@ -145,9 +85,7 @@ const funnelSlice = createSlice({
             .addCase(createOrder.fulfilled, (state) => {
                 state.status = "fulfilled";
             })
-            .addCase(updateOrderTitle.fulfilled, (state) => {
-  state.status = "fulfilled";
-})
+
     },
 });
 

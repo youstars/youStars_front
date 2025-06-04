@@ -17,6 +17,8 @@ import knowledgeBaseReducer from "./slices/librarySlice";
 import { foldersReducer } from "./slices/foldersSlice";
 import { projectReducer } from "./slices/projectSlice";
 import trackerReducer from "./slices/trackersSlice"
+import invitationReducer from './slices/invitationSlice';
+import orderReducer from "./slices/orderSlice";
 
 const store = configureStore({
   reducer: {
@@ -37,7 +39,9 @@ const store = configureStore({
     projectFiles: projectFilesReducer,
     knowledgeBase: knowledgeBaseReducer,
     folders: foldersReducer, 
-    trackers: trackerReducer
+    trackers: trackerReducer,
+    invitation: invitationReducer,
+    order: orderReducer,
   },
 });
 

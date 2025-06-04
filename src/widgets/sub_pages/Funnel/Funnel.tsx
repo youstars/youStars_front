@@ -9,6 +9,7 @@ import chatIcons from "shared/images/chats.svg";
 import chatIcon from "shared/images/chat.svg";
 import ModalOrders from "widgets/Modals/ModalOrder/ModalOrder";
 import SideFunnel from "widgets/SideBar/SideFunnel/SideFunnel";
+import { getInitials } from "shared/helpers/userUtils";
 
 const statusLabels: Record<string, string> = {
   new: "Новая заявка",
@@ -133,11 +134,15 @@ const Funnel = () => {
                         <div className={styles.taskHeader}>
                           <div>
                             <h3 className={styles.taskTitle}>
-                              {`Заявка №${order.id}`}
+                              {order.project_name ||
+                                order.order_name ||
+                                `Заявка №${order.id}`}
                             </h3>
+
                             <p className={styles.description}>
-                              {`Клиент ${order.client}`}
-                            </p>
+  Клиент {order.client?.custom_user?.full_name|| `ID ${order.client?.id}`}
+</p>
+
                           </div>
                           <div className={styles.taskActions}>
                             <button className={styles.taskActionButton}>
@@ -179,9 +184,13 @@ const Funnel = () => {
                               Трекер:
                             </span>
                             <span className={styles.taskDetailValue}>
-                              <span className={styles.avatarCircle}>
-                                {order.tracker ?? "–"}
-                              </span>
+                             <span className={styles.avatarCircle}>
+  {order.tracker?.custom_user?.full_name
+    ? getInitials(order.tracker.custom_user.full_name)
+    : "–"}
+</span>
+
+
                             </span>
                           </div>
                           <div className={styles.taskDetailItem}>
@@ -189,16 +198,16 @@ const Funnel = () => {
                               Специалисты:
                             </span>
                             <span className={styles.taskDetailValue}>
-                              {(order.approved_specialists || [])
-                                .slice(0, 2)
-                                .map((id) => (
-                                  <span
-                                    key={id}
-                                    className={styles.avatarCircle}
-                                  >
-                                    ID {id}
-                                  </span>
-                                ))}
+                             {(order.approved_specialists || [])
+  .slice(0, 2)
+  .map((spec) => (
+    <span key={spec.id} className={styles.avatarCircle}>
+      {spec.custom_user?.full_name
+        ? getInitials(spec.custom_user.full_name)
+        : `ID ${spec.id}`}
+    </span>
+))}
+
                               {order.approved_specialists &&
                                 order.approved_specialists.length > 2 && (
                                   <span className={styles.avatarMore}>...</span>

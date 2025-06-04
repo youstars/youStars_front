@@ -196,24 +196,31 @@
   margin-left: auto;
 }
 
-.icon {
+.chatButton {
+  background: none;
+  border: none;
+  padding: 0;
   cursor: pointer;
+  display: flex;
+  align-items: center;
   opacity: 0.85;
   transition: all 0.3s ease;
-  color: #e0e0e0;
-  stroke-width: 1.5px;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
 }
 
-.icon:hover {
+.chatButton:hover {
   opacity: 1;
   transform: translateY(-2px);
-  color: #ffffff;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
 }
 
-.icon:active {
+.chatButton:active {
   transform: translateY(-1px);
+}
+
+.chatIcon {
+  width: 20px;
+  height: 20px;
 }
 
 .section {
@@ -833,6 +840,14 @@
   }
 }
 
+.submitButton:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+
 
 .titleInput {
   font-size: 14px;
@@ -869,3 +884,126 @@
     transform: scale(1.2);
   }
 }
+.invitedHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #ffc400;
+  margin-bottom: 8px;
+
+  h4 {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .actions {
+    font-size: 11px;
+    color: #a0a0a0;
+    display: flex;
+    gap: 14px;
+  }
+}
+
+.invitedList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.invitedItem {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #e0e0e0;
+  justify-content: space-between;
+}
+
+.statusIcon {
+  width: 16px;
+}
+
+.statusRejected {
+  color: red;
+}
+.statusWaiting {
+  color: #ffcc00;
+}
+.statusAccepted {
+  color: #00cc66;
+}
+
+.avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #444;
+  margin: 0 8px;
+}
+
+.name {
+  flex: 1;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  input {
+    pointer-events: none;
+  }
+
+  .reject {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover {
+      color: red;
+    }
+  }
+}
+
+.payment {
+  font-weight: 500;
+}
+
+
+.actionIcons {
+  display: flex;
+  gap: 6px;
+}
+
+.approve,
+.reject {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #ccc;
+  transition: color 0.2s ease;
+}
+
+.approve:hover {
+  color: #4ade80; 
+}
+
+.reject:hover {
+  color: #f87171; 
+}
+
+.approve:disabled {
+  color: #4ade80;
+  cursor: default;
+}
+.plusWrapper {
+  margin: 8px 0 12px;
+  display: flex;
+  justify-content: flex-start;
+}
+

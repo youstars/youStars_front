@@ -5,35 +5,35 @@ import Plus from "shared/assets/icons/plus.svg";
 import Avatar from "shared/UI/Avatar/Avatar";
 import Tag from "shared/UI/Tag/Tag";
 import { useNavigate } from "react-router-dom";
-import { Chat } from "shared/types/chat";
 import { useChatService } from "shared/hooks/useWebsocket";
 import IconButton from "shared/UI/IconButton/IconButton";
-
 import { Specialist } from "shared/types/specialist";
 import { Order } from "shared/types/orders";
-import { useAppSelector } from "shared/hooks/useAppSelector";
+import { setInvitationPayload, sendInvitation } from "shared/store/slices/invitationSlice";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
-import { getFunnelData } from "shared/store/slices/funnelSlice";
+import { getCookie } from "shared/utils/cookies";
 
 
 interface SpecialistCardProps {
   specialist: Specialist;
-
+  orders: Order[];
 }
 
-const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist,  }) => {
+const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist, orders }) => {
+  const dispatch = useAppDispatch();
   const { chats, setActiveChat } = useChatService();
   const navigate = useNavigate();
-   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
-const toggleOrders = () => {
-  setIsOrdersOpen(prev => !prev);
-};
-const allOrders = useAppSelector(state => state.funnel.funnel);
-const dispatch = useAppDispatch()
+  const [isOrdersOpen, setIsOrdersOpen] = useState(false);
+
+  const toggleOrders = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsOrdersOpen((prev) => !prev);
+  };
+
   const handleChatClick = () => {
     const specialistUserId = String(specialist.custom_user?.id);
-    const chat = chats.find((chat: Chat) =>
-      chat.participants?.some((p: any) => String(p.id) === specialistUserId)
+    const chat = chats.find((chat) =>
+      chat.participants?.some((p) => String(p.id) === specialistUserId)
     );
 
     if (chat) {
@@ -43,18 +43,20 @@ const dispatch = useAppDispatch()
       alert("Чат с этим специалистом не найден.");
     }
   };
+const trackerId = parseInt(getCookie("user_id") || "1");
 
+const handleOrderSelect = (order: Order) => {
+  const payload = {
+    order: order.id,
+    specialist_id: specialist.id,
+    tracker_id: trackerId,
+    proposed_payment: 0,
+  };
 
-const handlePlusClick = (e: React.MouseEvent) => {
-  e.stopPropagation();
-  if (isOrdersOpen) {
-    setIsOrdersOpen(false);
-  } else {
-    dispatch(getFunnelData());
-    setIsOrdersOpen(true);
-  }
+  dispatch(setInvitationPayload(payload));
+  dispatch(sendInvitation(payload));
+  setIsOrdersOpen(false); 
 };
-
 
   const formatValue = (value: any) => {
     if (
@@ -70,8 +72,6 @@ const handlePlusClick = (e: React.MouseEvent) => {
   };
 
   const handleProfileClick = () => {
-    console.log(specialist, "при переходе")
-    
     navigate(`/manager/specialists/${specialist.id}`);
   };
 
@@ -87,11 +87,8 @@ const handlePlusClick = (e: React.MouseEvent) => {
           <div className={styles.userInfo}>
             <div className={styles.nameContainer}>
               <h3 className={styles.name}>
-                {specialist.custom_user?.first_name ||
-                specialist.custom_user?.last_name
-                  ? `${specialist.custom_user.first_name || ""} ${
-                      specialist.custom_user.last_name || ""
-                    }`.trim()
+                {specialist.custom_user?.first_name || specialist.custom_user?.last_name
+                  ? `${specialist.custom_user.first_name || ""} ${specialist.custom_user.last_name || ""}`.trim()
                   : specialist.custom_user?.full_name || "ДАННЫХ НЕТ"}
               </h3>
               <div className={styles.rating}>
@@ -103,65 +100,57 @@ const handlePlusClick = (e: React.MouseEvent) => {
               {specialist.profession || "Профессия не указана"}
             </p>
             <p className={styles.availability}>
-              {specialist.is_busy === "Available"
-                ? "Доступен к проектам"
-                : "Сейчас не доступен"}
+              {specialist.is_busy === "Available" ? "Доступен к проектам" : "Сейчас не доступен"}
             </p>
           </div>
         </div>
         <div className={styles.actionGroup}>
-<div className={styles.buttons}>
-  <IconButton
-    icon={PaperPlane}
-    alt="Chat"
-    onClick={handleChatClick}
-    title="Начать чат"
-  />
- <IconButton
-  icon={Plus}
-  alt="Toggle Orders"
-  onClick={handlePlusClick}
-  title="Показать заказы"
-/>
-
-
-
-  <button
-    className={styles.profileButton}
-    onClick={handleProfileClick}
+          <div className={styles.buttons}>
+            <IconButton
+              icon={PaperPlane}
+              alt="Chat"
+              onClick={handleChatClick}
+              title="Начать чат"
+            />
+            <IconButton
+              icon={Plus}
+              alt="Toggle Orders"
+              onClick={toggleOrders}
+              title="Показать заказы"
+            />
+            {isOrdersOpen && (
+              <div className={styles.ordersDropdown}>
+                {orders.length > 0 ? (
+                 orders.map((order) => (
+  <div
+    key={order.id}
+    className={styles.orderItem}
+    onClick={() => handleOrderSelect(order)}
   >
-    Профиль
-  </button>
-   {isOrdersOpen && (
-  <div className={styles.ordersDropdown}>
-    {allOrders.length > 0 ? (
-      allOrders.map(order => (
-        <div key={order.id} className={styles.orderItem}>
-          {order.project_name || order.order_name}
-        </div>
-      ))
-    ) : (
-      <div>Нет заказов</div>
-    )}
+    {order.project_name || order.order_name}
   </div>
-)}
-</div>
+))
 
-
+                ) : (
+                  <div>Нет заказов</div>
+                )}
+              </div>
+            )}
+            <button
+              className={styles.profileButton}
+              onClick={handleProfileClick}
+            >
+              Профиль
+            </button>
+          </div>
         </div>
-       
       </div>
       <div className={styles.cardDetails}>
-        <p className={styles.description}>
-          {specialist.self_description || "ДАННЫХ НЕТ"}
-        </p>
+        <p className={styles.description}>{specialist.self_description || "ДАННЫХ НЕТ"}</p>
         <div className={styles.skillList}>
           <span className={styles.label}>Услуги:</span>
           <div className={styles.tags}>
-            {(specialist.services?.length
-              ? specialist.services
-              : ["Услуги не указаны"]
-            ).map((service, idx) => (
+            {(specialist.services?.length ? specialist.services : ["Услуги не указаны"]).map((service, idx) => (
               <Tag key={idx} label={service} />
             ))}
           </div>
@@ -169,31 +158,23 @@ const handlePlusClick = (e: React.MouseEvent) => {
         <div className={styles.skillList}>
           <span className={styles.label}>Ниши:</span>
           <div className={styles.tags}>
-            {(specialist.business_scopes?.length
-              ? specialist.business_scopes
-              : ["Ниши не указаны"]
-            ).map((service, idx) => (
+            {(specialist.business_scopes?.length ? specialist.business_scopes : ["Ниши не указаны"]).map((service, idx) => (
               <Tag key={idx} label={service} />
             ))}
           </div>
         </div>
         <div className={styles.stats}>
           <div>
-            <strong>Проекты в работе:</strong>{" "}
-            {formatValue(specialist.projects_in_progress_count)}
+            <strong>Проекты в работе:</strong> {formatValue(specialist.projects_in_progress_count)}
           </div>
-
           <div>
-            <strong>Осталось задач:</strong>{" "}
-            {formatValue(specialist.projects_in_progress_count)}
+            <strong>Осталось задач:</strong> {formatValue(specialist.projects_in_progress_count)}
           </div>
           <div>
             <strong>Ставка:</strong> {formatValue(specialist.appr_hourly_rate)}
           </div>
-
           <div>
-            <strong>Стоимость:</strong>{" "}
-            {formatValue(specialist.specialist_cost_total)}
+            <strong>Стоимость:</strong> {formatValue(specialist.specialist_cost_total)}
           </div>
           <div>
             <strong>Занятость:</strong>{" "}
@@ -207,4 +188,4 @@ const handlePlusClick = (e: React.MouseEvent) => {
   );
 };
 
-export default SpecialistCard;
+export default React.memo(SpecialistCard);

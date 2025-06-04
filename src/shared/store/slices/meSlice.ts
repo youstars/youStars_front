@@ -32,16 +32,16 @@ export const getMe = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const token = getCookie("access_token");
-
+      console.log("Token:", token); 
       const response = await axiosInstance.get(API_ME.get, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
-
       return response.data;
     } catch (error: any) {
+      console.error("Error fetching me:", error); 
       return thunkAPI.rejectWithValue(
         error.response?.data || "Ошибка запроса"
       );
@@ -76,10 +76,16 @@ const meSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(getMe.rejected, (state, action) => {
-        state.loading = false;
-        state.data = null;
-        state.error = action.payload as string;
-      });
+  state.loading = false;
+  state.error = action.payload as string;
+ 
+  const token = getCookie("access_token");
+  if (token) {
+    state.data = { id: getCookie("user_id") || null };
+  } else {
+    state.data = null;
+  }
+});
   },
 });
 

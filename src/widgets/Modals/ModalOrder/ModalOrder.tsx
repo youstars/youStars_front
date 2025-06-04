@@ -29,6 +29,10 @@ const ModalOrders: React.FC<ModalOrdersProps> = ({ closeModal }) => {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const clients = useAppSelector((state) => state.clients.list);
 
+  const { data: me } = useAppSelector((state) => state.me);
+  const userRole = me?.role;
+  const userId = me?.id;
+
   useEffect(() => {
     dispatch(getClients());
   }, [dispatch]);
@@ -159,24 +163,26 @@ const ModalOrders: React.FC<ModalOrdersProps> = ({ closeModal }) => {
               </div>
             </div>
           </div>
-          <div className={styles.inputGroup}>
-            <label>
-              Выберите клиента <span className={styles.required}>*</span>
-            </label>
-            <select
-              value={selectedClientId || ""}
-              onChange={(e) => setSelectedClientId(e.target.value || null)}
-            >
-              <option value="" disabled>
-                Выберите клиента
-              </option>
-              {clients.map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.custom_user.full_name}
+          {userRole !== "Client" && (
+            <div className={styles.inputGroup}>
+              <label>
+                Выберите клиента <span className={styles.required}>*</span>
+              </label>
+              <select
+                value={selectedClientId || ""}
+                onChange={(e) => setSelectedClientId(e.target.value || null)}
+              >
+                <option value="" disabled>
+                  Выберите клиента
                 </option>
-              ))}
-            </select>
-          </div>
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.custom_user.full_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className={styles.submitButtonWrapper}>
             <button className={styles.submitButton} onClick={handleSubmit}>
