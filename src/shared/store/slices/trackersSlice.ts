@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axiosInstance from 'shared/api/api';
 import { getToken } from 'shared/utils/cookies';
-import { Specialist } from 'shared/types/specialist'; // Убедись, что тип Specialist соответствует данным
+import { Specialist } from 'shared/types/specialist'; 
 import { RootState } from 'shared/store';
 
 const API_ENDPOINT = '/users/admins/';

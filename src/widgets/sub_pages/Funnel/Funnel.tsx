@@ -10,6 +10,7 @@ import chatIcon from "shared/images/chat.svg";
 import ModalOrders from "widgets/Modals/ModalOrder/ModalOrder";
 import SideFunnel from "widgets/SideBar/SideFunnel/SideFunnel";
 import { getInitials } from "shared/helpers/userUtils";
+import { useDragScroll } from "shared/hooks/useDragScroll";
 
 const statusLabels: Record<string, string> = {
   new: "Новая заявка",
@@ -39,6 +40,8 @@ const Funnel = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const dragScrollRef = useDragScroll();
 
   useEffect(() => {
     dispatch(getFunnelData());
@@ -100,7 +103,7 @@ const Funnel = () => {
         </button>
       </div>
 
-      <div className={styles.statusColumns}>
+      <div className={styles.statusColumns} ref={dragScrollRef}>
         {Object.entries(statusLabels).map(([statusKey, label]) => {
           const items = groupedOrders[statusKey] || [];
           const totalBudget = calculateTotalBudget(items);
@@ -140,9 +143,10 @@ const Funnel = () => {
                             </h3>
 
                             <p className={styles.description}>
-  Клиент {order.client?.custom_user?.full_name|| `ID ${order.client?.id}`}
-</p>
-
+                              Клиент{" "}
+                              {order.client?.custom_user?.full_name ||
+                                `ID ${order.client?.id}`}
+                            </p>
                           </div>
                           <div className={styles.taskActions}>
                             <button className={styles.taskActionButton}>
@@ -184,13 +188,13 @@ const Funnel = () => {
                               Трекер:
                             </span>
                             <span className={styles.taskDetailValue}>
-                             <span className={styles.avatarCircle}>
-  {order.tracker?.custom_user?.full_name
-    ? getInitials(order.tracker.custom_user.full_name)
-    : "–"}
-</span>
-
-
+                              <span className={styles.avatarCircle}>
+                                {order.tracker?.custom_user?.full_name
+                                  ? getInitials(
+                                      order.tracker.custom_user.full_name
+                                    )
+                                  : "–"}
+                              </span>
                             </span>
                           </div>
                           <div className={styles.taskDetailItem}>
@@ -198,15 +202,18 @@ const Funnel = () => {
                               Специалисты:
                             </span>
                             <span className={styles.taskDetailValue}>
-                             {(order.approved_specialists || [])
-  .slice(0, 2)
-  .map((spec) => (
-    <span key={spec.id} className={styles.avatarCircle}>
-      {spec.custom_user?.full_name
-        ? getInitials(spec.custom_user.full_name)
-        : `ID ${spec.id}`}
-    </span>
-))}
+                              {(order.approved_specialists || [])
+                                .slice(0, 2)
+                                .map((spec) => (
+                                  <span
+                                    key={spec.id}
+                                    className={styles.avatarCircle}
+                                  >
+                                    {spec.custom_user?.full_name
+                                      ? getInitials(spec.custom_user.full_name)
+                                      : `ID ${spec.id}`}
+                                  </span>
+                                ))}
 
                               {order.approved_specialists &&
                                 order.approved_specialists.length > 2 && (

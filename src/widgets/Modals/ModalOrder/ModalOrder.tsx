@@ -9,12 +9,27 @@ import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { useAppSelector } from "shared/hooks/useAppSelector";
 import { useEffect } from "react";
 import { getClients } from "shared/store/slices/clientsSlice";
+import * as yup from "yup";
 
 registerLocale("ru", ru);
 
 interface ModalOrdersProps {
   closeModal: () => void;
 }
+export const orderSchema = yup.object().shape({
+  order_goal: yup.string().required("Поле обязательно"),
+  product_or_service: yup.string().required("Поле обязательно"),
+  estimated_budget: yup
+    .string()
+    .matches(/^\d+\s*-\s*\d+$/, "Укажите диапазон, например: 1000 - 5000")
+    .required("Укажите бюджет"),
+  project_deadline: yup.date().required("Укажите срок выполнения"),
+  client: yup.string().nullable().when("userRole", {
+    is: (role: string) => role !== "Client",
+    then: (schema) => schema.required("Выберите клиента"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+});
 
 const ModalOrders: React.FC<ModalOrdersProps> = ({ closeModal }) => {
   const dispatch = useAppDispatch();
@@ -22,11 +37,15 @@ const ModalOrders: React.FC<ModalOrdersProps> = ({ closeModal }) => {
   const [productOrService, setProductOrService] = useState("");
   const [solvingProblems, setSolvingProblems] = useState("");
   const [extraWishes, setExtraWishes] = useState("");
-  const [budgetFrom, setBudgetFrom] = useState<number>(0);
-  const [budgetTo, setBudgetTo] = useState<number>(0);
+  const [budgetFrom, setBudgetFrom] = useState<number | string>("");
+  const [budgetTo, setBudgetTo] = useState<number | string>("");
+  const [budgetRange, setBudgetRange] = useState("");
   const [dateFrom, setDateFrom] = useState<Date | null>(null);
   const [dateTo, setDateTo] = useState<Date | null>(null);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+const [formTouched, setFormTouched] = useState(false);
+
   const clients = useAppSelector((state) => state.clients.list);
 
   const { data: me } = useAppSelector((state) => state.me);
@@ -37,32 +56,46 @@ const ModalOrders: React.FC<ModalOrdersProps> = ({ closeModal }) => {
     dispatch(getClients());
   }, [dispatch]);
 
-  const handleSubmit = async () => {
-    const estimated_budget = Math.round(budgetFrom + budgetTo);
-    const project_deadline = dateTo ? dateTo.toISOString() : null;
 
-    const orderData = {
-      order_goal: orderGoal,
-      product_or_service: productOrService,
-      solving_problems: solvingProblems,
-      extra_wishes: extraWishes,
-      estimated_budget,
-      project_deadline,
-      client: selectedClientId,
-    };
 
-    console.log("%c Отправляем:", "color: green", orderData);
+  
+const handleSubmit = async () => {
+  const estimated_budget = `${budgetFrom} - ${budgetTo}`;
+  const project_deadline = dateTo ? dateTo.toISOString() : null;
+setFormTouched(true);
 
-    try {
-      // @ts-ignore
-      await dispatch(createOrder(orderData));
-      await dispatch(getFunnelData());
-      closeModal();
-    } catch (e: any) {
-      console.error(" Ошибка при отправке заявки:", e);
-      console.log("Ответ сервера:", e?.response?.data);
-    }
+  const orderData = {
+    order_goal: orderGoal,
+    product_or_service: productOrService,
+    solving_problems: solvingProblems,
+    extra_wishes: extraWishes,
+    estimated_budget,
+    project_deadline,
+    client: selectedClientId,
+    userRole,
   };
+
+  try {
+    await orderSchema.validate(orderData, { abortEarly: false });
+    setErrors({}); 
+
+    // @ts-ignore
+    await dispatch(createOrder(orderData));
+    await dispatch(getFunnelData());
+    closeModal();
+  } catch (err: any) {
+    if (err.name === "ValidationError") {
+      const newErrors: Record<string, string> = {};
+      err.inner.forEach((e: any) => {
+        if (e.path) newErrors[e.path] = e.message;
+      });
+      setErrors(newErrors);
+    } else {
+      console.error("Ошибка при отправке:", err);
+    }
+  }
+};
+
 
   return (
     <div className={styles.modalOverlay} onClick={closeModal}>
@@ -72,25 +105,32 @@ const ModalOrders: React.FC<ModalOrdersProps> = ({ closeModal }) => {
           <div className={styles.line} />
 
           <div className={styles.inputRow}>
+           <div className={styles.inputGroup}>
+  <label>
+    Опишите ваш запрос<span className={styles.required}>*</span>
+  </label>
+  <textarea
+    value={orderGoal}
+    onChange={(e) => setOrderGoal(e.target.value)}
+  />
+  {errors.order_goal && <p className={styles.errorText}>{errors.order_goal}</p>}
+</div>
+
             <div className={styles.inputGroup}>
-              <label>
-                Опишите ваш запрос<span className={styles.required}>*</span>
-              </label>
-              <textarea
-                value={orderGoal}
-                onChange={(e) => setOrderGoal(e.target.value)}
-              />
-            </div>
-            <div className={styles.inputGroup}>
-              <label>
-                Продукт или услуга, целевая аудитория
-                <span className={styles.required}>*</span>
-              </label>
-              <textarea
-                value={productOrService}
-                onChange={(e) => setProductOrService(e.target.value)}
-              />
-            </div>
+  <label>
+    Продукт или услуга, целевая аудитория
+    <span className={styles.required}>*</span>
+  </label>
+  <textarea
+    value={productOrService}
+    onChange={(e) => setProductOrService(e.target.value)}
+  />
+{formTouched && errors.product_or_service && (
+  <p className={styles.errorText}>{errors.product_or_service}</p>
+)}
+
+</div>
+
           </div>
 
           <div className={styles.inputRow}>
@@ -111,29 +151,36 @@ const ModalOrders: React.FC<ModalOrdersProps> = ({ closeModal }) => {
           </div>
 
           <div className={styles.budgetDateRow}>
-            <div className={styles.budgetGroup}>
-              <label>Бюджет</label>
-              <div className={styles.budgetInputs}>
-                <div className={styles.budgetInput}>
-                  <input
-                    type="number"
-                    placeholder="от"
-                    value={budgetFrom}
-                    onChange={(e) => setBudgetFrom(Number(e.target.value))}
-                  />
-                  <Euro className={styles.currencyIcon} size={20} />
-                </div>
-                <div className={styles.budgetInput}>
-                  <input
-                    type="number"
-                    placeholder="до"
-                    value={budgetTo}
-                    onChange={(e) => setBudgetTo(Number(e.target.value))}
-                  />
-                  <Euro className={styles.currencyIcon} size={20} />
-                </div>
-              </div>
-            </div>
+<div className={styles.budgetGroup}>
+  <label>Бюджет</label>
+  <div className={styles.budgetInputs}>
+    <div className={styles.budgetInput}>
+      <input
+        type="number"
+        placeholder="от"
+        value={budgetFrom}
+        onChange={(e) => setBudgetFrom(e.target.value)}
+      />
+      <Euro className={styles.currencyIcon} size={20} />
+    </div>
+    <div className={styles.budgetInput}>
+      <input
+        type="number"
+        placeholder="до"
+        value={budgetTo}
+        onChange={(e) => setBudgetTo(e.target.value)}
+      />
+      <Euro className={styles.currencyIcon} size={20} />
+    </div>
+  </div>
+
+  {formTouched && errors.estimated_budget && (
+    <p className={styles.errorText}>{errors.estimated_budget}</p>
+  )}
+</div>
+
+
+
 
             <div className={styles.dateGroup}>
               <label>Срок выполнения</label>
@@ -161,6 +208,9 @@ const ModalOrders: React.FC<ModalOrdersProps> = ({ closeModal }) => {
                   <Calendar className={styles.calendarIcon} size={20} />
                 </div>
               </div>
+               {formTouched && errors.project_deadline && (
+    <p className={styles.errorText}>{errors.project_deadline}</p>
+  )}
             </div>
           </div>
           {userRole !== "Client" && (

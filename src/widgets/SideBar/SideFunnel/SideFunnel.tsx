@@ -21,6 +21,7 @@ import {
   updateOrderTitle,
   assignTrackerToOrder,
   getOrderById,
+  confirmPrepayment,
 } from "shared/store/slices/orderSlice";
 import {
   approveInvitation,
@@ -77,6 +78,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
   toggleSidebar,
   orderId,
 }) => {
+  //chats
   const { chats, setActiveChat } = useChatService();
 
   const handleClientChat = () => {
@@ -91,6 +93,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     }
   };
 
+  //sideBar opening
   const sidebarRef = React.useRef<HTMLDivElement>(null);
 
   const [isInfoOpen, setIsInfoOpen] = useState(true);
@@ -110,7 +113,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
 
   const dispatch = useAppDispatch();
-
+  //project_name change
   const handleTitleSave = async () => {
     if (!editableTitle.trim() || editableTitle === order.project_name) return;
 
@@ -163,6 +166,24 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, toggleSidebar]);
+
+  //budget changing
+  const [isEditingBudget, setIsEditingBudget] = useState(false);
+  const [budgetValue, setBudgetValue] = useState(
+    order?.approved_budget?.toString() ||
+      order?.estimated_budget?.toString() ||
+      ""
+  );
+
+  useEffect(() => {
+    if (order) {
+      setBudgetValue(
+        order?.approved_budget?.toString() ||
+          order?.estimated_budget?.toString() ||
+          ""
+      );
+    }
+  }, [order]);
 
   if (!order) return null;
 
@@ -230,7 +251,8 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
 
             {/* TITLE */}
             <div className={classes.title}>
-              {String(order.status) === "in_progress" && isEditingTitle ? (
+              {["in_progress", "matching"].includes(String(order.status)) &&
+              isEditingTitle ? (
                 <input
                   value={editableTitle}
                   onChange={(e) => setEditableTitle(e.target.value)}
@@ -246,7 +268,9 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
               ) : (
                 <span
                   onClick={() => {
-                    if (String(order.status) === "in_progress")
+                    if (
+                      ["in_progress", "matching"].includes(String(order.status))
+                    )
                       setIsEditingTitle(true);
                   }}
                 >
@@ -299,8 +323,31 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
               <div className={classes.funnelInfo}>
                 <div className={classes.sum}>
                   <p>Бюджет</p>
-                  <span>{order.estimated_budget || "—"}</span>
+                  {isEditingBudget ? (
+                    <input
+                      className={classes.budgetInput}
+                      value={budgetValue}
+                      onChange={(e) => setBudgetValue(e.target.value)}
+                      onBlur={() => setIsEditingBudget(false)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") setIsEditingBudget(false);
+                      }}
+                      autoFocus
+                    />
+                  ) : (
+                    <span
+                      onClick={() => {
+                        if (["matching"].includes(String(order.status))) {
+                          setIsEditingBudget(true);
+                        }
+                      }}
+                      title="Нажмите для редактирования"
+                    >
+                      {budgetValue || "—"}
+                    </span>
+                  )}
                 </div>
+
                 <div className={classes.sum}>
                   <p>Трекер</p>
                   <span>-</span>
@@ -386,7 +433,6 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                 </div>
 
                 {/* Утверждённые специалисты */}
-                {/* Утверждённые специалисты */}
                 <div className={classes.title}>Утверждённые специалисты</div>
                 <div className={classes.invitedList}>
                   {order.approved_specialists?.length ? (
@@ -466,9 +512,29 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                   await dispatch(getOrderById(orderId));
                   await dispatch(getFunnelData());
                 } else if (String(order.status) === "matching") {
+                  const parsedBudget = parseFloat(budgetValue);
+                  if (
+                    !budgetValue.trim() ||
+                    isNaN(Number(budgetValue)) ||
+                    Number(budgetValue) <= 0
+                  ) {
+                    alert(
+                      "Укажите корректный утверждённый бюджет (больше 0), прежде чем переходить к следующему этапу."
+                    );
+                    return;
+                  }
+
                   await dispatch(
-                    updateOrderStatus({ orderId, newStatus: "prepayment" })
+                    updateOrderStatus({
+                      orderId,
+                      newStatus: "prepayment",
+                      approved_budget: parsedBudget,
+                    })
                   );
+                  await dispatch(getOrderById(orderId));
+                  await dispatch(getFunnelData());
+                } else if (String(order.status) === "prepayment") {
+                  await dispatch(confirmPrepayment({ orderId }));
                   await dispatch(getOrderById(orderId));
                   await dispatch(getFunnelData());
                 } else {
@@ -488,6 +554,8 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                 ? "Мэтчинг"
                 : String(order.status) === "matching"
                 ? "Утвердить специалистов"
+                : String(order.status) === "prepayment"
+                ? "Предоплата получена"
                 : "Стать трекером"}
             </button>
           </div>

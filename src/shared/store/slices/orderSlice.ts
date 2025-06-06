@@ -7,7 +7,7 @@ import axiosInstance from "shared/api/api";
 const baseUrl = process.env.REACT_APP_API_BASE || "http://localhost:8000";
 const token = getCookie("access_token") || "";
 
-// Получить заявку по id
+
 export const getOrderById = createAsyncThunk<Order, string>(
   "order/getOrderById",
   async (id) => {
@@ -26,7 +26,7 @@ export const getOrderById = createAsyncThunk<Order, string>(
   }
 );
 
-// Обновление заявки
+
 export const updateOrder = createAsyncThunk<Order, Partial<Order> & { id: string | number }>(
   "order/updateOrder",
   async ({ id, ...data }) => {
@@ -47,21 +47,29 @@ export const updateOrder = createAsyncThunk<Order, Partial<Order> & { id: string
   }
 );
 
-// Обновление только статуса
+
 export const updateOrderStatus = createAsyncThunk<
   Order,
-  { orderId: string; newStatus: string },
+  { orderId: string; newStatus: string; approved_budget?: number },
   { rejectValue: string }
 >(
   "order/updateOrderStatus",
-  async ({ orderId, newStatus }, { rejectWithValue }) => {
+  async ({ orderId, newStatus, approved_budget }, { rejectWithValue }) => {
     try {
       const token = getToken();
       if (!token) return rejectWithValue("Нет токена");
 
+      const payload: any = {
+        status: newStatus,
+      };
+
+      if (approved_budget !== undefined) {
+        payload.approved_budget = approved_budget;
+      }
+
       const response = await axiosInstance.patch<Order>(
         `/order/${orderId}/`,
-        { status: newStatus },
+        payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -72,13 +80,16 @@ export const updateOrderStatus = createAsyncThunk<
 
       return response.data;
     } catch (error: any) {
-      console.error("Ошибка при обновлении статуса:", error);
-      return rejectWithValue(error.response?.data || "Ошибка при обновлении статуса");
+      console.error("Ошибка при обновлении статуса и бюджета:", error);
+      return rejectWithValue(
+        error.response?.data || "Ошибка при обновлении статуса"
+      );
     }
   }
 );
 
-// Назначить трекера
+
+
 export const assignTrackerToOrder = createAsyncThunk<
   void,
   { orderId: string; trackerId: string },
@@ -102,7 +113,29 @@ export const assignTrackerToOrder = createAsyncThunk<
   }
 );
 
-// Обновление названия + смена статуса на matching
+export const updateOrderBudget = createAsyncThunk(
+  "orders/updateBudget",
+  async ({ orderId, approved_budget }: { orderId: string; approved_budget: number }) => {
+    const token = getCookie("access_token") || "";
+    const baseUrl = process.env.REACT_APP_API_BASE || "http://localhost:8000";
+
+    const response = await fetch(`${baseUrl}/orders/${orderId}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ approved_budget }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Не удалось обновить бюджет");
+    }
+
+    return await response.json();
+  }
+);
+
 export const updateOrderTitle = createAsyncThunk<
   Order,
   { orderId: string; projectName: string; currentStatus: string },
@@ -114,7 +147,7 @@ export const updateOrderTitle = createAsyncThunk<
       const token = getToken();
       if (!token) return rejectWithValue("Нет токена");
 
-      // PATCH названия
+ 
       await axiosInstance.patch(`/order/${orderId}/`, {
         project_name: projectName,
       }, {
@@ -124,7 +157,7 @@ export const updateOrderTitle = createAsyncThunk<
         },
       });
 
-      // PATCH статуса и возврат нового объекта
+
       const response = await axiosInstance.patch<Order>(`/order/${orderId}/`, {
         status: "matching",
       }, {
@@ -142,7 +175,41 @@ export const updateOrderTitle = createAsyncThunk<
   }
 );
 
-// Интерфейс и начальное состояние
+export const confirmPrepayment = createAsyncThunk<
+  Order,
+  { orderId: string },
+  { rejectValue: string }
+>(
+  "order/confirmPrepayment",
+  async ({ orderId }, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      if (!token) return rejectWithValue("Нет токена");
+
+      const response = await axiosInstance.patch<Order>(
+        `/order/${orderId}/`,
+        {
+          payment_status: "prepaid",
+          status: "working",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      console.error("Ошибка при подтверждении предоплаты:", error);
+      return rejectWithValue(error.response?.data || "Ошибка при обновлении");
+    }
+  }
+);
+
+
+
 interface OrderState {
   current: Order | null;
   loading: boolean;
@@ -155,7 +222,6 @@ const initialState: OrderState = {
   error: null,
 };
 
-// Слайс
 const orderSlice = createSlice({
   name: "order",
   initialState,
@@ -188,7 +254,11 @@ const orderSlice = createSlice({
       })
       .addCase(updateOrderTitle.fulfilled, (state, action: PayloadAction<Order>) => {
         state.current = action.payload;
-      });
+      })
+      .addCase(confirmPrepayment.fulfilled, (state, action: PayloadAction<Order>) => {
+      state.current = action.payload;
+})
+
   },
 });
 

@@ -1,4 +1,3 @@
-// shared/store/slices/invitationSlice.ts
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "shared/store";
 import { API_INVITATIONS } from "shared/api/endpoints";
@@ -49,18 +48,17 @@ export const sendInvitation = createAsyncThunk(
 
 export const approveInvitation = createAsyncThunk(
   "invitations/approve",
-  async (invitationId: number) => {
+  async (id: number) => {
     const baseUrl = process.env.REACT_APP_API_BASE || "http://localhost:8000";
     const token = getCookie("access_token") || "";
 
-    const res = await fetch(`${baseUrl}/users/manage-invitations/${invitationId}/approve/`, {
+    const res = await fetch(`${baseUrl}/users/manage-invitations/${id}/approve/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-     body: JSON.stringify({ is_approved: true })
-
+      body: JSON.stringify({ is_approved: true }),
     });
 
     if (!res.ok) {
@@ -70,6 +68,7 @@ export const approveInvitation = createAsyncThunk(
     return await res.json();
   }
 );
+
 
 export const rejectInvitation = createAsyncThunk(
   "invitations/reject",
@@ -110,9 +109,11 @@ const invitationSlice = createSlice({
         state.status = "loading";
         state.error = null;
       })
-      .addCase(sendInvitation.fulfilled, (state) => {
-        state.status = "success";
-      })
+      .addCase(sendInvitation.fulfilled, (state, action) => {
+  state.status = "success";
+  state.payload = action.payload; 
+})
+
       .addCase(sendInvitation.rejected, (state, action) => {
         state.status = "error";
         state.error = action.error.message || "Ошибка";
