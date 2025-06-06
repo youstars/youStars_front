@@ -55,3 +55,8 @@ export const API_PROJECT_TASKS = {
   getByProjectId: (id: number) => `projects/${id}/tasks/`,
 
 };
+
+export const API_INVITATIONS = {
+  create: "users/create-invitations/",
+};
+

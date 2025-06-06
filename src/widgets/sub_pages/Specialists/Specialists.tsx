@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import styles from "./Specialists.module.scss";
 import { getSpecialists } from "shared/store/slices/specialistsSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,53 +7,67 @@ import SpecialistCard from "widgets/SpecialistCard/SpecialistCard";
 import SideBarFilter from "shared/UI/SideBarFilter/SideBarFilter";
 import SearchInput from "shared/UI/SearchInput/SearchInput";
 import FilterBtn from "shared/UI/FilterBtn/FilterBtn";
+import { getFunnelData } from "shared/store/slices/funnelSlice";
+import { getUserIdFromToken } from "shared/utils/cookies";
+import { Order } from "shared/types/orders";
 
 function Specialists() {
   const dispatch = useDispatch<AppDispatch>();
   const { list, loading, error } = useSelector(
     (state: RootState) => state.specialists
   );
+  const allOrders = useSelector((state: RootState) => state.funnel.funnel);
 
-
+  const myUserId = +getUserIdFromToken();
   const [searchTerm, setSearchTerm] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
   const sortButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    if (!list.length) dispatch(getSpecialists());
+    if (!allOrders.length) dispatch(getFunnelData());
+  }, [dispatch, list.length, allOrders.length]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         sortButtonRef.current &&
         !sortButtonRef.current.contains(event.target as Node)
       ) {
         setIsSortMenuOpen(false);
       }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
     };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const toggleSortMenu = () => {
-    setIsSortMenuOpen(!isSortMenuOpen);
-  };
+const ordersBySpecialist = useMemo(() => {
+  const userId = +getUserIdFromToken(); 
+  const result: { [key: number]: Order[] } = {};
 
-  useEffect(() => {
-    dispatch(getSpecialists());
-  }, [dispatch]);
+
+const filteredOrders = allOrders.filter(
+  (order) => order.tracker?.custom_user?.id === userId
+);
+
+
+
+  list.forEach(specialist => {
+    result[specialist.id] = filteredOrders;
+  });
+
+  return result;
+}, [list, allOrders]); 
+  console.log(ordersBySpecialist);
+  
 
   if (loading) return <p>Загрузка...</p>;
   if (error) return <p>Ошибка: {error}</p>;
 
   return (
     <div className={styles.container}>
-      <div
-        className={`${styles.mainContent} ${
-          isSidebarOpen ? styles.shifted : ""
-        }`}
-      >
+      <div className={`${styles.mainContent} ${isSidebarOpen ? styles.shifted : ""}`}>
         <div className={styles.form}>
           <div className={styles.search}>
             <SearchInput
@@ -62,7 +76,7 @@ function Specialists() {
               placeholder="Поиск специалиста"
             />
           </div>
-          <FilterBtn onClick={() => setIsSidebarOpen((prev) => !prev)} />
+          <FilterBtn onClick={() => setIsSidebarOpen(prev => !prev)} />
         </div>
 
         <h2 className={styles.resultsTitle}>
@@ -71,13 +85,17 @@ function Specialists() {
 
         <div className={styles.specialistList}>
           {list
-            .filter((specialist) =>
+            .filter(specialist =>
               specialist.custom_user?.full_name
                 ?.toLowerCase()
                 .includes(searchTerm.toLowerCase())
             )
-            .map((specialist) => (
-              <SpecialistCard key={specialist.id} specialist={specialist} />
+            .map(specialist => (
+              <SpecialistCard
+                key={specialist.id}
+                specialist={specialist}
+                orders={ordersBySpecialist[specialist.id] || []}
+              />
             ))}
         </div>
       </div>

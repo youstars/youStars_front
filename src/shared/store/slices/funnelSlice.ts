@@ -50,26 +50,6 @@ export const createOrder = createAsyncThunk<void, Partial<Order>, { rejectValue:
 
 
 
-export const assignTrackerToOrder = createAsyncThunk<
-  void,
-  { orderId: string; trackerId: string },
-  { rejectValue: string }
->('funnel/assignTrackerToOrder', async ({ orderId, trackerId }, { rejectWithValue }) => {
-  try {
-    const token = getToken();
-    if (!token) return rejectWithValue('Нет токена');
-
-    await axiosInstance.patch(`/order/${orderId}/`, {
-      tracker: trackerId,
-      
-    }, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-  } catch (error: any) {
-    console.error('Ошибка назначения трекера:', error);
-    return rejectWithValue(error.response?.data || 'Ошибка при назначении трекера');
-  }
-});
 
 
 interface FunnelState {
@@ -105,6 +85,7 @@ const funnelSlice = createSlice({
             .addCase(createOrder.fulfilled, (state) => {
                 state.status = "fulfilled";
             })
+
     },
 });
 
