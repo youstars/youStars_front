@@ -29,7 +29,7 @@
 .search_and_filter {
   width: 62%;
   height: 40px;
-  background: #353a3d;
+  background: --grey;
   display: flex;
   //justify-content: space-between;
   align-items: center;
@@ -45,8 +45,8 @@
   border: none;
   outline: none;
   box-shadow: none;
-  background: #353a3d;
-  color: white;
+  background: --grey;
+  color: var( --primery-color);
   padding-left: 20px;
 }
 
@@ -78,7 +78,7 @@
   font-weight: 400;
   font-size: 14px;
   line-height: 20px;
-  color: #ffffff;
+  color: --var( --primery-color);
   vertical-align: middle;
 
 }
@@ -89,7 +89,7 @@
   gap: 10px;
   justify-content: center;
   align-items: center;
-  background: #353a3d;
+  background: --grey;
   border-radius: 10px;
 }
 
@@ -117,7 +117,7 @@
   margin-left: 30px;
   margin-top: 20px;
   min-height: 222px;
-  background: #353a3d;
+  background: --grey;
   padding: 30px 32px;
   border-radius: 10px;
 }
@@ -146,7 +146,7 @@
   font-size: 12px;
   line-height: 100%;
   vertical-align: middle;
-  color: #ffffff;
+  color:var( --primery-color);
 }
 
 .content h3 {
@@ -155,7 +155,7 @@
   font-size: 29px;
   line-height: 100%;
   vertical-align: middle;
-  color: #ffffff;
+  color:var( --primery-color);
 }
 
 
@@ -176,7 +176,7 @@
 .button {
   width: 148px;
   height: 28px;
-  background: #353a3d;
+  background: --grey;
   color: #ffc400;
   border: 1px solid #ffc400;
   border-radius: 10px;
@@ -230,8 +230,8 @@
 
 .sidebar {
   width: 280px;
-  background: #2d3134;
-  color: white;
+  background: --dark-grey;
+  color: var( --primery-color);
   height: 100%;
   transition: all 0.5s ease;
   overflow: hidden;
@@ -288,7 +288,7 @@
 
 .scope_block {
   width: 200px;
-  color: white;
+  color: var( --primery-color);
   margin-top: 20px;
 }
 
@@ -320,7 +320,7 @@ label {
   align-items: center;
   font-size: 12px;
   gap: 8px;
-  color: white;
+  color: var( --primery-color);
   cursor: pointer;
 }
 
@@ -355,7 +355,7 @@ input[type="checkbox"]:checked + .customCheckbox {
   cursor: pointer;
 
   p {
-    color: white;
+    color: var( --primery-color);
     font-weight: 600;
     font-size: 16px;
   }
@@ -389,7 +389,7 @@ input[type="checkbox"]:checked + .customCheckbox {
     margin-bottom: 4px;
     font-size: 14px;
     font-weight: 600;
-    color: white;
+    color: var( --primery-color);
   }
 
   label {
@@ -397,7 +397,7 @@ input[type="checkbox"]:checked + .customCheckbox {
     align-items: center;
     gap: 8px;
     font-size: 12px;
-    color: white;
+    color: var( --primery-color);
     cursor: pointer;
   }
 }

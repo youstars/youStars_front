@@ -1,6 +1,7 @@
 .app.dark {
-  --bg-color: #353A3D;
-  --secondary-bg-color: #2A2B2E;
+  --color-bg-primary: #353A3D;
+  --color-bg-secondary: #2A2B2E;
+
   
   --primery-color: white;
   --secondary-color: white;
@@ -8,10 +9,18 @@
 
   --bg-login-form:#2D3134;
   --bg-input-color:#353A3D;
-  --text-input-color:white;
+
   --bg-button-color: #FFC400;
   --bg-checkbox-color:#353A3D;
   --secondary-font-color: #888888;
+
+  --green: #4FBF4B;
+  --red: #FF4E4E;
+  --yellow: #FFC400;
+  --grey: #353A3D;
+  --dark-grey: #2D3134;
+  --white: #FFFFFF;
+
   // --dark-bg-color: #2A2B2E;
   // --dark-lighter-bg-color: #353A3D;
   // --text-input-color: #2D3134;
@@ -20,3 +29,17 @@
   // --dark-white-text-color: #EDEDED;
 }
 
+.app.dark {
+  
+  --color-bg-secondary: #2A2B2E;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #888888;
+  --color-border: #2D3134;
+
+  --color-bg-input: #353A3D;
+  --color-bg-login-form: #2D3134;
+
+  --color-accent-yellow: #ffc400;
+  --color-accent-green: #4FBF4B;
+  --color-accent-red: #FF4E4E;
+}

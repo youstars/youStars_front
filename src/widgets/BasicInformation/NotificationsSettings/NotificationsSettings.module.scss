@@ -28,8 +28,8 @@
   border: none;
   outline: none;
   font-size: 17px;
-  background: var(--bg-input-color);
-  color: var(--text-input-color);
+  background: var(--grey);
+  color:var( --primery-color);
   margin-top: 9px;
 }
 
@@ -60,7 +60,7 @@
 }
 
 .saveButton {
-  background: var(--bg-button-color);
+  background: var(--yellow);
   width: 323.66px;
   height: 45px;
   top: 450px;

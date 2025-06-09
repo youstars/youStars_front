@@ -18,7 +18,7 @@ const UserProfilePage = () => {
   }, [dispatch, id]);
 
   if (loadingGetById) {
-    return <p style={{ color: "white" }}>Загрузка специалиста...</p>;
+    return <p style={{ color: "var( --primery-color)" }}>Загрузка специалиста...</p>;
   }
 
   if (error) {
@@ -29,7 +29,7 @@ const UserProfilePage = () => {
     return <SpecialistCard specialist={specialist} isSelf={false} />;
   }
 
-  return <p style={{ color: "white" }}>Специалист не найден</p>;
+  return <p style={{ color: "var( --primery-color)" }}>Специалист не найден</p>;
 };
 
 export default UserProfilePage;

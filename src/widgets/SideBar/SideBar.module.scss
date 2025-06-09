@@ -39,7 +39,7 @@
 .proj_avatar {
   width: 30px;
   height: 30px;
-  background-color: var(--bg-color);
+  background-color: var(--color-bg-primary);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -63,9 +63,9 @@
   height: 30px;
   border-radius: 10px;
   border: none;
-  background: var(--bg-color);
+  background: var(--color-bg-primary);
   outline: none;
-  color: var(--text-input-color);
+  color:var( --primery-color);
   margin: 0 12px;
   padding-left: 40px;
 }

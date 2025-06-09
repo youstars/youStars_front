@@ -1,5 +1,5 @@
 .container {
-  color: #ffffff;
+  color:var( --primery-color);
   height: auto;
   padding: 20px;
   transition: margin-right 0.3s ease;
@@ -7,11 +7,11 @@
 }
 
 .create_order {
-  background-color: var(--bg-button-color);
+  background-color: var(--yellow);
   width: 155px;
   height: 32px;
   padding: 10px 30px;
-  //color: var(--bg-color);
+  //color: var(--color-bg-primary);
   border-radius: 12px;
   border: none;
   cursor: pointer;
@@ -38,7 +38,7 @@
   border: none;
   border-radius: 8px;
   padding: 10px 15px 10px 40px;
-  color: #ffffff;
+  color:var( --primery-color);
   width: 100%;
   font-size: 14px;
 
@@ -75,7 +75,7 @@
   transition: color 0.2s ease, background-color 0.2s ease;
 
   &:hover {
-    color: #ffffff;
+    color:var( --primery-color);
     background-color: #32353a;
   }
 }
@@ -100,12 +100,12 @@
     transition: color 0.2s ease, background-color 0.2s ease;
 
     &:hover {
-      color: #ffffff;
+      color:var( --primery-color);
       background-color: #32353a;
     }
 
     &.selected {
-      color: #ffffff;
+      color:var( --primery-color);
       font-weight: 500;
       position: relative;
 
@@ -129,7 +129,7 @@
   cursor: pointer;
 
   &:hover {
-    color: #ffffff;
+    color:var( --primery-color);
   }
 }
 
@@ -150,7 +150,7 @@
     transition: all 0.2s ease;
 
     &:hover {
-      color: #ffffff;
+      color:var( --primery-color);
       background-color: #32353a;
     }
 
@@ -309,7 +309,7 @@
   font-size: 15px;
   font-weight: 500;
   margin: 0;
-  color: #ffffff;
+  color:var( --primery-color);
 }
 
 .taskActions {
@@ -328,7 +328,7 @@
   transition: color 0.2s ease;
 
   &:hover {
-    color: #ffffff;
+    color:var( --primery-color);
   }
 }
 
@@ -362,7 +362,7 @@
 }
 
 .taskDetailValue {
-  color: #ffffff;
+  color:var( --primery-color);
   display: flex;
   align-items: center;
   gap: 5px;
@@ -373,7 +373,7 @@
   height: 24px;
   border-radius: 50%;
   background-color: #5865f2;
-  color: #ffffff;
+  color:var( --primery-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -398,7 +398,7 @@
     cursor: pointer;
 
     &:hover {
-      color: #ffffff;
+      color:var( --primery-color);
     }
   }
 }
@@ -445,7 +445,7 @@
 
   h2 {
     margin-top: 0;
-    color: #ffffff;
+    color:var( --primery-color);
   }
 
   p {
@@ -464,6 +464,6 @@
   cursor: pointer;
 
   &:hover {
-    color: #ffffff;
+    color:var( --primery-color);
   }
 }

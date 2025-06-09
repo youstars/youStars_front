@@ -2,8 +2,8 @@
 $background-gradient: linear-gradient(to bottom right, #111827, #1a1c2e, #1a1c2e);
 $primary-color: #FACC15; // Жёлтый цвет для радио и кнопок
 $error-color: #f87171;
-$text-color: #ffffff;
-$input-bg: #353a3d;
+$text-color: var(--white);
+$input-bg: --grey;
 $input-border: #1f2937;
 $hint-color: #9ca3af;
 
@@ -151,7 +151,7 @@ $hint-color: #9ca3af;
       margin-right: 0.5rem;
       border: 2px solid $primary-color;
       border-radius: 50%;
-      background: white;
+      background: var( --primery-color);
       cursor: pointer;
       transition: background-color 0.2s;
       &:checked {
@@ -189,14 +189,14 @@ $hint-color: #9ca3af;
 
 .submitButton {
   background: linear-gradient(to right, $primary-color, lighten($primary-color, 10%));
-  color: #353a3d;
+  color: --grey;
   background: #FFC400;
   border: none;
 
 }
 
 .saveButton {
-  background: #2d3134;
+  background: --dark-grey;
   border:  1px solid #ffc400;
   //color: $text-color;
   //&:hover {

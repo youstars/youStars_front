@@ -45,6 +45,28 @@ export const sendInvitation = createAsyncThunk(
     return await res.json();
   }
 );
+export const respondToInvitation = createAsyncThunk(
+  "invitations/respond",
+  async ({ id, status }: { id: number; status: "ACCEPTED" | "DECLINED" }) => {
+    const baseUrl = process.env.REACT_APP_API_BASE || "http://localhost:8000";
+    const token = getCookie("access_token") || "";
+
+    const res = await fetch(`${baseUrl}/users/manage-invitations/${id}/respond/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Ошибка отправки ответа на приглашение");
+    }
+
+    return await res.json();
+  }
+);
 
 export const approveInvitation = createAsyncThunk(
   "invitations/approve",

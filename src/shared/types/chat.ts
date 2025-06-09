@@ -1,5 +1,5 @@
-export type ChatType = "admin-specialist" | "admin-business" | "admin-project";
-export type ShortChatType = "specialist" | "business" | "project";
+export type ChatType = "admin-specialist" | "admin-client" | "admin-project";
+export type ShortChatType = "specialist" | "client" | "project";
 
 export interface Message {
   id: string;
@@ -9,6 +9,14 @@ export interface Message {
   timestamp: string;
   isOwn: boolean;
   replyTo?: Message;
+    message_type?: string;
+  invitation?: {
+    id: number;
+    order_name: string;
+    project_deadline: string | null;
+    expires_at: string;
+    status: "PENDING" | "APPROVED" | "REJECTED" | string;
+  };
 }
 
 export interface Chat {
@@ -42,10 +50,19 @@ export interface WebSocketContextType {
 
 export interface WebSocketMessage {
   chat_id: string;
-  sender_id: string;
+  sender_id: string | { id: number; username: string };
   message?: string;
   content?: string;
   sender_name?: string;
   timestamp?: string;
   message_id?: string;
+
+  message_type?: string;
+  invitation?: {
+    id: number;
+    order_name: string;
+    project_deadline: string | null;
+    expires_at: string;
+    status: string;
+  };
 }

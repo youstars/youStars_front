@@ -1,6 +1,10 @@
 // shared/services/webSocketService.ts
 import { AppDispatch } from "shared/store";
-import { addMessage, setIsConnected, setError } from "shared/store/slices/chatSlice";
+import {
+  addMessage,
+  setIsConnected,
+  setError,
+} from "shared/store/slices/chatSlice";
 import { Message, WebSocketMessage } from "shared/types/chat";
 import { getCookie } from "shared/utils/cookies";
 
@@ -14,7 +18,7 @@ export const connectToWebSocket = (chatId: string, dispatch: AppDispatch) => {
   const token = getCookie("access_token") || "";
   const userId = parseInt(getCookie("user_id") || "1");
 
-  if (ws) ws.close(); 
+  if (ws) ws.close();
 
   const wsUrl = `ws://${window.location.hostname}:8000/ws/chat/${chatId}/?token=${token}`;
   ws = new WebSocket(wsUrl);
@@ -26,36 +30,79 @@ export const connectToWebSocket = (chatId: string, dispatch: AppDispatch) => {
   };
 
   ws.onmessage = (event) => {
-    const data: WebSocketMessage = JSON.parse(event.data);
-    if (!data.chat_id || !data.sender_id || (!data.message && !data.content)) return;
+  const data = JSON.parse(event.data);
 
-    const messageId = data.message_id || `${data.timestamp || Date.now()}-${data.sender_id}-${(data.message || data.content || '').slice(0, 10)}`;
+if (data.type === "history" && Array.isArray(data.history)) {
+  data.history.forEach((item: any) => {
+    const messageId = String(data.id)
+
     if (processedMessages.has(messageId)) return;
     processedMessages.add(messageId);
 
-    const sender = typeof data.sender_id === 'object' ? data.sender_id : { id: parseInt(data.sender_id), username: data.sender_name || "User" };
+    const newMessage: Message = {
+      id: messageId,
+      userId: item.sender_id,
+      userName: item.sender_name,
+      text: item.content,
+      timestamp: item.timestamp || new Date().toISOString(),
+      isOwn: item.sender_id === userId,
+      message_type: item.message_type,
+      invitation: item.invitation,
+    };
+
+
+    dispatch(addMessage({ chatId: String(chatId), message: newMessage }));
+  });
+
+  return;
+}
+
+
+    if (!data.chat_id || !data.sender_id || (!data.message && !data.content))
+      return;
+
+    const messageId =
+      data.message_id ||
+      `${data.timestamp || Date.now()}-${data.sender_id}-${(
+        data.message ||
+        data.content ||
+        ""
+      ).slice(0, 10)}`;
+    if (processedMessages.has(messageId)) return;
+    processedMessages.add(messageId);
+
+    const sender =
+      typeof data.sender_id === "object"
+        ? data.sender_id
+        : {
+            id: parseInt(data.sender_id),
+            username: data.sender_name || "User",
+          };
 
     const newMessage: Message = {
       id: messageId,
       userId: sender.id,
       userName: sender.username,
-      text: data.message || data.content || '',
+      text: data.message || data.content || "",
       timestamp: data.timestamp || new Date().toISOString(),
       isOwn: sender.id === userId,
+      message_type: data.message_type,
+      invitation: data.invitation,
     };
 
     dispatch(addMessage({ chatId: String(data.chat_id), message: newMessage }));
-
   };
 
-  ws.onerror = () => {
+  ws.onerror = (e) => {
     dispatch(setIsConnected(false));
     dispatch(setError("Ошибка WebSocket"));
+    console.warn(" WebSocket ошибка:", e);
     scheduleReconnect(chatId, dispatch);
   };
 
   ws.onclose = (event) => {
     dispatch(setIsConnected(false));
+    console.warn(" WebSocket отключён:", event);
     if (!event.wasClean) scheduleReconnect(chatId, dispatch);
   };
 };
@@ -72,7 +119,11 @@ const scheduleReconnect = (chatId: string, dispatch: AppDispatch) => {
   }, delay);
 };
 
-export const sendMessageViaWebSocket = (text: string, chatId: string, replyTo?: string | null) => {
+export const sendMessageViaWebSocket = (
+  text: string,
+  chatId: string,
+  replyTo?: string | null
+) => {
   const userId = parseInt(getCookie("user_id") || "1");
 
   if (!text.trim() || !ws || ws.readyState !== WebSocket.OPEN) return;

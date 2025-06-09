@@ -19,6 +19,7 @@ import { projectReducer } from "./slices/projectSlice";
 import trackerReducer from "./slices/trackersSlice"
 import invitationReducer from './slices/invitationSlice';
 import orderReducer from "./slices/orderSlice";
+// import subtasksReducer from "./slices/subtaskSlice";
 
 const store = configureStore({
   reducer: {
@@ -42,6 +43,7 @@ const store = configureStore({
     trackers: trackerReducer,
     invitation: invitationReducer,
     order: orderReducer,
+    // subtask: subtasksReducer,
   },
 });
 

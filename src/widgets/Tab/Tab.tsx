@@ -1,4 +1,4 @@
-// Tab.jsx
+
 import classes from './Tab.module.scss';
 import round from 'shared/images/round.svg';
 

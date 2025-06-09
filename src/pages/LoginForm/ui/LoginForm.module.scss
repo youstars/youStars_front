@@ -1,5 +1,5 @@
 .blockForm {
-  background: var(--bg-login-form);
+  background: var(--dark-grey);
   width: 450px;
   height: 573px;
   border-radius: 40px;
@@ -39,8 +39,8 @@ h2 {
   outline: none;
   padding-left: 15px;
   font-size: 17px;
-  background: var(--bg-input-color);
-  color: var(--text-input-color);
+  background: var(--grey);
+  color:var( --primery-color);
 }
 
 .fieldEmail {
@@ -66,7 +66,7 @@ fieldset {
 }
 
 .buttonLogIn {
-  background: var(--bg-button-color);
+  background: var(--yellow);
   width: 323.66px;
   height: 45px;
   top: 450px;
@@ -122,8 +122,8 @@ fieldset {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-login-form);
-  color: var(--text-input-color);
+  background: var(--dark-grey);
+  color:var( --primery-color);
   width: 323.66px;
   height: 45px;
   border-radius: 12px;
@@ -147,7 +147,7 @@ fieldset {
 .createAccount {
   background: none;
   border: none;
-  color: var(--bg-button-color);
+  color: var(--yellow);
   cursor: pointer;
   font-size: 14px;
   font-weight: 700;

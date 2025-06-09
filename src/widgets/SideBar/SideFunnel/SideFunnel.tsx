@@ -35,6 +35,8 @@ import { useChatService } from "shared/hooks/useWebsocket";
 import { findChatByParticipantId } from "shared/helpers/chatUtils";
 import ChatsIcon from "shared/assets/icons/ChatsY.svg";
 import ChatIcon from "shared/assets/icons/chatY.svg";
+import InvitationStatus from "widgets/SideBar/SideFunnel/InvitationStatus/InvitationStatus";
+// import { addSubtask } from "shared/store/slices/subtaskSlice";
 
 interface SideFunnelProps {
   isOpen: boolean;
@@ -78,7 +80,6 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
   toggleSidebar,
   orderId,
 }) => {
-  //chats
   const { chats, setActiveChat } = useChatService();
 
   const handleClientChat = () => {
@@ -93,7 +94,6 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     }
   };
 
-  //sideBar opening
   const sidebarRef = React.useRef<HTMLDivElement>(null);
 
   const [isInfoOpen, setIsInfoOpen] = useState(true);
@@ -113,7 +113,6 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
 
   const dispatch = useAppDispatch();
-  //project_name change
   const handleTitleSave = async () => {
     if (!editableTitle.trim() || editableTitle === order.project_name) return;
 
@@ -150,6 +149,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     await dispatch(getFunnelData());
     toggleSidebar();
   };
+
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -167,7 +167,6 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     };
   }, [isOpen, toggleSidebar]);
 
-  //budget changing
   const [isEditingBudget, setIsEditingBudget] = useState(false);
   const [budgetValue, setBudgetValue] = useState(
     order?.approved_budget?.toString() ||
@@ -184,6 +183,9 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
       );
     }
   }, [order]);
+
+  //subtasks
+  const [subtaskInput, setSubtaskInput] = useState("");
 
   if (!order) return null;
 
@@ -350,7 +352,15 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
 
                 <div className={classes.sum}>
                   <p>Трекер</p>
-                  <span>-</span>
+                  <span>
+                    {order.tracker?.custom_user?.full_name ? (
+                      <span className={classes.avatarCircle}>
+                        {getInitials(order.tracker.custom_user.full_name)}
+                      </span>
+                    ) : (
+                      "—"
+                    )}
+                  </span>
                 </div>
               </div>
             )}
@@ -362,6 +372,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                 <p>{order.extra_wishes || "Комментариев нет"}</p>
               </div>
             </div>
+
             {String(order.status) === "matching" && (
               <>
                 {/* Приглашённые специалисты */}
@@ -385,18 +396,17 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                 <div className={classes.invitedList}>
                   {order.invited_specialists.map((entry, index) => {
                     const user = entry.specialist?.custom_user;
-                    const statusIcon =
-                      entry.is_approved === true
-                        ? "✅"
-                        : entry.status === "REJECTED"
-                        ? "❌"
-                        : "⏳";
 
                     return (
                       <div key={index} className={classes.invitedItem}>
-                        <div className={classes.statusIcon}>{statusIcon}</div>
                         <div className={classes.avatar} />
                         <div className={classes.name}>
+                          <div className={classes.statusIcon}>
+                            <InvitationStatus
+                              status={entry.status}
+                              isApproved={!!entry.is_approved}
+                            />
+                          </div>
                           {user?.full_name || "Без имени"}
                         </div>
                         <div className={classes.actionIcons}>
@@ -455,23 +465,6 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                     </div>
                   )}
                 </div>
-
-                {/* Файлы */}
-                <div className={classes.uploadWrapper}>
-                  <div className={classes.uploadHeader}>
-                    <p>Файлы заявки</p>
-                    <div className={classes.uploadIcon}>
-                      <Upload size={16} className={classes.icon} />
-                    </div>
-                  </div>
-                  <div className={classes.uploadBody}>
-                    <ul className={classes.fileList}>
-                      <li className={classes.fileItem}>📎 КП</li>
-                      <li className={classes.fileItem}>📎 ТЗ</li>
-                      <li className={classes.fileItem}>📎 Договор</li>
-                    </ul>
-                  </div>
-                </div>
               </>
             )}
 
@@ -492,6 +485,29 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
               {isSubtasksOpen && (
                 <div className={classes.subtasksContent}>
                   <div className={classes.check_block}>
+                    <div className={classes.subtaskForm}>
+                      <input
+                        type="text"
+                        placeholder="Новая подзадача"
+                        value={subtaskInput}
+                        onChange={(e) => setSubtaskInput(e.target.value)}
+                        onKeyDown={async (e) => {
+                          if (e.key === "Enter" && subtaskInput.trim()) {
+                            try {
+                              // await dispatch(addSubtask({ taskId: order.id, message: subtaskInput.trim() }));
+                              setSubtaskInput("");
+                            } catch (err) {
+                              console.error(
+                                "Ошибка добавления подзадачи:",
+                                err
+                              );
+                            }
+                          }
+                        }}
+                        className={classes.subtaskInput}
+                      />
+                    </div>
+
                     <CheckSquare size={14} className={classes.icon} />
                     <p>Прислать счёт об оплате</p>
                   </div>
@@ -501,6 +517,56 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Файлы (Order Files) */}
+            <div className={classes.uploadWrapper}>
+              <div className={classes.uploadHeader}>
+                <p>Файлы заявки</p>
+                <div className={classes.uploadIcon}>
+                  <Upload size={16} className={classes.icon} />
+                </div>
+              </div>
+              <div className={classes.uploadBody}>
+                <ul className={classes.fileList}>
+                  {/* Terms of Reference (ТЗ) */}
+                  {order.file_terms_of_reference?.length > 0
+                    ? order.file_terms_of_reference.map((file, index) => (
+                        <li key={`tor-${index}`} className={classes.fileItem}>
+                          <span className={classes.fileIcon}>📎</span>
+                          ТЗ
+                        </li>
+                      ))
+                    : null}
+
+                  {/* Commercial Offer (КП) */}
+                  {order.file_commercial_offer?.length > 0
+                    ? order.file_commercial_offer.map((file, index) => (
+                        <li key={`co-${index}`} className={classes.fileItem}>
+                          <span className={classes.fileIcon}>📎</span>
+                          КП
+                        </li>
+                      ))
+                    : null}
+
+                  {/* Other File (Договор) */}
+                  {order.file_other_file?.length > 0
+                    ? order.file_other_file.map((file, index) => (
+                        <li key={`other-${index}`} className={classes.fileItem}>
+                          <span className={classes.fileIcon}>📎</span>
+                          Договор
+                        </li>
+                      ))
+                    : null}
+
+                  {/* Fallback if no files are present */}
+                  {!(
+                    order.file_terms_of_reference?.length ||
+                    order.file_commercial_offer?.length ||
+                    order.file_other_file?.length
+                  ) && <li className={classes.fileItem}>Нет файлов</li>}
+                </ul>
+              </div>
             </div>
 
             {/* BUTTON */}

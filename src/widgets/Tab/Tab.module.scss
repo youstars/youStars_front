@@ -3,15 +3,15 @@
   align-items: center;
   padding: 6px 12px;
   border-radius: 8px;
-  background-color: var(--bg-color);
-  color: var(--yellow-color); // <-- жёлтый цвет
+  background-color: var(--color-bg-primary);
+  color: var(--yellow-color);
   gap: 8px;
   font-weight: 500;
   white-space: nowrap;
 }
 
 .label {
-  color: var(--yellow-color); // дублируем на p
+  color: var(--yellow-color); 
 }
 
 .icon {
