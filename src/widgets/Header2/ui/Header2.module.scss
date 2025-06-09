@@ -23,7 +23,7 @@
 .control_panel {
     display: flex;
     align-items: center;
-    background-color: var(--bg-color);
+    background-color: var(--color-bg-primary);
     border-radius: 10px;
     gap: 12px;
     padding: 8px;
@@ -59,7 +59,7 @@
 .profile {
     display: flex;
     align-items: center;
-    background-color: var(--bg-color);
+    background-color: var(--color-bg-primary);
     padding: 8px;
     border-radius: 10px;
 }

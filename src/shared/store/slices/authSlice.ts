@@ -44,6 +44,7 @@ export const login = createAsyncThunk(
       });
 
       const token = response.data.access;
+      const role = response.data.role; // 👈 предполагаем, что бэк возвращает "role"
 
       Cookies.set("access_token", token, {
         expires: 7,
@@ -60,9 +61,21 @@ export const login = createAsyncThunk(
         });
       }
 
+      if (role) {
+        Cookies.set("user_role", role, {
+          expires: 7,
+          secure: true,
+          sameSite: "None",
+        });
+      }
+
       return {
         token,
-        user: { id: userId || null, username: response.data.username },
+        user: {
+          id: userId || null,
+          username: response.data.username,
+          role,
+        },
       };
     } catch (error: any) {
       console.error("Login failed:", error);
@@ -83,14 +96,14 @@ export const logout = createAsyncThunk(
         await axiosInstance.post(API_ENDPOINTS.auth.logout, { refresh });
       }
 
-      ["access_token", "refresh_token", "user_id"].forEach((key) => {
-        Cookies.remove(key, {
-          path: "/",
-          sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-          secure: process.env.NODE_ENV === "production",
-        });
-        console.log(`${key} after remove:`, Cookies.get(key));
-      });
+     ["access_token", "refresh_token", "user_id", "user_role"].forEach((key) => {
+  Cookies.remove(key, {
+    path: "/",
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+    secure: process.env.NODE_ENV === "production",
+  });
+});
+
 
       return true;
     } catch (error) {

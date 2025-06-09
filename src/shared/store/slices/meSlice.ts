@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../index";
-
+import Cookies from "js-cookie";
 import { getCookie } from "shared/utils/cookies";
 import { API_ME } from "shared/api/endpoints";
 import axiosInstance from "shared/api/api";
@@ -72,9 +72,19 @@ const meSlice = createSlice({
         state.error = null;
       })
       .addCase(getMe.fulfilled, (state, action) => {
-        state.loading = false;
-        state.data = action.payload;
-      })
+  state.loading = false;
+  state.data = action.payload;
+
+  const role = action.payload?.custom_user?.role || action.payload?.role;
+  if (role) {
+    Cookies.set("user_role", role, {
+      expires: 7,
+      secure: true,
+      sameSite: "None",
+    });
+  }
+})
+
       .addCase(getMe.rejected, (state, action) => {
   state.loading = false;
   state.error = action.payload as string;

@@ -1,12 +1,12 @@
 .table {
     width: 100%;
     border-collapse: collapse;
-    background-color: var(--bg-color);
+    background-color: var(--color-bg-primary);
     border-radius: 12px;
     overflow: hidden;
     
     thead {
-      background-color: var(--secondary-bg-color);
+      background-color: var(--color-bg-secondary);
     }
   
     th {
@@ -20,7 +20,7 @@
   
     th,
     td {
-      border-right: 1px solid var(--secondary-bg-color);
+      border-right: 1px solid var(--color-bg-secondary);
       width: 25%;
     }
   
@@ -36,7 +36,7 @@
       padding: 14px 18px;
       font-size: 14px;
       color: var(--text-primary, #e0e0e0);
-      border-top: 1px solid var(--secondary-bg-color);
+      border-top: 1px solid var(--color-bg-secondary);
       vertical-align: middle;
     }
   }

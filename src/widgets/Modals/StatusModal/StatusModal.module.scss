@@ -12,7 +12,7 @@
 }
 
 .modalContent {
-  background-color: #353a3d;
+  background-color: --grey;
   border-radius: 8px;
   width: 280px;
   padding: 1rem;
@@ -35,7 +35,7 @@
   width: 50%;
   border: none;
   height: 30px;
-  background: #2d3134;
+  background: --dark-grey;
   color: #fff;
   font-family: "Myriad Pro";
   font-size: 0.8rem;
@@ -59,7 +59,7 @@
 }
 
 .checkboxGroup::-webkit-scrollbar-track {
-  background: #2d3134;
+  background: --dark-grey;
   border-radius: 5px;
 }
 
@@ -83,7 +83,7 @@
     appearance: none;
     width: 20px;
     height: 20px;
-    background: #353a3d;
+    background: --grey;
     border: 1px solid #888888;
     cursor: pointer;
     border-radius: 5px;
@@ -124,7 +124,7 @@
 
 .divider {
   height: 1px;
-  background-color: white;
+  background-color: var( --primery-color);
   margin: 1rem 0;
   position: sticky;
 }
@@ -138,8 +138,8 @@
 
 .bottomButtons button {
   border: none;
-  background: #2d3134;
-  color: white;
+  background: --dark-grey;
+  color: var( --primery-color);
   width: 50%;
   height: 30px;
   border-radius: 15px;

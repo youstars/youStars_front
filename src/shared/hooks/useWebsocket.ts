@@ -1,4 +1,3 @@
-// shared/hooks/useChatService.ts
 import { useEffect } from "react";
 import { useAppSelector } from "./useAppSelector";
 

@@ -1,5 +1,5 @@
-$bg-highlight: #353A3D;
-$text-light: #ffffff;
+$bg-highlight: --grey;
+$text-light: var(--white);
 $text-muted: #9ca3af;
 $yellow: #fbbf24;
 
@@ -94,7 +94,7 @@ $yellow: #fbbf24;
 
   .contextMenu {
     position: fixed;
-    background-color: #2d3134;
+    background-color: --dark-grey;
     color: white;
     padding: 8px 12px;
     border-radius: 6px;

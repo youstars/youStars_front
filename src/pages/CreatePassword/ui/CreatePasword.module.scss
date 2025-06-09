@@ -1,5 +1,5 @@
 .userConfirmation {
-  background: var(--bg-login-form);
+  background: var(--dark-grey);
   width: 450px;
   height: 406px;
   border-radius: 40px;
@@ -24,8 +24,8 @@
   outline: none;
   padding-left: 15px;
   font-size: 17px;
-  background: var(--bg-input-color);
-  color: var(--text-input-color);
+  background: var(--grey);
+  color:var( --primery-color);
 }
 
 .fieldName {
@@ -41,7 +41,7 @@
 }
 
 .buttonContinue {
-  background: var(--bg-button-color);
+  background: var(--yellow);
   width: 323.66px;
   height: 45px;
   top: 450px;

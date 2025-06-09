@@ -39,7 +39,7 @@
   left: -40px;
   top: 20px;
   background: #2E3235;
-  color: white;
+  color: var( --primery-color);
   border: none;
   padding: 8px;
   border-radius: 8px 0 0 8px;
@@ -91,11 +91,11 @@
 
 .content {
   padding: 20px;
-  color: white;
+  color: var( --primery-color);
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: #4a4a4a #2d3134;
+  scrollbar-color: #4a4a4a --dark-grey;
   position: relative;
 }
 
@@ -104,14 +104,14 @@
 }
 
 .content::-webkit-scrollbar-track {
-  background: #2d3134;
+  background: --dark-grey;
   border-radius: 3px;
 }
 
 .content::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 6px;
-  border: 1px solid #2d3134;
+  border: 1px solid --dark-grey;
   transition: background-color 0.2s ease;
 }
 
@@ -164,7 +164,7 @@
 
 .user_name p:nth-child(1) {
   font-size: 14px;
-  color: #ffffff;
+  color:var( --primery-color);
   font-weight: 600;
 }
 
@@ -202,7 +202,7 @@
 
   font-weight: 600;
   font-size: 12px;
-  color: var(--text-input-color);
+  color:var( --primery-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -231,7 +231,7 @@
   font-size: 12px;
   font-family: sans-serif;
   font-weight: 400;
-  color: var(--text-input-color);
+  color:var( --primery-color);
   margin: 0;
 }
 
@@ -253,7 +253,7 @@
 
 .funnelInfo {
   margin: 20px 0;
-  color: var(--bg-button-color);
+  color: var(--yellow);
 }
 
 .sum {
@@ -270,7 +270,7 @@
 }
 
 .sum span {
-  color: #ffffff;
+  color:var( --primery-color);
   font-size: 12px;
   font-weight: 400;
 }
@@ -297,7 +297,7 @@
   font-family: sans-serif;
   font-size: 12px;
   line-height: 1.5;
-  color: var(--text-input-color);
+  color:var( --primery-color);
   margin: 0;
 }
 
@@ -384,7 +384,7 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 8px;
-  color: #ffffff;
+  color:var( --primery-color);
   font-family: sans-serif;
 }
 
@@ -418,12 +418,13 @@
 .invitedList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
 }
 
 .invitedItem {
   display: flex;
   align-items: center;
+  gap: 25px;
   background: #383E41;
   padding: 8px 12px;
   border-radius: 10px;
@@ -436,16 +437,10 @@
   width: 16px;
 }
 
-.avatar {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: #444;
-  margin: 0 8px;
-}
+
 
 .name {
-  flex: 1;
+  display: flex;
 }
 
 .actionIcons {
@@ -476,14 +471,14 @@
 .uploadWrapper {
   margin: 15px 0;
   padding: 15px;
-  background: #383E41;
+  background: #383E41; /* Matches the background in the screenshot */
   border-radius: 8px;
 }
 
 .uploadHeader {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between; /* Space between title and icon */
   padding-bottom: 10px;
 }
 
@@ -492,7 +487,16 @@
   font-size: 14px;
   font-weight: 600;
   margin: 0;
-  color: #FFC107;
+  color: #FFC107; /* Yellow color for the header text */
+}
+
+.uploadIcon {
+  display: flex;
+  align-items: center;
+}
+
+.uploadIcon .icon {
+  color: #FFC107; 
 }
 
 .uploadBody {
@@ -500,23 +504,21 @@
 }
 
 .fileList {
-  margin-top: 10px;
-  list-style: none;
+  margin: 0;
   padding: 0;
+  list-style: none;
 }
 
 .fileItem {
   font-family: sans-serif;
   font-size: 12px;
-  color: #a0a0a0;
+  color: #a0a0a0; 
   padding: 5px 0;
+  display: flex;
+  align-items: center;
+  gap: 5px; 
 }
 
-.project_card {
-  padding: 10px;
-  background: #383E41;
-  border-radius: 8px;
-  color: #a0a0a0;
-  text-align: center;
-  font-style: italic;
+.fileIcon {
+  font-size: 14px; 
 }

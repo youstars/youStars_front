@@ -1,5 +1,5 @@
 .dropdownMenu {
-  background-color: #353A3D;
+  background-color: --grey;
   padding: 10px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -19,7 +19,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: white;
+  color: var( --primery-color);
 
   &:hover {
     background-color: #3a3a3a;

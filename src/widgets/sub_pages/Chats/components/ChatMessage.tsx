@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./ChatMessage.module.scss";
 import { Message } from "shared/types/chat";
+import InvitationMessage from "./InvitationMessage/InvitationMessage";
 
 interface ChatMessageProps {
   message: Message;
@@ -76,8 +77,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onReply }) => {
             <p className={styles.text}>{message.replyTo.text}</p>
           </div>
         )}
+{message.message_type === "INVITATION" && message.invitation ? (
+  <InvitationMessage invitation={message.invitation} />
+) : (
+  <p className={styles.text}>{message.text}</p>
+)}
 
-        <p className={styles.text}>{message.text}</p>
+
       </div>
     </div>
   );

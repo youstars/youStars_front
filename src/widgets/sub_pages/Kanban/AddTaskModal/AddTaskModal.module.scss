@@ -14,7 +14,7 @@
 }
 
 .modalContent {
-  background: linear-gradient(145deg, #2d3134, #282c2f);
+  background: linear-gradient(145deg, --dark-grey, #282c2f);
   padding: 0;
   border-radius: 12px;
   width: 520px;
@@ -36,7 +36,7 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
   h2 {
-    color: #ffffff;
+    color:var( --primery-color);
     margin: 0;
     font-size: 18px;
     font-weight: 600;
@@ -59,7 +59,7 @@
 
   &:hover {
     background: rgba(255, 255, 255, 0.05);
-    color: #ffffff;
+    color:var( --primery-color);
   }
 }
 
@@ -96,7 +96,7 @@
   }
 
   &:hover:not(.active) {
-    color: #ffffff;
+    color:var( --primery-color);
   }
 }
 
@@ -146,7 +146,7 @@
 .select {
   width: 100%;
   background: rgba(59, 63, 67, 0.6);
-  color: #ffffff;
+  color:var( --primery-color);
   border: 1px solid #4a4f52;
   padding: 12px;
   border-radius: 8px;
@@ -190,7 +190,7 @@
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(59, 63, 67, 0.6);
-  color: #ffffff;
+  color:var( --primery-color);
   font-size: 13px;
   cursor: pointer;
   transition: all 0.2s;

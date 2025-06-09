@@ -1,9 +1,9 @@
 .tag {
-  border: 1px solid white;
+  border: 1px solid var( --primery-color);
   padding: 0.25rem 1rem;
   border-radius: 9999px;
   font-size: 0.875rem;
-  color: white;
+  color: var( --primery-color);
   display: inline-flex; 
   align-items: center; 
   line-height: 1; 

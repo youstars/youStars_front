@@ -1,6 +1,6 @@
 
 .specialistCard {
-  background-color: var(--bg-color);
+  background-color: var(--color-bg-primary);
   border-radius: 0.5rem;
   padding: 30px;
   
@@ -23,7 +23,7 @@
           .name {
             font-size: 12px;
             font-weight: 600;
-            color: white;
+            color: var( --primery-color);
           }
 
           .rating {
@@ -41,7 +41,7 @@
           font-size: 29px;
           font-weight: 600;
 
-          color: white;
+          color: var( --primery-color);
         }
 
         .availability {
@@ -83,7 +83,7 @@
    
 
     .description {
-      color: white;
+      color: var( --primery-color);
       margin: 0 0 0.5rem;
       font-size: 10px;
     }
@@ -97,7 +97,7 @@
 
       .label {
         font-weight: 600;
-        color: white;
+        color: var( --primery-color);
         font-size: 0.875rem;
       }
 
@@ -131,7 +131,7 @@
     }
   
     strong {
-      color: white;
+      color: var( --primery-color);
       font-weight: 600;
       margin-right: 0.25rem;
     }
