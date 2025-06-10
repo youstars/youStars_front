@@ -46,7 +46,7 @@ export const saveUserIdFromToken = (): void => {
       sameSite: "Lax",
       path: "/",
     });
-    console.log("✅ User ID сохранён в куки:", userId);
+    console.log("User ID сохранён в куки:", userId);
   }
 };
 

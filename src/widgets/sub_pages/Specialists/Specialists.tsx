@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import styles from "./Specialists.module.scss";
 import { getSpecialists } from "shared/store/slices/specialistsSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,8 +8,8 @@ import SideBarFilter from "shared/UI/SideBarFilter/SideBarFilter";
 import SearchInput from "shared/UI/SearchInput/SearchInput";
 import FilterBtn from "shared/UI/FilterBtn/FilterBtn";
 import { getFunnelData } from "shared/store/slices/funnelSlice";
-import { getUserIdFromToken } from "shared/utils/cookies";
 import { Order } from "shared/types/orders";
+import { selectMe } from "shared/store/slices/meSlice";
 
 function Specialists() {
   const dispatch = useDispatch<AppDispatch>();
@@ -17,8 +17,12 @@ function Specialists() {
     (state: RootState) => state.specialists
   );
   const allOrders = useSelector((state: RootState) => state.funnel.funnel);
+const me = useSelector(selectMe);
+const userId = me.data?.custom_user?.id || me.data?.id;
+console.log("userId", userId);
 
-  const myUserId = +getUserIdFromToken();
+
+
   const [searchTerm, setSearchTerm] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
@@ -43,22 +47,26 @@ function Specialists() {
   }, []);
 
 const ordersBySpecialist = useMemo(() => {
-  const userId = +getUserIdFromToken(); 
   const result: { [key: number]: Order[] } = {};
 
+  if (!userId) return result;
 
-const filteredOrders = allOrders.filter(
-  (order) => order.tracker?.custom_user?.id === userId
-);
+  
+  const filteredOrders = allOrders.filter(
+    (order) => order.tracker_data?.id
+    
+  );
 
+  console.log("filteredOrders", filteredOrders);
+  
 
-
-  list.forEach(specialist => {
+  list.forEach((specialist) => {
     result[specialist.id] = filteredOrders;
   });
 
   return result;
-}, [list, allOrders]); 
+}, [list, allOrders, userId]);
+
   console.log(ordersBySpecialist);
   
 

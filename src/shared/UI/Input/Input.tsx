@@ -6,8 +6,8 @@ interface InputProps {
     type: string;
     className?: string;
     required?: boolean;
-    value?: string; // Добавлено для поддержки управления значением
-    name?: string; // Добавлено свойство name
+    value?: string; 
+    name?: string; 
 }
 
 const Input: FC<InputProps> = ({ type, className, ...rest }) => {
@@ -15,7 +15,7 @@ const Input: FC<InputProps> = ({ type, className, ...rest }) => {
         <input
             type={type}
             className={className}
-            {...rest} // Передаём остальные пропсы в <input>
+            {...rest} 
         />
     );
 };

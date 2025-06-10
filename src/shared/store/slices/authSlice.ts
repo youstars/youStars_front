@@ -43,16 +43,21 @@ export const login = createAsyncThunk(
         password,
       });
 
-      const token = response.data.access;
-      const role = response.data.role; // 👈 предполагаем, что бэк возвращает "role"
+      const { access, refresh, role, username: userUsername } = response.data;
 
-      Cookies.set("access_token", token, {
+      Cookies.set("access_token", access, {
         expires: 7,
         secure: true,
         sameSite: "None",
       });
 
-      const userId = getUserIdFromToken();
+      Cookies.set("refresh_token", refresh, {
+        expires: 180,
+        secure: true,
+        sameSite: "None",
+      });
+
+      const userId = getUserIdFromToken(); 
       if (userId) {
         Cookies.set("user_id", userId.toString(), {
           expires: 7,
@@ -70,10 +75,10 @@ export const login = createAsyncThunk(
       }
 
       return {
-        token,
+        token: access,
         user: {
           id: userId || null,
-          username: response.data.username,
+          username: userUsername,
           role,
         },
       };

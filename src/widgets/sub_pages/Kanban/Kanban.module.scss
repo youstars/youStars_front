@@ -30,7 +30,7 @@
 .statusHeader {
   width: 214px;
   height: 40px;
-  background: --grey;
+  background: var(--grey);
   border-radius: 10px;
   margin-bottom: 0.5rem;
   padding: 8px 10px;
@@ -107,7 +107,7 @@
   gap: 6px;
   margin: 0 auto;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  background-color: --grey;
+  background-color: var(--grey);
 }
 
 .taskContent:hover {
@@ -139,7 +139,7 @@
 }
 
 .navButton {
-  background: --grey;
+  background: var(--grey);
   border: none;
   border-radius: 10px;
   width: 36px;
@@ -176,7 +176,7 @@
 .addTaskButton {
   margin-left: 60px;
   padding: 12px 20px;
-  background-color: --grey;
+  background-color: var(--grey);
   color: var( --primery-color);
   font-weight: 600;
   border: none;
@@ -201,7 +201,7 @@
   position: absolute;
   right: 20px;
   top: 10px;
-  background: --grey;
+  background: var(--grey);
   border: none;
   border-radius: 10px;
   width: 36px;

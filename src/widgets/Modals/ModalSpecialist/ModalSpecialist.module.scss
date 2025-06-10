@@ -12,7 +12,7 @@
 }
 
 .modalContent {
-  background-color: --grey;
+  background-color: var(--grey);
   border-radius: 8px;
   width: 280px;
   height: auto;
@@ -83,7 +83,7 @@
     appearance: none;
     width: 20px;
     height: 20px;
-    background: --grey;
+    background: var(var(--grey));
     border: 1px solid #888888;
     cursor: pointer;
     border-radius: 5px;

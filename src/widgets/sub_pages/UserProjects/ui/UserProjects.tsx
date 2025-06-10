@@ -11,7 +11,7 @@ import ModalsProjects from "widgets/Modals/ModalsProjects/ModalsProjects";
 import ModalCalendar from "widgets/Modals/ModalCalendar/ModalCalendar";
 import StatusModal from "widgets/Modals/StatusModal/StatusModal";
 import ModalSpecialist from "widgets/Modals/ModalSpecialist/ModalSpecialist";
-import CustomerModal from "widgets/Modals/CustomerModal/CustomerModal"; // ✅ Импорт `CustomerModal`
+import CustomerModal from "widgets/Modals/CustomerModal/CustomerModal";
 import { Link } from "react-router-dom";
 
 export default function UserProjects() {
@@ -156,16 +156,16 @@ export default function UserProjects() {
                 <p>{project.name || "Без названия"}</p>
               </div>
               <div className={classes.project_captain}>
-                <p>{project.captain || "Не назначен"}</p>
+                <p>{project.tracker.full_name || "Не назначен"}</p>
               </div>
               <div className={classes.project_end_date}>
-                <p>{project.end_date || "Не указана"}</p>
+                <p>{project.deadline || "Не указана"}</p>
               </div>
               <div className={classes.project_students}>
                 <p>{project.students || "Нет студентов"}</p>
               </div>
               <div className={classes.project_duration}>
-                <p>{project.intricacy_coefficient || "Не указана"}</p>
+                <p>{project.client.full_name || "Не указана"}</p>
               </div>
               <div className={classes.project_chat}>
                 <img src={message} />

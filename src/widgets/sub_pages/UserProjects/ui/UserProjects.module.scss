@@ -13,7 +13,7 @@
 .search_and_filter {
   width: 100%;
   height: 50px;
-  background: --grey;
+  background: var(--grey);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -115,7 +115,7 @@
   align-items: center;
   justify-content: space-around;
   border: 0.5px solid #272a2d;
-  background: --grey;
+  background: var(--grey);
   height: 41px;
   text-decoration: none;
 

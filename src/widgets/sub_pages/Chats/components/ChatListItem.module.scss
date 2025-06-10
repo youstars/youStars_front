@@ -1,7 +1,7 @@
 $bg-dark: --dark-grey;
-$bg-darker: --grey;
+$bg-darker: var(--grey);
 $bg-message: --dark-grey;
-$bg-highlight: --grey;
+$bg-highlight: var(--grey);
 $text-light: var(--white);
 $text-muted: #9ca3af;
 $border-color: #2d3339;

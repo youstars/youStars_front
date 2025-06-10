@@ -21,17 +21,18 @@ export interface Order {
     };
   };
 
-  tracker: {
+  tracker: number;
+  tracker_data?: {
+  id: number;
+  custom_user: {
     id: number;
-    custom_user: {
-      id: number;
-      full_name: string;
-      first_name: string;
-      last_name: string;
-      avatar: string | null;
-      role: string;
-    };
-  } | null;
+    full_name: string;
+    first_name: string;
+    last_name: string;
+    avatar: string | null;
+    role: string;
+  };
+};
 
   invited_specialists: any[];
 

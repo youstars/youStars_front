@@ -601,7 +601,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
                     />
                     <IconButton
                       alt="Добавить"
-                      borderColor="--grey"
+                      borderColor="var(--grey)"
                       icon={Plus}
                       border="none"
                       onClick={() => setIsEditMode(true)}
