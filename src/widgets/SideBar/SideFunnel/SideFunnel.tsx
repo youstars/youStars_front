@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  MessageCircle,
-  MessagesSquare,
   Calendar,
   Clock,
   ChevronLeft,
@@ -14,7 +12,6 @@ import classes from "./SideFunnel.module.scss";
 import { useAppSelector } from "shared/hooks/useAppSelector";
 import { getFunnelData } from "shared/store/slices/funnelSlice";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
-import { getUserIdFromToken } from "shared/utils/cookies";
 import { useNavigate } from "react-router-dom";
 import Plus from "shared/assets/icons/plus.svg";
 import {
@@ -36,7 +33,8 @@ import { findChatByParticipantId } from "shared/helpers/chatUtils";
 import ChatsIcon from "shared/assets/icons/ChatsY.svg";
 import ChatIcon from "shared/assets/icons/chatY.svg";
 import InvitationStatus from "widgets/SideBar/SideFunnel/InvitationStatus/InvitationStatus";
-// import { addSubtask } from "shared/store/slices/subtaskSlice";
+import { useSelector } from "react-redux";
+import { selectMe } from "shared/store/slices/meSlice";
 
 interface SideFunnelProps {
   isOpen: boolean;
@@ -44,36 +42,9 @@ interface SideFunnelProps {
   orderId: string;
 }
 
-const ExpandableText: React.FC<{ text: string; maxLength?: number }> = ({
-  text,
-  maxLength = 100,
-}) => {
-  const [expanded, setExpanded] = useState(false);
-  const isLong = text.length > maxLength;
 
-  const toggleExpanded = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setExpanded((prev) => !prev);
-  };
 
-  return (
-    <div className={classes.expandableBlock}>
-      <p className={classes.expandableText}>
-        {expanded || !isLong ? text : `${text.slice(0, maxLength)}... `}
-        {isLong && (
-          <button
-            className={classes.toggleLink}
-            onClick={toggleExpanded}
-            type="button"
-          >
-            {expanded ? "Скрыть" : "Дальше"}
-          </button>
-        )}
-      </p>
-    </div>
-  );
-};
+
 
 const SideFunnel: React.FC<SideFunnelProps> = ({
   isOpen,
@@ -81,60 +52,25 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
   orderId,
 }) => {
   const { chats, setActiveChat } = useChatService();
-
-  const handleClientChat = () => {
-    const clientUserId = order.client?.custom_user?.id;
-    const chat = findChatByParticipantId(chats, clientUserId);
-
-    if (chat) {
-      setActiveChat(chat.id);
-      navigate("/manager/chats");
-    } else {
-      alert("Чат с этим клиентом не найден.");
-    }
-  };
-
-  const sidebarRef = React.useRef<HTMLDivElement>(null);
-
-  const [isInfoOpen, setIsInfoOpen] = useState(true);
-  const [isSubtasksOpen, setIsSubtasksOpen] = useState(true);
-
+  console.log("useChatService:", { chats, setActiveChat }); 
   const order = useAppSelector((state) => state.order.current);
+  console.log("order:", order);
+  console.log("Redux state:", useAppSelector((state) => state.order)); 
 
-  const userId = getUserIdFromToken();
-  const [editableTitle, setEditableTitle] = useState(
-    order?.project_name || order?.order_name || ""
-  );
-  React.useEffect(() => {
-    if (order) {
-      setEditableTitle(order.project_name || order.order_name || "");
-    }
-  }, [order]);
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
+const me = useSelector(selectMe);
+const userId = me.data?.custom_user?.id || me.data?.id;
 
   const dispatch = useAppDispatch();
-  const handleTitleSave = async () => {
-    if (!editableTitle.trim() || editableTitle === order.project_name) return;
-
-    try {
-      await dispatch(
-        updateOrderTitle({
-          orderId: order.id.toString(),
-          projectName: editableTitle,
-          currentStatus: String(order.status),
-        })
-      );
-
-      await dispatch(getOrderById(order.id.toString()));
-      await dispatch(getFunnelData());
-    } catch (error) {
-      console.error("Ошибка при сохранении:", error);
-    } finally {
-      setIsEditingTitle(false);
-    }
-  };
-
   const navigate = useNavigate();
+
+  const sidebarRef = React.useRef<HTMLDivElement>(null);
+  const [isInfoOpen, setIsInfoOpen] = useState(true);
+  const [isSubtasksOpen, setIsSubtasksOpen] = useState(true);
+  const [editableTitle, setEditableTitle] = useState("");
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingBudget, setIsEditingBudget] = useState(false);
+  const [budgetValue, setBudgetValue] = useState("");
+  const [subtaskInput, setSubtaskInput] = useState("");
 
   useEffect(() => {
     if (orderId) {
@@ -142,15 +78,18 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     }
   }, [orderId, dispatch]);
 
-  const handleBecomeTracker = async () => {
-    if (!orderId || !userId) return;
-    console.log("CLICK — хочу стать трекером");
-    await dispatch(assignTrackerToOrder({ orderId, trackerId: userId }));
-    await dispatch(getFunnelData());
-    toggleSidebar();
-  };
+  useEffect(() => {
+    if (order) {
+      setEditableTitle(order.project_name || order.order_name || "");
+      setBudgetValue(
+        order?.approved_budget?.toString() ||
+          order?.estimated_budget?.toString() ||
+          ""
+      );
+    }
+  }, [order]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         sidebarRef.current &&
@@ -160,40 +99,58 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
         toggleSidebar();
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, toggleSidebar]);
 
-  const [isEditingBudget, setIsEditingBudget] = useState(false);
-  const [budgetValue, setBudgetValue] = useState(
-    order?.approved_budget?.toString() ||
-      order?.estimated_budget?.toString() ||
-      ""
-  );
-
-  useEffect(() => {
-    if (order) {
-      setBudgetValue(
-        order?.approved_budget?.toString() ||
-          order?.estimated_budget?.toString() ||
-          ""
-      );
+  const handleClientChat = () => {
+    const clientUserId = order?.client?.custom_user?.id;
+    const chat = findChatByParticipantId(chats, clientUserId);
+    if (chat) {
+      setActiveChat(chat.id);
+      navigate("/manager/chats");
+    } else {
+      alert("Чат с этим клиентом не найден.");
     }
-  }, [order]);
+  };
 
-  //subtasks
-  const [subtaskInput, setSubtaskInput] = useState("");
+  const handleTitleSave = async () => {
+    if (!editableTitle.trim() || editableTitle === order?.project_name) return;
+    try {
+      await dispatch(
+        updateOrderTitle({
+          orderId: order!.id.toString(),
+          projectName: editableTitle,
+          currentStatus: String(order!.status),
+        })
+      );
+      await dispatch(getOrderById(order!.id.toString()));
+      await dispatch(getFunnelData());
+    } catch (error) {
+      console.error("Ошибка при сохранении:", error);
+    } finally {
+      setIsEditingTitle(false);
+    }
+  };
 
-  if (!order) return null;
+  const handleBecomeTracker = async () => {
+    if (!orderId || !userId) return;
+    console.log("CLICK — хочу стать трекером");
+    await dispatch(assignTrackerToOrder({ orderId, trackerId: userId }));
+    await dispatch(getFunnelData());
+    toggleSidebar();
+  };
+
+  if (!order) {
+    return <div>Loading order...</div>;
+  }
 
   const clientUser = order.client?.custom_user;
   const clientName =
     clientUser?.full_name || (order.client ? `ID ${order.client.id}` : "—");
   const clientInitials = getInitials(clientName);
-
+  const invitedSpecialists = order.invited_specialists || [];
+  const approvedSpecialists = order.approved_specialists || [];
   return (
     <div
       className={`${classes.sidebarContainer} ${
@@ -353,9 +310,9 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                 <div className={classes.sum}>
                   <p>Трекер</p>
                   <span>
-                    {order.tracker?.custom_user?.full_name ? (
+                    {order.tracker_data?.custom_user?.full_name ? (
                       <span className={classes.avatarCircle}>
-                        {getInitials(order.tracker.custom_user.full_name)}
+                        {getInitials(order.tracker_data.custom_user.full_name)}
                       </span>
                     ) : (
                       "—"
@@ -394,7 +351,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                 </div>
 
                 <div className={classes.invitedList}>
-                  {order.invited_specialists.map((entry, index) => {
+                  {invitedSpecialists.map((entry, index) => {
                     const user = entry.specialist?.custom_user;
 
                     return (
@@ -445,8 +402,8 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                 {/* Утверждённые специалисты */}
                 <div className={classes.title}>Утверждённые специалисты</div>
                 <div className={classes.invitedList}>
-                  {order.approved_specialists?.length ? (
-                    order.approved_specialists.map((spec, index) => {
+                  {approvedSpecialists?.length ? (
+                    approvedSpecialists.map((spec, index) => {
                       const user = spec.custom_user;
                       return (
                         <div key={index} className={classes.invitedItem}>

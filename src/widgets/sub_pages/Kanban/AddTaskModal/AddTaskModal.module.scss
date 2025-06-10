@@ -14,7 +14,7 @@
 }
 
 .modalContent {
-  background: linear-gradient(145deg, --dark-grey, #282c2f);
+  background: linear-gradient(145deg, var(--dark-grey), #282c2f); 
   padding: 0;
   border-radius: 12px;
   width: 520px;

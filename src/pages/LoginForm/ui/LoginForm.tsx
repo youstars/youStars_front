@@ -22,7 +22,7 @@ const LoginForm = () => {
   const { t } = useTranslation();
   const icon = useMemo(() => {
     return theme === "dark" ? whiteApple : blackApple;
-  }, [theme, google, blackApple, whiteApple]);
+  }, []);
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const dispatch = useDispatch<AppDispatch>();

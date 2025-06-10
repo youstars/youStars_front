@@ -9,17 +9,22 @@ import { useChatService } from "shared/hooks/useWebsocket";
 import IconButton from "shared/UI/IconButton/IconButton";
 import { Specialist } from "shared/types/specialist";
 import { Order } from "shared/types/orders";
-import { setInvitationPayload, sendInvitation } from "shared/store/slices/invitationSlice";
+import {
+  setInvitationPayload,
+  sendInvitation,
+} from "shared/store/slices/invitationSlice";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { getCookie } from "shared/utils/cookies";
-
 
 interface SpecialistCardProps {
   specialist: Specialist;
   orders: Order[];
 }
 
-const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist, orders }) => {
+const SpecialistCard: React.FC<SpecialistCardProps> = ({
+  specialist,
+  orders,
+}) => {
   const dispatch = useAppDispatch();
   const { chats, setActiveChat } = useChatService();
   const navigate = useNavigate();
@@ -43,20 +48,20 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist, orders }) =
       alert("Чат с этим специалистом не найден.");
     }
   };
-const trackerId = parseInt(getCookie("user_id") || "1");
+  const trackerId = parseInt(getCookie("user_id") || "1");
 
-const handleOrderSelect = (order: Order) => {
-  const payload = {
-    order: order.id,
-    specialist_id: specialist.id,
-    tracker_id: trackerId,
-    proposed_payment: 0,
+  const handleOrderSelect = (order: Order) => {
+    const payload = {
+      order: order.id,
+      specialist_id: specialist.id,
+      tracker_id: trackerId,
+      proposed_payment: 0,
+    };
+
+    dispatch(setInvitationPayload(payload));
+    dispatch(sendInvitation(payload));
+    setIsOrdersOpen(false);
   };
-
-  dispatch(setInvitationPayload(payload));
-  dispatch(sendInvitation(payload));
-  setIsOrdersOpen(false); 
-};
 
   const formatValue = (value: any) => {
     if (
@@ -87,8 +92,11 @@ const handleOrderSelect = (order: Order) => {
           <div className={styles.userInfo}>
             <div className={styles.nameContainer}>
               <h3 className={styles.name}>
-                {specialist.custom_user?.first_name || specialist.custom_user?.last_name
-                  ? `${specialist.custom_user.first_name || ""} ${specialist.custom_user.last_name || ""}`.trim()
+                {specialist.custom_user?.first_name ||
+                specialist.custom_user?.last_name
+                  ? `${specialist.custom_user.first_name || ""} ${
+                      specialist.custom_user.last_name || ""
+                    }`.trim()
                   : specialist.custom_user?.full_name || "ДАННЫХ НЕТ"}
               </h3>
               <div className={styles.rating}>
@@ -100,7 +108,9 @@ const handleOrderSelect = (order: Order) => {
               {specialist.profession || "Профессия не указана"}
             </p>
             <p className={styles.availability}>
-              {specialist.is_busy === "Available" ? "Доступен к проектам" : "Сейчас не доступен"}
+              {specialist.is_busy === "Available"
+                ? "Доступен к проектам"
+                : "Сейчас не доступен"}
             </p>
           </div>
         </div>
@@ -121,16 +131,15 @@ const handleOrderSelect = (order: Order) => {
             {isOrdersOpen && (
               <div className={styles.ordersDropdown}>
                 {orders.length > 0 ? (
-                 orders.map((order) => (
-  <div
-    key={order.id}
-    className={styles.orderItem}
-    onClick={() => handleOrderSelect(order)}
-  >
-    {order.project_name || order.order_name}
-  </div>
-))
-
+                  orders.map((order) => (
+                    <div
+                      key={order.id}
+                      className={styles.orderItem}
+                      onClick={() => handleOrderSelect(order)}
+                    >
+                      {order.project_name || order.order_name}
+                    </div>
+                  ))
                 ) : (
                   <div>Нет заказов</div>
                 )}
@@ -146,11 +155,16 @@ const handleOrderSelect = (order: Order) => {
         </div>
       </div>
       <div className={styles.cardDetails}>
-        <p className={styles.description}>{specialist.self_description || "ДАННЫХ НЕТ"}</p>
+        <p className={styles.description}>
+          {specialist.self_description || "ДАННЫХ НЕТ"}
+        </p>
         <div className={styles.skillList}>
           <span className={styles.label}>Услуги:</span>
           <div className={styles.tags}>
-            {(specialist.services?.length ? specialist.services : ["Услуги не указаны"]).map((service, idx) => (
+            {(specialist.services?.length
+              ? specialist.services
+              : ["Услуги не указаны"]
+            ).map((service, idx) => (
               <Tag key={idx} label={service} />
             ))}
           </div>
@@ -158,23 +172,29 @@ const handleOrderSelect = (order: Order) => {
         <div className={styles.skillList}>
           <span className={styles.label}>Ниши:</span>
           <div className={styles.tags}>
-            {(specialist.business_scopes?.length ? specialist.business_scopes : ["Ниши не указаны"]).map((service, idx) => (
+            {(specialist.business_scopes?.length
+              ? specialist.business_scopes
+              : ["Ниши не указаны"]
+            ).map((service, idx) => (
               <Tag key={idx} label={service} />
             ))}
           </div>
         </div>
         <div className={styles.stats}>
           <div>
-            <strong>Проекты в работе:</strong> {formatValue(specialist.projects_in_progress_count)}
+            <strong>Проекты в работе:</strong>{" "}
+            {formatValue(specialist.projects_in_progress_count)}
           </div>
           <div>
-            <strong>Осталось задач:</strong> {formatValue(specialist.projects_in_progress_count)}
+            <strong>Осталось задач:</strong>{" "}
+            {formatValue(specialist.projects_in_progress_count)}
           </div>
           <div>
             <strong>Ставка:</strong> {formatValue(specialist.appr_hourly_rate)}
           </div>
           <div>
-            <strong>Стоимость:</strong> {formatValue(specialist.specialist_cost_total)}
+            <strong>Стоимость:</strong>{" "}
+            {formatValue(specialist.specialist_cost_total)}
           </div>
           <div>
             <strong>Занятость:</strong>{" "}

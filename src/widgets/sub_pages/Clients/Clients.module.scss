@@ -31,7 +31,7 @@
 .search_and_filter {
   width: 62%;
   height: 40px;
-  background: --grey;
+  background: var(--grey);
   display: flex;
   //justify-content: space-between;
   align-items: center;
@@ -47,7 +47,7 @@
   border: none;
   outline: none;
   box-shadow: none;
-  background: --grey;
+  background: var(--grey);
   color: white;
   padding-left: 20px;
 }
@@ -91,7 +91,7 @@
   gap: 10px;
   justify-content: center;
   align-items: center;
-  background: --grey;
+  background: var(--grey);
   border-radius: 10px;
 }
 
@@ -119,7 +119,7 @@
   margin-left: 30px;
   margin-top: 20px;
   min-height: 222px;
-  background: --grey;
+  background: var(--grey);
   padding: 30px 32px;
   border-radius: 10px;
 }
@@ -172,7 +172,7 @@
 .button {
   width: 148px;
   height: 28px;
-  background: --grey;
+  background: var(--grey);
   color: #ffc400;
   border: 1px solid #ffc400;
   border-radius: 10px;
@@ -226,7 +226,7 @@
 
 .sidebar {
   width: 280px;
-  background: --dark-grey;
+  background: var(--dark-grey);
   color: white;
   height: 100%;
   transition: all 0.5s ease;

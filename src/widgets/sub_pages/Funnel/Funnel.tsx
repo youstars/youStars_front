@@ -47,6 +47,12 @@ const Funnel = () => {
     dispatch(getFunnelData());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (selectedOrderId !== null) {
+      setIsSidebarOpen(true);
+    }
+  }, [selectedOrderId]);
+
   const filteredOrders = useMemo(() => {
     return funnelData.filter((order) =>
       (order.order_goal || "").toLowerCase().includes(searchTerm.toLowerCase())
@@ -130,7 +136,6 @@ const Funnel = () => {
                       key={order.id}
                       onClick={() => {
                         setSelectedOrderId(order.id);
-                        setIsSidebarOpen(true);
                       }}
                     >
                       <div className={styles.taskContent}>
@@ -189,11 +194,14 @@ const Funnel = () => {
                             </span>
                             <span className={styles.taskDetailValue}>
                               <span className={styles.avatarCircle}>
-                                {order.tracker?.custom_user?.full_name
-                                  ? getInitials(
-                                      order.tracker.custom_user.full_name
-                                    )
-                                  : "–"}
+                                <span className={styles.avatarCircle}>
+                                  {order.tracker_data &&
+                                  order.tracker_data.custom_user?.full_name
+                                    ? getInitials(
+                                        order.tracker_data.custom_user.full_name
+                                      )
+                                    : "–"}
+                                </span>
                               </span>
                             </span>
                           </div>

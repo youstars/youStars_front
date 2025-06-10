@@ -1,8 +1,8 @@
 // Variables
 $bg-dark: --dark-grey;
-$bg-darker: --grey;
+$bg-darker: var(--grey);
 $bg-message: --dark-grey;
-$bg-highlight: --grey;
+$bg-highlight: var(--grey);
 $text-light: var(--white);
 $text-muted: #9ca3af;
 $border-color: #2d3339;
@@ -16,7 +16,7 @@ $yellow: #fbbf24;
 
   .topSection {
     border-bottom: 1px solid $border-color;
-    background-color: --grey;
+    background-color: var(--grey);
     flex-shrink: 0;
     border: 1px solid #272A2D;
 
@@ -110,7 +110,7 @@ $yellow: #fbbf24;
         }
 
         &.chatListItem--active {
-          background-color: var(--grey);
+          background-color: var(var(--grey));
         }
 
         .chatListItem__avatar {
@@ -315,7 +315,7 @@ $yellow: #fbbf24;
         .chatReply {
           display: flex;
           align-items: center;
-          background: var(--grey);
+          background: var(var(--grey));
           padding: 8px;
           border-left: 3px solid $yellow;
           border-radius: 6px;
