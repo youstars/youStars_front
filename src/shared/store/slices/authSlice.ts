@@ -43,7 +43,14 @@ export const login = createAsyncThunk(
         password,
       });
 
-      const { access, refresh, role, username: userUsername } = response.data;
+ const {
+  access,
+  refresh,
+  role,
+  username: userUsername,
+  role_id,
+} = response.data;
+
 
       Cookies.set("access_token", access, {
         expires: 7,
@@ -65,6 +72,13 @@ export const login = createAsyncThunk(
           sameSite: "None",
         });
       }
+if (role_id) {
+  Cookies.set("user_role_id", role_id.toString(), {
+    expires: 7,
+    secure: true,
+    sameSite: "None",
+  });
+}
 
       if (role) {
         Cookies.set("user_role", role, {
@@ -74,14 +88,15 @@ export const login = createAsyncThunk(
         });
       }
 
-      return {
-        token: access,
-        user: {
-          id: userId || null,
-          username: userUsername,
-          role,
-        },
-      };
+return {
+  token: access,
+  user: {
+    id: userId || null,
+    username: userUsername,
+    role,
+    role_id: role_id || null, 
+  },
+}
     } catch (error: any) {
       console.error("Login failed:", error);
       return rejectWithValue({
@@ -101,13 +116,14 @@ export const logout = createAsyncThunk(
         await axiosInstance.post(API_ENDPOINTS.auth.logout, { refresh });
       }
 
-     ["access_token", "refresh_token", "user_id", "user_role"].forEach((key) => {
+["access_token", "refresh_token", "user_id", "user_role", "user_role_id"].forEach((key) => {
   Cookies.remove(key, {
     path: "/",
     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
     secure: process.env.NODE_ENV === "production",
   });
 });
+
 
 
       return true;
@@ -122,7 +138,13 @@ const authSlice = createSlice({
   initialState: {
     loading: false,
     error: null as ErrorType | null,
-    user: null as null | { id: string | null; username: string },
+   user: null as null | {
+  id: string | null;
+  username: string;
+  role?: string;
+  role_id?: number | null;
+},
+
   },
   reducers: {
     logoutUser: (state) => {
@@ -152,13 +174,16 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(login.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = {
-          id: action.payload.user.id,
-          username: action.payload.user.username,
-        };
-      })
+.addCase(login.fulfilled, (state, action) => {
+  state.loading = false;
+  state.user = {
+    id: action.payload.user.id,
+    username: action.payload.user.username,
+    role: action.payload.user.role,
+    role_id: action.payload.user.role_id,
+  };
+})
+
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error =
