@@ -59,7 +59,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
   console.log("Redux state:", useAppSelector((state) => state.order)); 
 
 const me = useSelector(selectMe);
-const userId = me.data?.custom_user?.id || me.data?.id;
+const userId = me.data?.custom_user?.role_id || me.data?.role_id;
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
