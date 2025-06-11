@@ -43,6 +43,7 @@ export const createTask = createAsyncThunk(
             intricacy_coefficient: number;
             task_credits: number;
             status_priority: string;
+            project: number;
         },
         { rejectWithValue }
     ) => {
@@ -92,22 +93,39 @@ export const updateTaskStatus = createAsyncThunk(
 );
 
 interface TasksState {
-    tasks: {
-        results: Task[];
-    };
-    status: "idle" | "pending" | "fulfilled" | "rejected";
-    error: string | null;
-    updatingTaskIds: number[];
+  tasks: {
+    results: Task[];
+  };
+  selectedTask: Task | null; 
+  status: "idle" | "pending" | "fulfilled" | "rejected";
+  error: string | null;
+  updatingTaskIds: number[];
 }
 
 const initialState: TasksState = {
     tasks: {
         results: [],
     },
+    selectedTask: null,
     status: "idle",
     error: null,
     updatingTaskIds: [],
 };
+
+export const getTaskById = createAsyncThunk(
+  "tasks/getTaskById",
+  async (taskId: string, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get<{ results: Task[] }>(
+        `/task_specialist/${taskId}/`
+      );
+      return response.data.results[0]; 
+    } catch (error) {
+      return rejectWithValue("Ошибка при получении задачи");
+    }
+  }
+);
+
 
 const tasksSlice = createSlice({
     name: "tasks",
@@ -166,6 +184,16 @@ const tasksSlice = createSlice({
                 }
                 state.updatingTaskIds = state.updatingTaskIds.filter(id => id !== updatedTask.id);
             })
+.addCase(getTaskById.fulfilled, (state, action: PayloadAction<Task>) => {
+  const fetchedTask = action.payload;
+  const index = state.tasks.results.findIndex((task) => task.id === fetchedTask.id);
+  if (index !== -1) {
+    state.tasks.results[index] = fetchedTask;
+  } else {
+    state.tasks.results.push(fetchedTask);
+  }
+})
+
             .addCase(updateTaskStatus.rejected, (state, action) => {
                 const id = (action.meta.arg as { id: number }).id;
                 state.updatingTaskIds = state.updatingTaskIds.filter(taskId => taskId !== id);
@@ -190,5 +218,7 @@ export const selectTasks = (state: { tasks: TasksState }) => state.tasks.tasks;
 export const selectTasksStatus = (state: { tasks: TasksState }) => state.tasks.status;
 export const selectTasksError = (state: { tasks: TasksState }) => state.tasks.error;
 export const selectUpdatingTaskIds = (state: { tasks: TasksState }) => state.tasks.updatingTaskIds;
+export const selectTaskById = (state: { tasks: TasksState }, id: number) =>
+  state.tasks.tasks.results.find((task) => task.id === id);
 
 export default tasksSlice.reducer;

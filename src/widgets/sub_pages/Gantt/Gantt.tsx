@@ -89,20 +89,26 @@ end: new Date(task.deadline || task.start_date),
   };
 
   const days = getDaysArray();
+
+const hasAutoScrolled = useRef(false);
+
 useEffect(() => {
+  if (hasAutoScrolled.current) return;
+
   if (scrollContainerRef.current && tasks.length > 0) {
-    const firstTaskStart = tasks.reduce((earliest, task) =>
-      task.start < earliest.start ? task : earliest
-    ).start;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     const dayWidth = 30;
-    const startIndex = days.findIndex(
-      (day) => day.toDateString() === firstTaskStart.toDateString()
+    const todayIndex = days.findIndex(
+      (day) => day.toDateString() === today.toDateString()
     );
 
-    if (startIndex !== -1) {
-      scrollContainerRef.current.scrollLeft = startIndex * dayWidth;
+    if (todayIndex !== -1) {
+      scrollContainerRef.current.scrollLeft = todayIndex * dayWidth;
     }
+
+    hasAutoScrolled.current = true; 
   }
 }, [tasks, days]);
 

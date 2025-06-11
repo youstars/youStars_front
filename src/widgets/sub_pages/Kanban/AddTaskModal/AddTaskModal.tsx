@@ -6,13 +6,15 @@ import { TaskStatus } from "../types";
 import styles from "./AddTaskModal.module.scss";
 
 interface AddTaskModalProps {
-    onClose: () => void;
+  onClose: () => void;
+  projectId: number;
 }
+
 
 type StatusPriority = "frozen" | "low" | "medium" | "high" | "urgent";
 type GradeOption = 1 | 2 | 3 | 4 | 5;
 
-const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose }) => {
+const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose, projectId }) => {
     const dispatch = useDispatch<AppDispatch>();
 
     const [title, setTitle] = useState("");
@@ -54,7 +56,8 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose }) => {
                 manager_recommendation: managerRecommendation,
                 intricacy_coefficient: intricacyCoefficient,
                 task_credits: taskCredits,
-                status_priority: statusPriority
+                status_priority: statusPriority,
+                project: projectId, 
             }));
             await dispatch(getTasks());
             onClose();
