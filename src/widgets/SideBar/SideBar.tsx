@@ -22,10 +22,10 @@ export default function SideBar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const me = useAppSelector(selectMe);
-const role = me.data?.role?.toLowerCase() || "guest";
+  const role = me.data?.role?.toLowerCase() || "guest";
 
-console.log("me.data:", me.data);
-console.log("role:", role);
+  console.log("me.data:", me.data);
+  console.log("role:", role);
 
   const navItems = [
     { text: "Задачи", image: round, to: "overview" },
@@ -39,13 +39,16 @@ console.log("role:", role);
     { text: "Админы", image: admins, to: "admins" },
     { text: "Настройки", image: settings, to: "settings" },
   ];
-const filteredNavItems = navItems.filter((item) => {
-  if (role === "client") return !["Клиенты", "Специалисты", "Админы"].includes(item.text); 
-  if (role === "specialist") return !["Воронка", "Клиенты", "Специалисты", "Админы"].includes(item.text);
-  if (role === "tracker") return item.text !== "";
-  return true;
-});
-
+  const filteredNavItems = navItems.filter((item) => {
+    if (role === "client")
+      return !["Клиенты", "Специалисты", "Админы"].includes(item.text);
+    if (role === "specialist")
+      return !["Воронка", "Клиенты", "Специалисты", "Админы"].includes(
+        item.text
+      );
+    if (role === "tracker") return item.text !== "";
+    return true;
+  });
 
   return (
     <aside
@@ -88,6 +91,7 @@ const filteredNavItems = navItems.filter((item) => {
         <SearchInput
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
+          isCollapsed={isCollapsed}
         />
       </div>
 

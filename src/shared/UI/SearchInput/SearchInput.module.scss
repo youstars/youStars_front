@@ -32,3 +32,23 @@
   align-items: center;
   overflow: visible; 
 }
+
+
+.input {
+  flex: 1;
+  height: 30px;
+  border-radius: 10px;
+  border: none;
+  background: var(--color-bg-primary);
+  outline: none;
+  color: var(--primery-color);
+  padding-left: 50px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.input.collapsed {
+  width: 30px;
+  padding-left: 32px; 
+  cursor: pointer;
+}
