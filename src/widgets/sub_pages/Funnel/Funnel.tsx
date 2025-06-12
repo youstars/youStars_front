@@ -11,6 +11,8 @@ import ModalOrders from "widgets/Modals/ModalOrder/ModalOrder";
 import SideFunnel from "widgets/SideBar/SideFunnel/SideFunnel";
 import { getInitials } from "shared/helpers/userUtils";
 import { useDragScroll } from "shared/hooks/useDragScroll";
+import { useAppSelector } from "shared/hooks/useAppSelector";
+import { getOrderById } from "shared/store/slices/orderSlice";
 
 const statusLabels: Record<string, string> = {
   new: "Новая заявка",
@@ -42,6 +44,9 @@ const Funnel = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const dragScrollRef = useDragScroll();
+  const order = useAppSelector((state) => state.order.current);
+
+  const isOrderReady = isSidebarOpen && order?.id === selectedOrderId;
 
   useEffect(() => {
     dispatch(getFunnelData());
@@ -136,6 +141,7 @@ const Funnel = () => {
                       key={order.id}
                       onClick={() => {
                         setSelectedOrderId(order.id);
+                        dispatch(getOrderById(order.id));
                       }}
                     >
                       <div className={styles.taskContent}>
@@ -162,12 +168,13 @@ const Funnel = () => {
                             </button>
                           </div>
                         </div>
-
                         <p className={styles.amount}>
-                          {order.estimated_budget
-                            ? `${Math.round(
-                                parseFloat(order.estimated_budget)
-                              ).toLocaleString("ru-RU")} ₽`
+                          {order.approved_budget
+                            ? `${Number(order.approved_budget).toLocaleString(
+                                "ru-RU"
+                              )} ₽`
+                            : order.estimated_budget
+                            ? `${order.estimated_budget} ₽`
                             : "Бюджет не указан"}
                         </p>
 
@@ -248,11 +255,11 @@ const Funnel = () => {
           // clientId={clientId}
         />
       )}
-      {isSidebarOpen && (
+      {isOrderReady && (
         <SideFunnel
-          isOpen={isSidebarOpen}
+          isOpen={true}
           toggleSidebar={() => setIsSidebarOpen(false)}
-          orderId={selectedOrderId?.toString() ?? ""}
+          orderId={selectedOrderId!.toString()}
         />
       )}
     </div>

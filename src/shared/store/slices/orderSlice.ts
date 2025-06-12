@@ -8,7 +8,7 @@ const baseUrl = process.env.REACT_APP_API_BASE || "http://localhost:8000";
 const token = getCookie("access_token") || "";
 
 
-export const getOrderById = createAsyncThunk<Order, string>(
+export const getOrderById = createAsyncThunk<Order, any>(
   "order/getOrderById",
   async (id) => {
     const res = await fetch(`${baseUrl}/order/${id}/`, {
@@ -92,7 +92,7 @@ export const updateOrderStatus = createAsyncThunk<
 
 export const assignTrackerToOrder = createAsyncThunk<
   void,
-  { orderId: string; trackerId: string },
+  { orderId: string; trackerId: number },
   { rejectValue: string }
 >(
   "funnel/assignTrackerToOrder",
@@ -101,11 +101,17 @@ export const assignTrackerToOrder = createAsyncThunk<
       const token = getToken();
       if (!token) return rejectWithValue("Нет токена");
 
-      await axiosInstance.patch(`/order/${orderId}/`, {
-        tracker: trackerId,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      console.log("Отправляем PATCH в assignTrackerToOrder:", {
+  url: `/order/${orderId}/`,
+  data: { tracker: trackerId },
+});
+
+await axiosInstance.patch(`/order/${orderId}/`, {
+  tracker: trackerId,
+}, {
+  headers: { Authorization: `Bearer ${token}` },
+});
+
     } catch (error: any) {
       console.error("Ошибка назначения трекера:", error);
       return rejectWithValue(error.response?.data || "Ошибка при назначении трекера");

@@ -24,8 +24,8 @@ export type TaskFile = {
 export type Task = {
   id: number | string;
   title: string;
-  description?: string;
-  status: number | string;
+   description?: string;
+  status: string;
   material?: string;
   notice?: string;
   start_date: string;

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { Task, TaskStatus } from "shared/types/tasks";
+import { getCookie } from "shared/utils/cookies";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -15,9 +16,15 @@ export const getTasks = createAsyncThunk(
   "tasks/getTasks",
   async (_, { rejectWithValue }) => {
     try {
+       const token = getCookie("access_token");
       const response = await axiosInstance.get<{ results: Task[] }>(
-        "task_specialist"
-      );
+        "task_specialist/",
+          {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       return response.data;
     } catch (error: any) {
       console.error("Error fetching tasks:", error);
@@ -25,6 +32,8 @@ export const getTasks = createAsyncThunk(
     }
   }
 );
+
+
 
 export const createTask = createAsyncThunk(
   "tasks/createTask",
@@ -101,6 +110,20 @@ export const updateTaskStatus = createAsyncThunk(
     }
   }
 );
+
+export const updateTask = createAsyncThunk(
+  "tasks/updateTask",
+  async ({ id, data }: { id: number; data: Partial<Task> }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.patch<Task>(`/task_specialist/${id}/`, data);
+      return response.data;
+    } catch (error: any) {
+      console.error("Error updating task:", error);
+      return rejectWithValue(error.response?.data || "Ошибка при обновлении задачи");
+    }
+  }
+);
+
 
 interface TasksState {
   tasks: {
