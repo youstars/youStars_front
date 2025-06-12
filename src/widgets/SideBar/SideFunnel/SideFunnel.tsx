@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-
   Calendar,
   Clock,
   ChevronLeft,
@@ -36,6 +35,7 @@ import ChatIcon from "shared/assets/icons/chatY.svg";
 import InvitationStatus from "widgets/SideBar/SideFunnel/InvitationStatus/InvitationStatus";
 import { useSelector } from "react-redux";
 import { selectMe } from "shared/store/slices/meSlice";
+import Cookies from "js-cookie";
 
 interface SideFunnelProps {
   isOpen: boolean;
@@ -59,7 +59,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
   console.log("Redux state:", useAppSelector((state) => state.order)); 
 
 const me = useSelector(selectMe);
-const userId = me.data?.custom_user?.role_id || me.data?.role_id;
+const userId = Number(Cookies.get("user_role_id"));
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -135,6 +135,8 @@ const userId = me.data?.custom_user?.role_id || me.data?.role_id;
   };
 
   const handleBecomeTracker = async () => {
+    console.log("userId:", userId);
+
     if (!orderId || !userId) return;
     console.log("CLICK — хочу стать трекером");
     await dispatch(assignTrackerToOrder({ orderId, trackerId: userId }));

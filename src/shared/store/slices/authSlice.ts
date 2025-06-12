@@ -3,6 +3,32 @@ import axiosInstance from "shared/api/api";
 import Cookies from "js-cookie";
 import { getUserIdFromToken } from "shared/utils/cookies";
 import { API_ENDPOINTS } from "shared/api/endpoints";
+import { jwtDecode } from "jwt-decode";
+
+
+export const checkAuthFromCookies = createAsyncThunk(
+  "auth/checkAuthFromCookies",
+  async (_, { rejectWithValue }) => {
+    const token = Cookies.get("access_token");
+
+    if (!token) return rejectWithValue("No token");
+
+    try {
+      const decoded: any = jwtDecode(token);
+
+      const user = {
+        id: decoded.user_id,
+        username: decoded.username,
+        role: decoded.role,
+        role_id: decoded.role_id,
+      };
+
+      return user;
+    } catch (e) {
+      return rejectWithValue("Invalid token");
+    }
+  }
+);
 
 export const register = createAsyncThunk(
   "auth/register",
@@ -43,14 +69,13 @@ export const login = createAsyncThunk(
         password,
       });
 
- const {
-  access,
-  refresh,
-  role,
-  username: userUsername,
-  role_id,
-} = response.data;
-
+      const {
+        access,
+        refresh,
+        role,
+        username: userUsername,
+        role_id,
+      } = response.data;
 
       Cookies.set("access_token", access, {
         expires: 7,
@@ -64,7 +89,7 @@ export const login = createAsyncThunk(
         sameSite: "None",
       });
 
-      const userId = getUserIdFromToken(); 
+      const userId = getUserIdFromToken();
       if (userId) {
         Cookies.set("user_id", userId.toString(), {
           expires: 7,
@@ -72,13 +97,13 @@ export const login = createAsyncThunk(
           sameSite: "None",
         });
       }
-if (role_id) {
-  Cookies.set("user_role_id", role_id.toString(), {
-    expires: 7,
-    secure: true,
-    sameSite: "None",
-  });
-}
+      if (role_id) {
+        Cookies.set("user_role_id", role_id.toString(), {
+          expires: 7,
+          secure: true,
+          sameSite: "None",
+        });
+      }
 
       if (role) {
         Cookies.set("user_role", role, {
@@ -88,15 +113,15 @@ if (role_id) {
         });
       }
 
-return {
-  token: access,
-  user: {
-    id: userId || null,
-    username: userUsername,
-    role,
-    role_id: role_id || null, 
-  },
-}
+      return {
+        token: access,
+        user: {
+          id: userId || null,
+          username: userUsername,
+          role,
+          role_id: role_id || null,
+        },
+      };
     } catch (error: any) {
       console.error("Login failed:", error);
       return rejectWithValue({
@@ -116,15 +141,19 @@ export const logout = createAsyncThunk(
         await axiosInstance.post(API_ENDPOINTS.auth.logout, { refresh });
       }
 
-["access_token", "refresh_token", "user_id", "user_role", "user_role_id"].forEach((key) => {
-  Cookies.remove(key, {
-    path: "/",
-    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-    secure: process.env.NODE_ENV === "production",
-  });
-});
-
-
+      [
+        "access_token",
+        "refresh_token",
+        "user_id",
+        "user_role",
+        "user_role_id",
+      ].forEach((key) => {
+        Cookies.remove(key, {
+          path: "/",
+          sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+          secure: process.env.NODE_ENV === "production",
+        });
+      });
 
       return true;
     } catch (error) {
@@ -138,13 +167,12 @@ const authSlice = createSlice({
   initialState: {
     loading: false,
     error: null as ErrorType | null,
-   user: null as null | {
-  id: string | null;
-  username: string;
-  role?: string;
-  role_id?: number | null;
-},
-
+    user: null as null | {
+      id: string | null;
+      username: string;
+      role?: string;
+      role_id?: number | null;
+    },
   },
   reducers: {
     logoutUser: (state) => {
@@ -174,15 +202,15 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-.addCase(login.fulfilled, (state, action) => {
-  state.loading = false;
-  state.user = {
-    id: action.payload.user.id,
-    username: action.payload.user.username,
-    role: action.payload.user.role,
-    role_id: action.payload.user.role_id,
-  };
-})
+      .addCase(login.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = {
+          id: action.payload.user.id,
+          username: action.payload.user.username,
+          role: action.payload.user.role,
+          role_id: action.payload.user.role_id,
+        };
+      })
 
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -204,7 +232,11 @@ const authSlice = createSlice({
               ? action.payload
               : "Logout failed",
         };
-      });
+      })
+      .addCase(checkAuthFromCookies.fulfilled, (state, action) => {
+  state.user = action.payload;
+})
+
   },
 });
 
