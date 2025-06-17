@@ -7,7 +7,7 @@ import GroupChat from "shared/assets/icons/ChatsY.svg";
 import IconButton from "shared/UI/IconButton/IconButton";
 import ProgressBar from "shared/UI/ProgressBar/ProgressBar";
 import TextAreaField from "shared/UI/TextAreaField/TextAreaField";
-import { Tracker } from "./types";
+import { Tracker } from "shared/types/tracker";
 import { TableColumn } from "./types";
 import AvatarWithName from "shared/UI/AvatarWithName/AvatarWithName";
 import { Specialist } from "./types";

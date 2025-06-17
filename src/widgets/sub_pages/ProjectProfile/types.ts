@@ -5,13 +5,6 @@ export interface TableColumn<T> {
 }
 
 
-export  type Tracker = {
-    name: string;
-    avatar: string;
-    inWork: number;
-    inReview: number;
-    done: number;
-  };
 
   export type Specialist = {
     name: string;

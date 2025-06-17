@@ -16,15 +16,15 @@ export const getTasks = createAsyncThunk(
   "tasks/getTasks",
   async (_, { rejectWithValue }) => {
     try {
-       const token = getCookie("access_token");
+      const token = getCookie("access_token");
       const response = await axiosInstance.get<{ results: Task[] }>(
         "task_specialist/",
-          {
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
+      );
       return response.data;
     } catch (error: any) {
       console.error("Error fetching tasks:", error);
@@ -33,33 +33,42 @@ export const getTasks = createAsyncThunk(
   }
 );
 
-
-
 export const createTask = createAsyncThunk(
   "tasks/createTask",
   async (
     data: {
       title: string;
       description: string;
-      execution_period: number;
-      status: TaskStatus;
       deadline: string;
       start_date: string;
+      execution_period: number;
       assigned_specialist: number[];
-      material: string;
-      notice: string;
-      personal_grade: number;
-      deadline_compliance: number;
-      manager_recommendation: number;
-      intricacy_coefficient: number;
-      task_credits: number;
-      status_priority: string;
       project: number;
+      status?: TaskStatus;
+      material?: string;
+      notice?: string;
+      personal_grade?: number;
+      deadline_compliance?: number;
+      manager_recommendation?: number;
+      intricacy_coefficient?: number;
+      task_credits?: number;
+      status_priority?: string;
+      created_at: string;
     },
     { rejectWithValue }
   ) => {
     try {
-      const response = await axiosInstance.post<Task>("task_specialist/", data);
+      const token = getCookie("access_token");
+      const response = await axios.post<Task>(
+        `${API_BASE_URL}task_specialist/`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       return response.data;
     } catch (error: any) {
       console.error("Error creating task:", error);
@@ -69,6 +78,7 @@ export const createTask = createAsyncThunk(
     }
   }
 );
+
 
 export const updateTaskDeadline = createAsyncThunk(
   "tasks/updateDeadline",
@@ -113,17 +123,24 @@ export const updateTaskStatus = createAsyncThunk(
 
 export const updateTask = createAsyncThunk(
   "tasks/updateTask",
-  async ({ id, data }: { id: number; data: Partial<Task> }, { rejectWithValue }) => {
+  async (
+    { id, data }: { id: number; data: Partial<Task> },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await axiosInstance.patch<Task>(`/task_specialist/${id}/`, data);
+      const response = await axiosInstance.patch<Task>(
+        `/task_specialist/${id}/`,
+        data
+      );
       return response.data;
     } catch (error: any) {
       console.error("Error updating task:", error);
-      return rejectWithValue(error.response?.data || "Ошибка при обновлении задачи");
+      return rejectWithValue(
+        error.response?.data || "Ошибка при обновлении задачи"
+      );
     }
   }
 );
-
 
 interface TasksState {
   tasks: {

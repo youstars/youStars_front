@@ -1,26 +1,5 @@
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 1000;
-  display: flex;
-  justify-content: flex-end;
-  pointer-events: all;
-}
-
-.modalContent {
-  width: 340px;
-  background-color: #2E3235;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.25);
-  position: relative;
-  transform: translateX(0);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
 .modalHeader {
+  
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -43,46 +22,6 @@
   cursor: pointer;
 }
 
-.modalBody {
-  padding: 20px;
-  color: var(--primery-color);
-  overflow-y: auto;
-  flex: 1;
-}
-
-.formGroup {
-  margin-bottom: 16px;
-
-  label {
-    font-size: 12px;
-    color: #a0a0a0;
-    margin-bottom: 6px;
-    display: block;
-  }
-
-  input,
-  textarea,
-  select {
-    width: 100%;
-    background: #383E41;
-    color: var(--primery-color);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 13px;
-    resize: none;
-
-    &:focus {
-      outline: none;
-      border-color: #ffc107;
-    }
-  }
-
-  textarea {
-    min-height: 80px;
-  }
-}
-
 .prioritySelector {
   display: flex;
   gap: 8px;
@@ -90,21 +29,6 @@
   margin-top: 8px;
 }
 
-.priorityBtn {
-  flex: 1;
-  font-size: 12px;
-  padding: 8px;
-  border-radius: 6px;
-  background: #383E41;
-  border: 1px solid transparent;
-  color: var(--primery-color);
-  cursor: pointer;
-
-  &.active {
-    border-color: #ffc107;
-    background: rgba(255, 193, 7, 0.2);
-  }
-}
 
 .actions {
   display: flex;
@@ -136,4 +60,314 @@
   &:hover {
     background: #ffcd39;
   }
+}
+
+.trackerBlock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.trackerInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.trackerText {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  color: var(--primery-color);
+}
+
+.subtext {
+  font-size: 10px;
+  color: #aaa;
+}
+
+.trackerIcons {
+  display: flex;
+  gap: 10px;
+}
+
+.chatIcon {
+  width: 20px;
+  height: 20px;
+  filter: brightness(1.2);
+  cursor: pointer;
+}
+
+.sectionTitle {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 20px 20px 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.required {
+  color: red;
+  margin-left: 4px;
+}
+
+.itemRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  color: var(--primery-color);
+  font-size: 13px;
+  cursor: pointer;
+
+  svg {
+    color: #FFC107;
+  }
+}
+
+.dateRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  font-size: 12px;
+  color: var(--primery-color);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: #FFC107;
+  border-radius: 50%;
+}
+
+.avatarSmall {
+  background: #6E8AE6;
+  color: black;
+  font-weight: bold;
+  font-size: 10px;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  color: #FFC107;
+  cursor: pointer;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.textarea {
+  width: calc(100% - 40px);
+  margin: 0 20px;
+  padding: 10px 12px;
+  background: #383E41;
+  color: var(--primery-color);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  min-height: 80px;
+  resize: none;
+  font-size: 13px;
+}
+
+.textareaDate{
+  width: calc(100% - 40px);
+  margin: 0 20px;
+  background: #2E3235;;
+  color: var(--primery-color);
+  border: none;
+  border-radius: 8px;
+  resize: none;
+}
+
+.sectionToggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  font-size: 13px;
+  color: var(--primery-color);
+  cursor: pointer;
+
+  svg {
+    color: #FFC107;
+  }
+}
+
+.attach {
+  font-size: 16px;
+  color: #FFC107;
+}
+
+
+
+
+.sidebarContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: calc(100vh - 60px);
+  width: 100%;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.containerOpen {
+  pointer-events: all;
+}
+
+.sidebar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 340px;
+  height: 100%;
+  background: #2E3235;
+  opacity: 0;
+  transform: translateX(100%);
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.4s ease-in-out;
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1001;
+  will-change: transform, opacity;
+    &.sidebarOpen {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.specialistsList {
+  background-color: #1f1f1f;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  margin: 8px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.specialistItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--primery-color);
+
+  input[type="checkbox"] {
+    accent-color: #FFC107;
+    transform: scale(1.1);
+  }
+
+  span {
+    user-select: none;
+  }
+}
+
+.selectedSpecialists {
+  margin: 12px 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.specialistTag {
+  background-color: #383E41;
+  color: #FFC107;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.sectionTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+
+  .sectionTitle {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .addButton {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #facc15;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+}
+
+
+.sectionTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.hiddenDateInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  height: 0;
+  width: 0;
+}
+
+
+.selectedDate {
+  font-size: 13px;
+  color: var(--primery-color);
+  margin: 8px 20px 0;
+}
+.contentWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 20px;
 }

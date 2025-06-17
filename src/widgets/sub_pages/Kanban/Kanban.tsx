@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { getProjectById, selectProject } from "shared/store/slices/projectSlice";
 import {
   getTasks,
   updateTaskStatus,
@@ -9,13 +10,13 @@ import { AppDispatch, RootState } from "shared/store";
 import AddTaskModal from "./AddTaskModal/AddTaskModal";
 import classes from "./Kanban.module.scss";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import SideFunnel from "widgets/SideBar/SideFunnel/SideFunnel";
 import arrow_back from "shared/images/sideBarImgs/arrow_back.svg";
 import { SpecialistShort } from "shared/types/tasks";
 import { Task, TaskStatus } from "shared/types/tasks";
 import { useOutletContext } from "react-router-dom";
 import { getProjectTasks } from "shared/store/slices/projectTasksSlice";
 import SideTask from "widgets/SideBar/SideTask/SideTask";
+import { useAppSelector } from "shared/hooks/useAppSelector";
 
 const orderedStatusKeys: TaskStatus[] = [
   "to_do",
@@ -131,6 +132,13 @@ const Kanban: React.FC = () => {
   }, [dispatch]);
 
   console.log(tasks);
+useEffect(() => {
+  if (currentProjectId) {
+    dispatch(getProjectTasks(currentProjectId));
+    dispatch(getProjectById(currentProjectId));
+  }
+}, [dispatch, currentProjectId]);
+const { project } = useAppSelector(selectProject);
 
   const groupedTasks: Record<TaskStatus, Task[]> = {
     to_do: [],
@@ -289,10 +297,13 @@ const Kanban: React.FC = () => {
       </button>
 
       {isModalOpen && (
-        <AddTaskModal
-          onClose={() => setIsModalOpen(false)}
-          projectId={currentProjectId}
-        />
+<AddTaskModal
+  isOpen={isModalOpen}
+  toggleSidebar={() => setIsModalOpen(false)}
+  projectId={currentProjectId}
+/>
+
+
       )}
 
    

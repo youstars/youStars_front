@@ -1,4 +1,6 @@
 import { Task } from "shared/types/tasks";
+import { Tracker } from "./tracker";
+
 
 
 export interface Project {
@@ -21,14 +23,7 @@ export interface Project {
     mood: number;
   };
   project_team: {
-    tracker: {
-      id: number;
-      full_name: string;
-      tasks_total: number;
-      tasks_in_progress: number;
-      tasks_in_review: number;
-      tasks_completed_percent: number;
-    };
+   tracker: Tracker;
     specialists: {
       id: number;
       full_name: string;
