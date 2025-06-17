@@ -18,7 +18,7 @@ function Specialists() {
   );
   const allOrders = useSelector((state: RootState) => state.funnel.funnel);
 const me = useSelector(selectMe);
-const userId = me.data?.custom_user?.id || me.data?.id;
+const userId = me.data?.trackerId?.id || me.data?.id;
 console.log("userId", userId);
 
 

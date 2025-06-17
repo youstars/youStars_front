@@ -1,5 +1,5 @@
 .modalHeader {
-  
+
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -198,10 +198,11 @@
   font-size: 13px;
 }
 
-.textareaDate{
+.textareaDate {
   width: calc(100% - 40px);
   margin: 0 20px;
-  background: #2E3235;;
+  background: #2E3235;
+  ;
   color: var(--primery-color);
   border: none;
   border-radius: 8px;
@@ -228,11 +229,9 @@
 }
 
 
-
-
 .sidebarContainer {
   position: fixed;
-    top: 60px;
+  top: 60px;
 
   right: 0;
   height: calc(100vh - 60px);
@@ -263,7 +262,8 @@
   overflow: hidden;
   z-index: 1001;
   will-change: transform, opacity;
-    &.sidebarOpen {
+
+  &.sidebarOpen {
     transform: translateX(0);
     opacity: 1;
   }
@@ -360,6 +360,7 @@
   color: var(--primery-color);
   margin: 8px 20px 0;
 }
+
 .contentWrapper {
   flex: 1;
   display: flex;
