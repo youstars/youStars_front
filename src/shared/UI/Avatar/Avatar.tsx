@@ -6,7 +6,7 @@ interface AvatarProps {
   src?: string;
   alt?: string;
   size?: string;
-  onUpload?: (file: File) => void; // 👈 добавим коллбек
+  onUpload?: (file: File) => void; 
 }
 
 const Avatar: React.FC<AvatarProps> = ({ src, alt, size = "40px", onUpload }) => {

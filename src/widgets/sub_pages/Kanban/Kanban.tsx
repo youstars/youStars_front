@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getProjectById, selectProject } from "shared/store/slices/projectSlice";
+import {
+  getProjectById,
+  selectProject,
+} from "shared/store/slices/projectSlice";
 import {
   getTasks,
   updateTaskStatus,
@@ -48,7 +51,10 @@ const borderColors: Record<TaskStatus, string> = {
   canceled: "#FF4E4E",
 };
 
-const TaskCard: React.FC<{ task: Task; onClick: () => void }> = ({ task, onClick }) => (
+const TaskCard: React.FC<{ task: Task; onClick: () => void }> = ({
+  task,
+  onClick,
+}) => (
   <div
     className={classes.taskCard}
     draggable
@@ -109,7 +115,7 @@ const TaskCard: React.FC<{ task: Task; onClick: () => void }> = ({ task, onClick
 );
 
 const Kanban: React.FC = () => {
-    const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   const { currentProjectId } = useOutletContext<{
     currentProjectId: number | null;
@@ -132,13 +138,13 @@ const Kanban: React.FC = () => {
   }, [dispatch]);
 
   console.log(tasks);
-useEffect(() => {
-  if (currentProjectId) {
-    dispatch(getProjectTasks(currentProjectId));
-    dispatch(getProjectById(currentProjectId));
-  }
-}, [dispatch, currentProjectId]);
-const { project } = useAppSelector(selectProject);
+  useEffect(() => {
+    if (currentProjectId) {
+      dispatch(getProjectTasks(currentProjectId));
+      dispatch(getProjectById(currentProjectId));
+    }
+  }, [dispatch, currentProjectId]);
+  const { project } = useAppSelector(selectProject);
 
   const groupedTasks: Record<TaskStatus, Task[]> = {
     to_do: [],
@@ -253,10 +259,14 @@ const { project } = useAppSelector(selectProject);
                 >
                   <div className={classes.tasksList}>
                     {groupedTasks[statusKey].map((task) => (
-                      <TaskCard key={task.id} task={task}   onClick={() => {
-    setSelectedTaskId(task.id.toString());
-    setIsSidebarOpen(true);
-  }}/>
+                      <TaskCard
+                        key={task.id}
+                        task={task}
+                        onClick={() => {
+                          setSelectedTaskId(task.id.toString());
+                          setIsSidebarOpen(true);
+                        }}
+                      />
                     ))}
                   </div>
                 </div>
@@ -297,25 +307,20 @@ const { project } = useAppSelector(selectProject);
       </button>
 
       {isModalOpen && (
-<AddTaskModal
-  isOpen={isModalOpen}
-  toggleSidebar={() => setIsModalOpen(false)}
-  projectId={currentProjectId}
-/>
-
-
+        <AddTaskModal
+          isOpen={isModalOpen}
+          toggleSidebar={() => setIsModalOpen(false)}
+          projectId={currentProjectId}
+        />
       )}
 
-   
-{selectedTaskId && (
-  <SideTask
-    isOpen={isSidebarOpen}
-    toggleSidebar={toggleSidebar}
-    id={parseInt(selectedTaskId)}
-  />
-)}
-
-
+      {selectedTaskId && (
+        <SideTask
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          id={parseInt(selectedTaskId)}
+        />
+      )}
     </div>
   );
 };
