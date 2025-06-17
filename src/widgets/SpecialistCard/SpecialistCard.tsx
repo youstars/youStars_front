@@ -51,12 +51,13 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
   const trackerId = parseInt(getCookie("user_id") || "1");
 
   const handleOrderSelect = (order: Order) => {
-    const payload = {
-      order: order.id,
-      specialist_id: specialist.id,
-      tracker_id: trackerId,
-      proposed_payment: 0,
-    };
+const payload = {
+  order: order.id,
+  specialist_id: specialist.id,
+  tracker_id: trackerId,
+  proposed_payment: 0,
+};
+
 
     dispatch(setInvitationPayload(payload));
     dispatch(sendInvitation(payload));

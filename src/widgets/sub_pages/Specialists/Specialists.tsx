@@ -10,6 +10,7 @@ import FilterBtn from "shared/UI/FilterBtn/FilterBtn";
 import { getFunnelData } from "shared/store/slices/funnelSlice";
 import { Order } from "shared/types/orders";
 import { selectMe } from "shared/store/slices/meSlice";
+import Cookies from "js-cookie";
 
 function Specialists() {
   const dispatch = useDispatch<AppDispatch>();
@@ -17,11 +18,12 @@ function Specialists() {
     (state: RootState) => state.specialists
   );
   const allOrders = useSelector((state: RootState) => state.funnel.funnel);
-const me = useSelector(selectMe);
-const userId = me.data?.trackerId?.id || me.data?.id;
-console.log("userId", userId);
+  const me = useSelector(selectMe);
+  const userId = Number(Cookies.get("user_role_id"));
+  console.log("userId", userId);
 
 
+  
 
   const [searchTerm, setSearchTerm] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
