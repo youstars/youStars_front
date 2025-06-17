@@ -20,9 +20,7 @@ export const getTasks = createAsyncThunk(
       const response = await axiosInstance.get<{ results: Task[] }>(
         "task_specialist/",
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       return response.data;
@@ -35,28 +33,7 @@ export const getTasks = createAsyncThunk(
 
 export const createTask = createAsyncThunk(
   "tasks/createTask",
-  async (
-    data: {
-      title: string;
-      description: string;
-      deadline: string;
-      start_date: string;
-      execution_period: number;
-      assigned_specialist: number[];
-      project: number;
-      status?: TaskStatus;
-      material?: string;
-      notice?: string;
-      personal_grade?: number;
-      deadline_compliance?: number;
-      manager_recommendation?: number;
-      intricacy_coefficient?: number;
-      task_credits?: number;
-      status_priority?: string;
-      created_at: string;
-    },
-    { rejectWithValue }
-  ) => {
+  async (data: Omit<Task, "id">, { rejectWithValue }) => {
     try {
       const token = getCookie("access_token");
       const response = await axios.post<Task>(
@@ -72,102 +49,81 @@ export const createTask = createAsyncThunk(
       return response.data;
     } catch (error: any) {
       console.error("Error creating task:", error);
-      return rejectWithValue(
-        error.response?.data || "Ошибка при создании задачи"
-      );
+      return rejectWithValue(error.response?.data || "Ошибка при создании задачи");
     }
   }
 );
 
-
 export const updateTaskDeadline = createAsyncThunk(
   "tasks/updateDeadline",
-  async (
-    { id, end_date }: { id: number; end_date: string },
-    { rejectWithValue }
-  ) => {
+  async ({ id, end_date }: { id: number; end_date: string }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.patch<Task>(`task_students/${id}/`, {
-        end_date,
-      });
+      const token = getCookie("access_token");
+      const response = await axiosInstance.patch<Task>(
+        `task_students/${id}/`,
+        { end_date },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error: any) {
       console.error("Error updating deadline:", error);
-      return rejectWithValue(
-        error.response?.data || "Ошибка при сохранении дедлайна"
-      );
+      return rejectWithValue(error.response?.data || "Ошибка при сохранении дедлайна");
     }
   }
 );
 
 export const updateTaskStatus = createAsyncThunk(
   "tasks/updateStatus",
-  async (
-    { id, status }: { id: number; status: TaskStatus },
-    { rejectWithValue }
-  ) => {
+  async ({ id, status }: { id: number; status: TaskStatus }, { rejectWithValue }) => {
     try {
+      const token = getCookie("access_token");
       const response = await axiosInstance.patch<Task>(
         `task_specialist/${id}/`,
-        { status }
+        { status },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       return response.data;
     } catch (error: any) {
       console.error("Error updating task status:", error);
-      return rejectWithValue(
-        error.response?.data || "Ошибка при обновлении статуса"
-      );
+      return rejectWithValue(error.response?.data || "Ошибка при обновлении статуса");
     }
   }
 );
 
 export const updateTask = createAsyncThunk(
   "tasks/updateTask",
-  async (
-    { id, data }: { id: number; data: Partial<Task> },
-    { rejectWithValue }
-  ) => {
+  async ({ id, data }: { id: number; data: Partial<Task> }, { rejectWithValue }) => {
     try {
+      const token = getCookie("access_token");
       const response = await axiosInstance.patch<Task>(
         `/task_specialist/${id}/`,
-        data
+        data,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       return response.data;
     } catch (error: any) {
       console.error("Error updating task:", error);
-      return rejectWithValue(
-        error.response?.data || "Ошибка при обновлении задачи"
-      );
+      return rejectWithValue(error.response?.data || "Ошибка при обновлении задачи");
     }
   }
 );
-
-interface TasksState {
-  tasks: {
-    results: Task[];
-  };
-  selectedTask: Task | null;
-  status: "idle" | "pending" | "fulfilled" | "rejected";
-  error: string | null;
-  updatingTaskIds: number[];
-}
-
-const initialState: TasksState = {
-  tasks: {
-    results: [],
-  },
-  selectedTask: null,
-  status: "idle",
-  error: null,
-  updatingTaskIds: [],
-};
 
 export const getTaskById = createAsyncThunk(
   "tasks/getTaskById",
   async (taskId: string, { rejectWithValue }) => {
     try {
+      const token = getCookie("access_token");
       const response = await axiosInstance.get<{ results: Task[] }>(
-        `/task_specialist/${taskId}/`
+        `/task_specialist/${taskId}/`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       return response.data.results[0];
     } catch (error) {
@@ -175,6 +131,22 @@ export const getTaskById = createAsyncThunk(
     }
   }
 );
+
+interface TasksState {
+  tasks: { results: Task[] };
+  selectedTask: Task | null;
+  status: "idle" | "pending" | "fulfilled" | "rejected";
+  error: string | null;
+  updatingTaskIds: number[];
+}
+
+const initialState: TasksState = {
+  tasks: { results: [] },
+  selectedTask: null,
+  status: "idle",
+  error: null,
+  updatingTaskIds: [],
+};
 
 const tasksSlice = createSlice({
   name: "tasks",
@@ -187,10 +159,7 @@ const tasksSlice = createSlice({
       const { id, status } = action.payload;
       const taskIndex = state.tasks.results.findIndex((task) => task.id === id);
       if (taskIndex !== -1) {
-        state.tasks.results[taskIndex] = {
-          ...state.tasks.results[taskIndex],
-          status,
-        };
+        state.tasks.results[taskIndex].status = status;
       }
     },
   },
@@ -200,90 +169,56 @@ const tasksSlice = createSlice({
         state.status = "pending";
         state.error = null;
       })
-      .addCase(
-        getTasks.fulfilled,
-        (state, action: PayloadAction<{ results: Task[] }>) => {
-          state.status = "fulfilled";
-          state.tasks = action.payload;
-        }
-      )
+      .addCase(getTasks.fulfilled, (state, action) => {
+        state.status = "fulfilled";
+        state.tasks = action.payload;
+      })
       .addCase(getTasks.rejected, (state, action) => {
         state.status = "rejected";
         state.error = action.payload as string;
       })
-      .addCase(createTask.fulfilled, (state, action: PayloadAction<Task>) => {
+      .addCase(createTask.fulfilled, (state, action) => {
         state.tasks.results.push(action.payload);
       })
-      .addCase(
-        updateTaskDeadline.fulfilled,
-        (state, action: PayloadAction<Task>) => {
-          const updatedTask = action.payload;
-          const index = state.tasks.results.findIndex(
-            (task) => task.id === updatedTask.id
-          );
-          if (index !== -1) {
-            state.tasks.results[index] = {
-              ...state.tasks.results[index],
-              ...updatedTask,
-            };
-          }
+      .addCase(updateTaskDeadline.fulfilled, (state, action) => {
+        const updatedTask = action.payload;
+        const index = state.tasks.results.findIndex((task) => task.id === updatedTask.id);
+        if (index !== -1) {
+          state.tasks.results[index] = { ...state.tasks.results[index], ...updatedTask };
         }
-      )
+      })
       .addCase(updateTaskStatus.pending, (state, action) => {
         const id = (action.meta.arg as { id: number }).id;
         state.updatingTaskIds.push(id);
       })
-      .addCase(
-        updateTaskStatus.fulfilled,
-        (state, action: PayloadAction<Task>) => {
-          const updatedTask = action.payload;
-          const index = state.tasks.results.findIndex(
-            (task) => task.id === updatedTask.id
-          );
-          if (index !== -1) {
-            state.tasks.results[index] = {
-              ...state.tasks.results[index],
-              ...updatedTask,
-            };
-          }
-          state.updatingTaskIds = state.updatingTaskIds.filter(
-            (id) => id !== updatedTask.id
-          );
+      .addCase(updateTaskStatus.fulfilled, (state, action) => {
+        const updatedTask = action.payload;
+        const index = state.tasks.results.findIndex((task) => task.id === updatedTask.id);
+        if (index !== -1) {
+          state.tasks.results[index] = { ...state.tasks.results[index], ...updatedTask };
         }
-      )
-      .addCase(getTaskById.fulfilled, (state, action: PayloadAction<Task>) => {
+        state.updatingTaskIds = state.updatingTaskIds.filter((id) => id !== updatedTask.id);
+      })
+      .addCase(updateTaskStatus.rejected, (state, action) => {
+        const { id, status: originalStatus } = action.meta.arg as {
+          id: number;
+          status: TaskStatus;
+        };
+        state.updatingTaskIds = state.updatingTaskIds.filter((taskId) => taskId !== id);
+        state.error = action.payload as string;
+
+        const taskIndex = state.tasks.results.findIndex((task) => task.id === id);
+        if (taskIndex !== -1) {
+          state.tasks.results[taskIndex].status = originalStatus;
+        }
+      })
+      .addCase(getTaskById.fulfilled, (state, action) => {
         const fetchedTask = action.payload;
-        const index = state.tasks.results.findIndex(
-          (task) => task.id === fetchedTask.id
-        );
+        const index = state.tasks.results.findIndex((task) => task.id === fetchedTask.id);
         if (index !== -1) {
           state.tasks.results[index] = fetchedTask;
         } else {
           state.tasks.results.push(fetchedTask);
-        }
-      })
-
-      .addCase(updateTaskStatus.rejected, (state, action) => {
-        const id = (action.meta.arg as { id: number }).id;
-        state.updatingTaskIds = state.updatingTaskIds.filter(
-          (taskId) => taskId !== id
-        );
-        state.error = action.payload as string;
-
-        if (action.meta.arg) {
-          const { id, status: originalStatus } = action.meta.arg as {
-            id: number;
-            status: TaskStatus;
-          };
-          const taskIndex = state.tasks.results.findIndex(
-            (task) => task.id === id
-          );
-          if (taskIndex !== -1) {
-            state.tasks.results[taskIndex] = {
-              ...state.tasks.results[taskIndex],
-              status: originalStatus,
-            };
-          }
         }
       });
   },
@@ -291,10 +226,8 @@ const tasksSlice = createSlice({
 
 export const { optimisticUpdateTaskStatus } = tasksSlice.actions;
 export const selectTasks = (state: { tasks: TasksState }) => state.tasks.tasks;
-export const selectTasksStatus = (state: { tasks: TasksState }) =>
-  state.tasks.status;
-export const selectTasksError = (state: { tasks: TasksState }) =>
-  state.tasks.error;
+export const selectTasksStatus = (state: { tasks: TasksState }) => state.tasks.status;
+export const selectTasksError = (state: { tasks: TasksState }) => state.tasks.error;
 export const selectUpdatingTaskIds = (state: { tasks: TasksState }) =>
   state.tasks.updatingTaskIds;
 export const selectTaskById = (state: { tasks: TasksState }, id: number) =>
