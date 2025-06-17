@@ -117,7 +117,7 @@
 .sectionTitle {
   font-size: 12px;
   font-weight: 600;
-  margin: 20px 20px 8px;
+  margin: 0px 20px;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -232,7 +232,8 @@
 
 .sidebarContainer {
   position: fixed;
-  top: 0;
+    top: 60px;
+
   right: 0;
   height: calc(100vh - 60px);
   width: 100%;
