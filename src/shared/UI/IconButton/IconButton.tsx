@@ -36,7 +36,7 @@ const IconButton: React.FC<IconButtonProps> = ({
       className={styles.iconButton}
       onClick={onClick}
       title={title}
-      style={{ width: button, height: button, borderColor: borderColor, border: border  }}
+      style={{ width: button, height: button,  border: border || `2px solid ${borderColor}`,  }}
     >
       <img src={icon} alt={alt} style={{ width: iconSize, height: iconSize }} />
     </button>

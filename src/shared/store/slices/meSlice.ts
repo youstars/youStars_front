@@ -27,32 +27,28 @@ export const updateMe = createAsyncThunk(
   }
 );
 
-export const getMe = createAsyncThunk(
-  "me/fetch",
-  async (_, thunkAPI) => {
-    try {
-      const response = await axiosInstance.get(API_ME.get);
-      return response.data;
-    } catch (error: any) {
-      console.error("Error fetching me:", error);
-      return thunkAPI.rejectWithValue(
-        error.response?.data || "Ошибка запроса"
-      );
-    }
+export const getMe = createAsyncThunk("me/fetch", async (_, thunkAPI) => {
+  try {
+    const response = await axiosInstance.get(API_ME.get);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching me:", error);
+    return thunkAPI.rejectWithValue(error.response?.data || "Ошибка запроса");
   }
-);
-
+});
 
 interface MeState {
   data: any;
   loading: boolean;
   error: string | null;
+  initialized: boolean;
 }
 
 const initialState: MeState = {
   data: null,
   loading: false,
   error: null,
+  initialized: false,
 };
 
 const meSlice = createSlice({
@@ -64,32 +60,34 @@ const meSlice = createSlice({
       .addCase(getMe.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.initialized = false;
       })
       .addCase(getMe.fulfilled, (state, action) => {
-  state.loading = false;
-  state.data = action.payload;
+        state.loading = false;
+        state.data = action.payload;
+        state.initialized = true;
 
-  const role = action.payload?.custom_user?.role || action.payload?.role;
-  if (role) {
-    Cookies.set("user_role", role, {
-      expires: 7,
-      secure: true,
-      sameSite: "None",
-    });
-  }
-})
-
+        const role = action.payload?.custom_user?.role || action.payload?.role;
+        if (role) {
+          Cookies.set("user_role", role, {
+            expires: 7,
+            secure: true,
+            sameSite: "None",
+          });
+        }
+      })
       .addCase(getMe.rejected, (state, action) => {
-  state.loading = false;
-  state.error = action.payload as string;
- 
-  const token = getCookie("access_token");
-  if (token) {
-    state.data = { id: getCookie("user_id") || null };
-  } else {
-    state.data = null;
-  }
-});
+        state.loading = false;
+        state.error = action.payload as string;
+        state.initialized = true; 
+
+        const token = getCookie("access_token");
+        if (token) {
+          state.data = { id: getCookie("user_id") || null };
+        } else {
+          state.data = null;
+        }
+      });
   },
 });
 

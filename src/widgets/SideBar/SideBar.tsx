@@ -14,6 +14,7 @@ import arrow from "shared/images/sideBarImgs/arrow.svg";
 import arrow_back from "shared/images/sideBarImgs/arrow_back.svg";
 import { useAppSelector } from "shared/hooks/useAppSelector";
 import { selectMe } from "shared/store/slices/meSlice";
+import applicationIcon from "shared/images/sideBarImgs/application.svg";
 import SearchInput from "shared/UI/SearchInput/SearchInput";
 import clienst from "shared/images/sideBarImgs/clients.svg";
 import admins from "shared/images/admins.svg";
@@ -34,6 +35,7 @@ export default function SideBar() {
     { text: "Специалисты", image: specialists, to: "specialists" },
     { text: "Клиенты", image: contacts, to: "clients" },
     { text: "Воронка", image: funnel, to: "funnel" },
+    { text: "Заявки", image: applicationIcon, to: "orders" },
     { text: "Библиотека знаний", image: bibl, to: "library" },
     { text: "Чаты", image: chat, to: "chats" },
     { text: "Админы", image: admins, to: "admins" },
@@ -41,7 +43,7 @@ export default function SideBar() {
   ];
   const filteredNavItems = navItems.filter((item) => {
     if (role === "client")
-      return !["Клиенты", "Специалисты", "Админы"].includes(item.text);
+      return !["Клиенты", "Специалисты", "Админы", "Воронка"].includes(item.text);
     if (role === "specialist")
       return !["Воронка", "Клиенты", "Специалисты", "Админы"].includes(
         item.text

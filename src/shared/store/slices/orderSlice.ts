@@ -30,7 +30,7 @@ export const getOrderById = createAsyncThunk<Order, any>(
 export const updateOrder = createAsyncThunk<Order, Partial<Order> & { id: string | number }>(
   "order/updateOrder",
   async ({ id, ...data }) => {
-    const res = await fetch(`${baseUrl}/orders/${id}/`, {
+    const res = await fetch(`${baseUrl}/order/${id}/`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,

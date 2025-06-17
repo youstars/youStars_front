@@ -1,43 +1,75 @@
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(255, 215, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+  }
+}
+
 .progressBar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    padding-top: 12px;
-  
-    &::before {
-      content: "";
-      position: absolute;
-      top: 14px; 
-      left: 20px;
-      right: 16px; 
-      height: 2px;
-      background-color: #FFD700;
-      z-index: 0;
-    }
-  }
-  
-  .step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    z-index: 1;
-  
-    p {
-      margin-top: 6px;
-      font-size: 10px;
-      color: #888;
-      text-align: center;
-      white-space: nowrap;
-    }
-  }
-  
-  .circle {
-    width: 8px;
-    height: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  padding-top: 11px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 14px;
+    left: 20px;
+    right: 16px;
+    height: 2px;
     background-color: #FFD700;
-    border-radius: 50%;
-    z-index: 2;
+    z-index: 0;
   }
-  
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+
+  &.completed,
+  &.active {
+    .circle {
+      background-color: #FFD700;
+    }
+
+    p {
+      color: #FFD700;
+    }
+  }
+
+  &.active {
+    .circle {
+      animation: pulse 1.5s infinite;
+    }
+
+    p {
+      font-weight: 600;
+    }
+  }
+
+  p {
+    margin-top: 6px;
+    font-size: 10px;
+    color: #888;
+    text-align: center;
+    white-space: nowrap;
+  }
+}
+
+.circle {
+  width: 8px;
+  height: 8px;
+  background-color: #888;
+  border-radius: 50%;
+  z-index: 2;
+}

@@ -80,6 +80,7 @@ if (!isAuthed && !isPublic && !isLoading) {
             <Route path="clients" element={<Clients />} />
             <Route path="clients/:id" element={<ClientProfile />} />
             <Route path="funnel" element={<Funnel />} />
+            <Route path="orders" element={<BusinessApplication />} />
             <Route path="library" element={<Library />} />
             <Route path="admins" element={<AdminsPage />} />
             <Route path="settings" element={<Settings />} />
@@ -90,7 +91,6 @@ if (!isAuthed && !isPublic && !isLoading) {
               <Route path="gantt" element={<Gantt />} />
               <Route path="kanban" element={<Kanban />} />
             </Route>
-            <Route path="business-application" element={<BusinessApplication />} />
             <Route path="projectProfile" element={<ProjectProfile />} />
           </Route>
         </Routes>

@@ -7,6 +7,7 @@ interface TextAreaFieldProps {
   label: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onBlur?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   name?: string;
   placeholder?: string;
   readOnly?: boolean;
@@ -17,6 +18,7 @@ const TextAreaField: React.FC<TextAreaFieldProps> = ({
   label,
   value,
   onChange,
+  onBlur,
   name,
   placeholder,
   readOnly = false,

@@ -43,23 +43,22 @@ interface SideFunnelProps {
   orderId: string;
 }
 
-
-
-
-
 const SideFunnel: React.FC<SideFunnelProps> = ({
   isOpen,
   toggleSidebar,
   orderId,
 }) => {
   const { chats, setActiveChat } = useChatService();
-  console.log("useChatService:", { chats, setActiveChat }); 
+  console.log("useChatService:", { chats, setActiveChat });
   const order = useAppSelector((state) => state.order.current);
   console.log("order:", order);
-  console.log("Redux state:", useAppSelector((state) => state.order)); 
+  console.log(
+    "Redux state:",
+    useAppSelector((state) => state.order)
+  );
 
-const me = useSelector(selectMe);
-const userId = Number(Cookies.get("user_role_id"));
+  const me = useSelector(selectMe);
+  const userId = Number(Cookies.get("user_role_id"));
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();

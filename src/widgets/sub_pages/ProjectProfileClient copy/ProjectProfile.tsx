@@ -124,7 +124,7 @@ export default function ProjectProfile() {
             </div>
           </div>
           <div className={styles.progressBar}>
-            <ProgressBar steps={steps} />
+            <ProgressBar currentStep={0} steps={steps} />
           </div>
         </div>
         <div className={styles.buttons}>

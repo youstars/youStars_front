@@ -1,8 +1,10 @@
 .main {
-    padding: 38px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 38px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .container {
@@ -11,15 +13,12 @@
     background-color: var(--color-bg-primary);
     
 .header {
-    // margin-top: 38px 10px;
-    width: 100%;
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    justify-content: space-between;
-    background-color: var(--color-bg-primary);
-    border-radius: var(--border-radius-main);
-  }
+  display: flex;
+  align-items: center; // ✅ по центру по вертикали
+  justify-content: space-between;
+  gap: 15px;
+}
+
   
   .avatar {
     display: flex;
@@ -32,17 +31,22 @@
     }
   }
   
-  .rank {
-    flex: 1; 
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    justify-content: center;
-  }
+.rank {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: center;
+  min-width: 200px; 
+}
+
   
-  .progressBar {
-    width: 40%;
-  }
+.progressBar {
+  width: 100%; // ✅ чтобы занимал всю доступную ширину в .rank
+  max-width: 400px; // можно ограничить при необходимости
+  margin: 0 auto; // ✅ по центру в колонке
+}
+
   
   .rightBlock {
     display: flex;
@@ -51,22 +55,45 @@
   }
   
 
-  .projectDetails {
-    display: flex;
-    gap: 10px;
-    justify-content: space-between;
-    max-height: 0;
-        overflow: hidden;
-        opacity: 0;
-        transition: max-height 0.4s ease, opacity 0.4s ease;
-  
-    > * {
-      flex: 1;
-    }
-   
-    
-  }.open {
-        max-height: 1000px; 
-        opacity: 1;
-      }
+.projectDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.4s ease, opacity 0.4s ease;
+
+  > * {
+    flex: 0 0 auto;
+  }
+
+  &.open {
+    max-height: 300px; // <= фиксированная высота
+    overflow-y: auto;
+    opacity: 1;
+  }
+}
+
+
+}
+
+.pageContainer {
+  height: calc(100vh - 100px); 
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+
+.rank {
+  background: rgba(255, 255, 0, 0.1);
+}
+.avatar {
+  background: rgba(0, 255, 255, 0.1);
+}
+.rightBlock {
+  background: rgba(255, 0, 255, 0.1);
 }

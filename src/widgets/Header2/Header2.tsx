@@ -13,14 +13,12 @@ import Avatar from "shared/UI/Avatar/Avatar";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { logout } from "shared/store/slices/authSlice";
 import { LogOut } from "lucide-react";
-
-// Иконки из сайдбара
 import overview from "shared/images/sideBarImgs/round.svg";
 import projs from "shared/images/sideBarImgs/projs.svg";
 import task from "shared/images/sideBarImgs/task.svg";
 import specialistsIcon from "shared/images/sideBarImgs/spcialists.svg";
 import clientsIcon from "shared/images/sideBarImgs/contacts.svg";
-
+import applicationIcon from "shared/images/sideBarImgs/application.svg";
 import funnel from "shared/images/sideBarImgs/funnel.svg";
 import bibl from "shared/images/sideBarImgs/bibl.svg";
 import chat from "shared/images/sideBarImgs/fi-br-envelope.svg";
@@ -72,6 +70,7 @@ export default function Header2() {
     tasks: "Задачи",
     specialists: "Специалисты",
     funnel: "Воронка",
+    orders: "Заявки",
     library: "Библиотека знаний",
     settings: "Настройки",
     overview: "Сводка",
@@ -90,6 +89,7 @@ export default function Header2() {
     specialists: specialistsIcon,
     clients: clientsIcon,
     funnel: funnel,
+    orders: applicationIcon,
     library: bibl,
     chats: chat,
     settings,
