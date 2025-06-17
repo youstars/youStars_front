@@ -7,7 +7,6 @@ import styles from "./Funnel.module.scss";
 import searchIcon from "shared/images/sideBarImgs/search.svg";
 import chatIcons from "shared/images/chats.svg";
 import chatIcon from "shared/images/chat.svg";
-import ModalOrders from "widgets/Modals/ModalOrder/ModalOrder";
 import SideFunnel from "widgets/SideBar/SideFunnel/SideFunnel";
 import { getInitials } from "shared/helpers/userUtils";
 import { useDragScroll } from "shared/hooks/useDragScroll";
@@ -106,12 +105,12 @@ const Funnel = () => {
           <img src={searchIcon} alt="Поиск" className={styles.searchIcon} />
         </div>
 
-        <button
+        {/* <button
           className={styles.create_order}
           onClick={() => setIsModalOpen(true)}
         >
           Создать заказ
-        </button>
+        </button> */}
       </div>
 
       <div className={styles.statusColumns} ref={dragScrollRef}>
@@ -249,12 +248,7 @@ const Funnel = () => {
         })}
       </div>
 
-      {isModalOpen && (
-        <ModalOrders
-          closeModal={() => setIsModalOpen(false)}
-          // clientId={clientId}
-        />
-      )}
+    
       {isOrderReady && (
         <SideFunnel
           isOpen={true}

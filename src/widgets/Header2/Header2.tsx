@@ -23,10 +23,12 @@ import funnel from "shared/images/sideBarImgs/funnel.svg";
 import bibl from "shared/images/sideBarImgs/bibl.svg";
 import chat from "shared/images/sideBarImgs/fi-br-envelope.svg";
 import settings from "shared/images/sideBarImgs/settings.svg";
+import ModalOrders from "widgets/Modals/ModalOrder/ModalOrder";
 
 export default function Header2() {
   const [dateTime, setDateTime] = useState(new Date());
   const [showNotifications, setShowNotifications] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const { data: user } = useSelector(selectMe);
@@ -173,6 +175,12 @@ export default function Header2() {
 
       <div className={classes.right_side}>
         {/*<button className={classes.create_order}>Создать заказ</button>*/}
+          <button
+          className={classes.create_order}
+          onClick={() => setIsModalOpen(true)}
+        >
+          Создать заказ
+        </button>
         <div className={classes.control_panel}>
           <div className={classes.notification_container} ref={notificationRef}>
             <button
@@ -209,6 +217,12 @@ export default function Header2() {
           </Link>
         </div>
       </div>
+      {isModalOpen && (
+        <ModalOrders
+          closeModal={() => setIsModalOpen(false)}
+          // clientId={clientId}
+        />
+      )}
     </div>
   );
 }
