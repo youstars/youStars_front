@@ -30,20 +30,20 @@ export const SideFunnelHeader: React.FC<SideFunnelHeaderProps> = ({
 
     return (
         <header className={classes.header}>
-            <div className={classes.block}>
+            <div className={classes.bloks}>
                 {/* Аватар */}
-                <div className={classes.avatarWrapper}>
+                <div className={classes.user_img}>
                     {user?.avatar ? (
-                        <img src={user.avatar} alt={clientName} className={classes.avatar}/>
+                        <img src={user.avatar} alt={clientName} className={classes.avatarImg}/>
                     ) : (
-                        <div className={classes.avatarFallback}>{initials}</div>
+                        <div className={classes.avatarCircle}>{initials}</div>
                     )}
                 </div>
 
                 {/* Имя и компания */}
-                <div className={classes.clientInfo}>
-                    <p className={classes.clientName}>{clientName}</p>
-                    <p className={classes.company}>{client?.business_name || "Без компании"}</p>
+                <div className={classes.user_name}>
+                    <p>{clientName}</p>
+                    <p>{client?.business_name || "Без компании"}</p>
                 </div>
 
                 {/* Кнопки чатов */}
@@ -53,11 +53,11 @@ export const SideFunnelHeader: React.FC<SideFunnelHeaderProps> = ({
                         onClick={onClientChat}
                         title="Чат с клиентом"
                     >
-                        <img src={ChatIcon} alt="Чат с клиентом"/>
+                        <img src={ChatIcon} alt="Чат с клиентом" className={classes.chatIcon}/>
                     </button>
 
                     {/* Общий чат (иконка без обработчика) */}
-                    <img src={ChatsIcon} alt="Чат" className={classes.chatIconStatic}/>
+                    <img src={ChatsIcon} alt="Чат" className={classes.chatIcon}/>
                 </div>
             </div>
         </header>
