@@ -12,7 +12,8 @@
 }
 
 .modalContent {
-  background-color: --grey;
+
+  background-color: var(--grey); //change name
   border-radius: 8px;
   width: 280px;
   height: auto;
@@ -36,7 +37,7 @@
   width: 50%;
   border: none;
   height: 30px;
-  background: --dark-grey;
+  background: var(--dark-grey);
   color: #fff;
   font-family: "Myriad Pro";
   font-size: 0.8rem;
@@ -60,7 +61,7 @@
 }
 
 .checkboxGroup::-webkit-scrollbar-track {
-  background: --dark-grey;
+  background: var(--dark-grey);
   border-radius: 5px;
 }
 
@@ -115,7 +116,7 @@
   width: 100%;
   height: 35px;
   padding-left: 20px;
-  background: --dark-grey;
+  background: var(--dark-grey);
   border-radius: 10px;
   color: var( --primery-color);
   position: relative;
@@ -149,7 +150,7 @@
 
 .bottomButtons button {
   border: none;
-  background: --dark-grey;
+  background: var(--dark-grey);
   color: var( --primery-color);
   width: 50%;
   height: 30px;
