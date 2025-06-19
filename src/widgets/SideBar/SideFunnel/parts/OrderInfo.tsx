@@ -1,70 +1,68 @@
-import React, {useState} from "react";
+import React from "react";
 import classes from "../SideFunnel.module.scss"
 import {OrderStatus} from "../SideFunnel";          // путь относительно вашей структуры
 import {getInitials} from "shared/helpers/userUtils";
 
+interface InfoCardProps {
+    title: string;
+    text: string;
+    onEdit?: () => void;
+    updatedAt?: string;
+}
+
+const InfoCard: React.FC<InfoCardProps> = ({title, text, onEdit, updatedAt}) => (
+    <div className={classes.card}>
+        <div className={classes.cardHeader}>
+            <h4>{title}</h4>
+            {updatedAt && <span className={classes.date}>{updatedAt}</span>}
+            {onEdit && (
+                <button className={classes.editButton} onClick={onEdit} title="Редактировать">
+                    ✎
+                </button>
+            )}
+        </div>
+        <p className={classes.cardBody}>{text || "—"}</p>
+    </div>
+);
+
 interface OrderInfoProps {
     status: OrderStatus;
-    initialBudget: string;
-    trackerName: string | null;
-    /** Изменённый бюджет отдаётся наружу. */
-    onBudgetChange: (value: string) => void;
+    solving_problems: string;
+    product_or_service: string;
+    order_goal: string;
+    extra_wishes: string;
 }
 
 export const OrderInfo: React.FC<OrderInfoProps> = ({
                                                         status,
-                                                        initialBudget,
-                                                        trackerName,
-                                                        onBudgetChange,
+                                                        solving_problems,
+                                                        product_or_service,
+                                                        order_goal,
+                                                        extra_wishes,
                                                     }) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [value, setValue] = useState(initialBudget);
-
-    const canEditBudget = status === OrderStatus.Matching;
 
     return (
         <section className={classes.wrapper}>
-            <div className={classes.sum}>
-                <p className={classes.label}>Бюджет</p>
 
-                {isEditing ? (
-                    <input
-                        className={classes.input}
-                        value={value}
-                        onChange={(e) => setValue(e.target.value)}
-                        onBlur={() => {
-                            setIsEditing(false);
-                            if (value !== initialBudget) onBudgetChange(value);
-                        }}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                setIsEditing(false);
-                                if (value !== initialBudget) onBudgetChange(value);
-                            }
-                        }}
-                        autoFocus
-                    />
-                ) : (
-                    <span
-                        className={classes.value}
-                        onClick={() => canEditBudget && setIsEditing(true)}
-                        title={canEditBudget ? "Редактировать бюджет" : ""}
-                    >
-            {initialBudget || "—"}
-          </span>
-                )}
-            </div>
+            <InfoCard
+                title="Запрос"
+                text={order_goal}
+            />
 
-            <div className={classes.sum}>
-                <p className={classes.label}>Трекер</p>
-                <span className={classes.tracker}>
-          {trackerName ? (
-              <span className={classes.trackerAvatar}>{getInitials(trackerName)}</span>
-          ) : (
-              "—"
-          )}
-        </span>
-            </div>
+            <InfoCard
+                title="Продукт или услуга"
+                text={product_or_service}
+            />
+
+            <InfoCard
+                title="Проблемы"
+                text={solving_problems}
+            />
+
+            <InfoCard
+                title="Доп. пожелания"
+                text={extra_wishes}
+            />
         </section>
     );
 };

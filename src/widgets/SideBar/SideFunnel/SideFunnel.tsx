@@ -80,6 +80,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     const notify = useNotify();
 
     const sidebarRef = React.useRef<HTMLDivElement>(null);
+    const infoRef = React.useRef<HTMLDivElement>(null);
     const [isInfoOpen, setIsInfoOpen] = useState(true);
     const [editableTitle, setEditableTitle] = useState("");
     const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -99,18 +100,14 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     }, [order]);
 
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                sidebarRef.current &&
-                !sidebarRef.current.contains(event.target as Node) &&
-                isOpen
-            ) {
-                toggleSidebar();
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [isOpen, toggleSidebar]);
+        if (infoRef.current) {
+            // если секция открыта, ставим точную высоту; если закрыта — 0
+            infoRef.current.style.maxHeight = isInfoOpen
+                ? `${infoRef.current.scrollHeight}px`
+                : "0";
+        }
+        // если внутри OrderInfo может меняться текст, добавьте зависимость
+    }, [isInfoOpen, order.order_goal, order.product_or_service, order.solving_problems, order.extra_wishes]);
 
     const handleClientChat = () => {
         const clientUserId = order?.client?.custom_user?.id;
@@ -238,6 +235,27 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                             />
                         </div>
 
+                        {/* BUDGET & TRACKER */}
+                        <div className={classes.funnelInfo}>
+                          <div className={classes.sum}>
+                            <p>Бюджет</p>
+                            <span>{budgetValue || "—"}</span>
+                          </div>
+
+                          <div className={classes.sum}>
+                            <p>Трекер</p>
+                            <span>
+                              {order.tracker_data?.custom_user?.full_name ? (
+                                <span className={classes.avatarCircle}>
+                                  {order.tracker_data.custom_user.full_name
+                                    .split(" ")
+                                    .map(s => s[0])
+                                    .join("")}
+                                </span>
+                              ) : "—"}
+                            </span>
+                          </div>
+                        </div>
                         {/* INFO */}
                         <div className={classes.title}>
                             Информация по заявке
@@ -246,14 +264,21 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                                 onClick={() => setIsInfoOpen((prev) => !prev)}
                             />
                         </div>
-                        {isInfoOpen && (
+
+                        {/* контейнер с анимацией */}
+                        <div
+                            ref={infoRef}
+                            className={classes.infoWrapper}
+                            style={{ maxHeight: isInfoOpen ? `${infoRef.current?.scrollHeight}px` : "0px" }}
+                        >
                             <OrderInfo
                                 status={order.status as OrderStatus}
-                                initialBudget={budgetValue}
-                                trackerName={order.tracker_data?.custom_user?.full_name || null}
-                                onBudgetChange={setBudgetValue}
+                                solving_problems={order.solving_problems || ""}
+                                product_or_service={order.product_or_service || ""}
+                                order_goal={order.order_goal || ""}
+                                extra_wishes={order.extra_wishes || ""}
                             />
-                        )}
+                        </div>
 
                         {/* NOTE */}
                         <div className={classes.blok_paragraph}>
