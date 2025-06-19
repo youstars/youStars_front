@@ -9,15 +9,13 @@ import {
     PlusSquare,
 } from "lucide-react";
 import classes from "./SideFunnel.module.scss";
-import {useAppSelector} from "shared/hooks/useAppSelector";
-import {getFunnelData} from "shared/store/slices/funnelSlice";
 import {useAppDispatch} from "shared/hooks/useAppDispatch";
 import {useNavigate} from "react-router-dom";
+import { useOrder } from "shared/hooks/useOrder";
 import Plus from "shared/assets/icons/plus.svg";
 import {
     updateOrderTitle,
     assignTrackerToOrder,
-    getOrderById,
     confirmPrepayment,
 } from "shared/store/slices/orderSlice";
 import {
@@ -73,7 +71,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                                                    orderId,
                                                }) => {
     const {chats, setActiveChat} = useChatService();
-    const order = useAppSelector((state) => state.order.current);
+    const { order, refresh } = useOrder(orderId);
 
     const me = useSelector(selectMe);
     const userId = Number(Cookies.get("user_role_id"));
@@ -91,11 +89,6 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     const [budgetValue, setBudgetValue] = useState("");
     const [subtaskInput, setSubtaskInput] = useState("");
 
-    useEffect(() => {
-        if (orderId) {
-            dispatch(getOrderById(orderId));
-        }
-    }, [orderId, dispatch]);
 
     useEffect(() => {
         if (order) {
@@ -143,8 +136,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                     currentStatus: order!.status as OrderStatus,
                 })
             );
-            await dispatch(getOrderById(order!.id.toString()));
-            await dispatch(getFunnelData());
+            await refresh();
         } catch (error) {
             notify.error("Не удалось сохранить название заявки.");
         } finally {
@@ -156,7 +148,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
         try {
             if (!orderId || !userId) return;
             await dispatch(assignTrackerToOrder({orderId, trackerId: userId}));
-            await dispatch(getFunnelData());
+            await refresh();
             toggleSidebar();
         } catch {
             notify.error("Не удалось назначить вас трекером.");
@@ -385,7 +377,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                                                         className={classes.approve}
                                                         onClick={async () => {
                                                             await dispatch(approveInvitation(entry.id));
-                                                            await dispatch(getOrderById(orderId));
+                                                            await refresh();
                                                         }}
                                                         disabled={entry.is_approved}
                                                         title="Подтвердить"
@@ -395,9 +387,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                                                     <button
                                                         className={classes.reject}
                                                         onClick={() => {
-                                                            dispatch(rejectInvitation(entry.id)).then(() =>
-                                                                dispatch(getOrderById(orderId))
-                                                            );
+                                                            dispatch(rejectInvitation(entry.id)).then(refresh);
                                                         }}
                                                         title="Отклонить"
                                                     >
@@ -546,8 +536,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                             onClick={async () => {
                                 if (order.status === OrderStatus.InProgress) {
                                     await handleTitleSave();
-                                    await dispatch(getOrderById(orderId));
-                                    await dispatch(getFunnelData());
+                                    await refresh();
                                 } else if (order.status === OrderStatus.Matching) {
                                     const parsedBudget = parseFloat(budgetValue);
                                     if (
@@ -566,15 +555,13 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                                             approved_budget: parsedBudget,
                                         })
                                     );
-                                    await dispatch(getOrderById(orderId));
-                                    await dispatch(getFunnelData());
+                                    await refresh();
                                 } else if (order.status === OrderStatus.Prepayment) {
                                     await dispatch(confirmPrepayment({orderId}));
-                                    await dispatch(getOrderById(orderId));
-                                    await dispatch(getFunnelData());
+                                    await refresh();
                                 } else {
                                     await handleBecomeTracker();
-                                    await dispatch(getOrderById(orderId));
+                                    await refresh();
                                 }
                             }}
                             disabled={
