@@ -24,7 +24,7 @@ export const OrderInfo: React.FC<OrderInfoProps> = ({
 
     return (
         <section className={classes.wrapper}>
-            <div className={classes.row}>
+            <div className={classes.sum}>
                 <p className={classes.label}>Бюджет</p>
 
                 {isEditing ? (
@@ -55,7 +55,7 @@ export const OrderInfo: React.FC<OrderInfoProps> = ({
                 )}
             </div>
 
-            <div className={classes.row}>
+            <div className={classes.sum}>
                 <p className={classes.label}>Трекер</p>
                 <span className={classes.tracker}>
           {trackerName ? (
