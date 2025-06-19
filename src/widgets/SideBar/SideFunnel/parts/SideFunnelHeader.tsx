@@ -1,5 +1,5 @@
 import React from "react";
-import classes from "./SideFunnelHeader.module.scss";
+import classes from "../SideFunnel.module.scss"
 import ChatIcon from "shared/assets/icons/chatY.svg";
 import ChatsIcon from "shared/assets/icons/ChatsY.svg";
 import {getInitials} from "shared/helpers/userUtils";

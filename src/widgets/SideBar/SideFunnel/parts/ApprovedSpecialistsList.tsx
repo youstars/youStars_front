@@ -1,5 +1,6 @@
 import React from "react";
-import classes from "./ApprovedSpecialistsList.module.scss";
+import classes from "../SideFunnel.module.scss"
+
 
 interface SpecialistUser {
     full_name: string | null;

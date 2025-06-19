@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from "react";
+import React, {useEffect, useState} from "react";
 import {
     Calendar,
     Clock,
@@ -21,15 +21,11 @@ import {
 } from "shared/store/slices/invitationSlice";
 import {updateOrderStatus} from "shared/store/slices/orderSlice";
 import {formatDate} from "shared/helpers/userUtils";
-import Approve from "shared/images/sideBarImgs/fi-br-checkbox.svg";
-import Decline from "shared/images/sideBarImgs/Checkbox.svg";
 import {useChatService} from "shared/hooks/useWebsocket";
 import {findChatByParticipantId} from "shared/helpers/chatUtils";
 import ChatsIcon from "shared/assets/icons/ChatsY.svg";
 import ChatIcon from "shared/assets/icons/chatY.svg";
 import InvitationStatus from "widgets/SideBar/SideFunnel/InvitationStatus/InvitationStatus";
-import {useSelector} from "react-redux";
-import {selectMe} from "shared/store/slices/meSlice";
 import Cookies from "js-cookie";
 
 import SideFunnelHeader from "./parts/SideFunnelHeader";
@@ -77,7 +73,6 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     const {chats, setActiveChat} = useChatService();
     const {order, refresh} = useOrder(orderId);
 
-    const me = useSelector(selectMe);
     const userId = Number(Cookies.get("user_role_id"));
 
     const dispatch = useAppDispatch();
@@ -275,9 +270,15 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                                     <div className={classes.actions}><span>принять</span><span>оплата</span></div>
                                 </div>
 
-                                <div className={classes.plusWrapper}>
-                                    {/* кнопка «добавить» оставляем без изменений */}
-                                </div>
+                        <div className={classes.plusWrapper}>
+                            <img
+                              src={Plus}
+                              alt="Добавить"
+                              className={classes.plusIcon}
+                              onClick={() => navigate("/manager/specialists")}
+                              title="Добавить специалиста"
+                            />
+                        </div>
 
                                 <InvitedSpecialistsList
                                     items={invitedSpecialists}
@@ -296,16 +297,16 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
 
                         {/* SUBTASKS */}
                         <Subtasks
-                          onAddSubtask={(text) => {
-                            // TODO: dispatch addSubtask when API is ready
-                            console.log("new subtask:", text);
-                          }}
+                            onAddSubtask={(text) => {
+                                // TODO: dispatch addSubtask when API is ready
+                                console.log("new subtask:", text);
+                            }}
                         />
 
                         <OrderFiles
-                          termsOfReference={order.file_terms_of_reference}
-                          commercialOffer={order.file_commercial_offer}
-                          other={order.file_other_file}
+                            termsOfReference={order.file_terms_of_reference}
+                            commercialOffer={order.file_commercial_offer}
+                            other={order.file_other_file}
                         />
 
                         {/* BUTTON */}

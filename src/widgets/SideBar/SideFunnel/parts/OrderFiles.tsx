@@ -1,5 +1,5 @@
 import React from "react";
-import classes from "./OrderFiles.module.scss";
+import classes from "../SideFunnel.module.scss"
 import { Upload } from "lucide-react";
 
 interface OrderFilesProps {

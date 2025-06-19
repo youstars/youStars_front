@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import classes from "./Subtasks.module.scss";
+import classes from "../SideFunnel.module.scss"
 import { CheckSquare, PlusSquare } from "lucide-react";
 
 interface Props {

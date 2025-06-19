@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import classes from "./OrderInfo.module.scss";
+import classes from "../SideFunnel.module.scss"
 import {OrderStatus} from "../SideFunnel";          // путь относительно вашей структуры
 import {getInitials} from "shared/helpers/userUtils";
 
