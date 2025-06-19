@@ -4,9 +4,6 @@ import {
     Clock,
     ChevronLeft,
     ChevronRight,
-    Upload,
-    CheckSquare,
-    PlusSquare,
 } from "lucide-react";
 import classes from "./SideFunnel.module.scss";
 import {useAppDispatch} from "shared/hooks/useAppDispatch";
@@ -39,6 +36,8 @@ import SideFunnelHeader from "./parts/SideFunnelHeader";
 import OrderInfo from "./parts/OrderInfo";
 import InvitedSpecialistsList from "./parts/InvitedSpecialistsList";
 import ApprovedSpecialistsList from "./parts/ApprovedSpecialistsList";
+import OrderFiles from "./parts/OrderFiles";
+import Subtasks from "./parts/Subtasks";
 
 
 /** Strict enum for order statuses to avoid magic strings */
@@ -87,12 +86,10 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
 
     const sidebarRef = React.useRef<HTMLDivElement>(null);
     const [isInfoOpen, setIsInfoOpen] = useState(true);
-    const [isSubtasksOpen, setIsSubtasksOpen] = useState(true);
     const [editableTitle, setEditableTitle] = useState("");
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     // const [isEditingBudget, setIsEditingBudget] = useState(false);
     const [budgetValue, setBudgetValue] = useState("");
-    const [subtaskInput, setSubtaskInput] = useState("");
 
 
     useEffect(() => {
@@ -298,105 +295,18 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                         )}
 
                         {/* SUBTASKS */}
-                        <div className={classes.subtasksWrapper}>
-                            <div
-                                className={classes.subtasksHeader}
-                                onClick={() => setIsSubtasksOpen((prev) => !prev)}
-                            >
-                                <h3>Подзадачи</h3>
-                                <span
-                                    className={`${classes.arrow} ${
-                                        isSubtasksOpen ? classes.up : ""
-                                    }`}
-                                />
-                            </div>
+                        <Subtasks
+                          onAddSubtask={(text) => {
+                            // TODO: dispatch addSubtask when API is ready
+                            console.log("new subtask:", text);
+                          }}
+                        />
 
-                            {isSubtasksOpen && (
-                                <div className={classes.subtasksContent}>
-                                    <div className={classes.check_block}>
-                                        <div className={classes.subtaskForm}>
-                                            <input
-                                                type="text"
-                                                placeholder="Новая подзадача"
-                                                value={subtaskInput}
-                                                onChange={(e) => setSubtaskInput(e.target.value)}
-                                                onKeyDown={async (e) => {
-                                                    if (e.key === "Enter" && subtaskInput.trim()) {
-                                                        try {
-                                                            // await dispatch(addSubtask({ taskId: order.id, message: subtaskInput.trim() }));
-                                                            setSubtaskInput("");
-                                                        } catch (err) {
-                                                            console.error(
-                                                                "Ошибка добавления подзадачи:",
-                                                                err
-                                                            );
-                                                        }
-                                                    }
-                                                }}
-                                                className={classes.subtaskInput}
-                                            />
-                                        </div>
-
-                                        <CheckSquare size={14} className={classes.icon}/>
-                                        <p>Прислать счёт об оплате</p>
-                                    </div>
-                                    <div className={classes.plus_block}>
-                                        <PlusSquare size={14} className={classes.icon}/>
-                                        <p>Новая задача</p>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Файлы (Order Files) */}
-                        <div className={classes.uploadWrapper}>
-                            <div className={classes.uploadHeader}>
-                                <p>Файлы заявки</p>
-                                <div className={classes.uploadIcon}>
-                                    <Upload size={16} className={classes.icon}/>
-                                </div>
-                            </div>
-                            <div className={classes.uploadBody}>
-                                <ul className={classes.fileList}>
-                                    {/* Terms of Reference (ТЗ) */}
-                                    {order.file_terms_of_reference?.length > 0
-                                        ? order.file_terms_of_reference.map((file, index) => (
-                                            <li key={`tor-${index}`} className={classes.fileItem}>
-                                                <span className={classes.fileIcon}>📎</span>
-                                                ТЗ
-                                            </li>
-                                        ))
-                                        : null}
-
-                                    {/* Commercial Offer (КП) */}
-                                    {order.file_commercial_offer?.length > 0
-                                        ? order.file_commercial_offer.map((file, index) => (
-                                            <li key={`co-${index}`} className={classes.fileItem}>
-                                                <span className={classes.fileIcon}>📎</span>
-                                                КП
-                                            </li>
-                                        ))
-                                        : null}
-
-                                    {/* Other File (Договор) */}
-                                    {order.file_other_file?.length > 0
-                                        ? order.file_other_file.map((file, index) => (
-                                            <li key={`other-${index}`} className={classes.fileItem}>
-                                                <span className={classes.fileIcon}>📎</span>
-                                                Договор
-                                            </li>
-                                        ))
-                                        : null}
-
-                                    {/* Fallback if no files are present */}
-                                    {!(
-                                        order.file_terms_of_reference?.length ||
-                                        order.file_commercial_offer?.length ||
-                                        order.file_other_file?.length
-                                    ) && <li className={classes.fileItem}>Нет файлов</li>}
-                                </ul>
-                            </div>
-                        </div>
+                        <OrderFiles
+                          termsOfReference={order.file_terms_of_reference}
+                          commercialOffer={order.file_commercial_offer}
+                          other={order.file_other_file}
+                        />
 
                         {/* BUTTON */}
                         <button
