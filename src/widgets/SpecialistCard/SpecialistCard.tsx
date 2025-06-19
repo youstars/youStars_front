@@ -187,7 +187,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
           </div>
           <div>
             <strong>Осталось задач:</strong>{" "}
-            {formatValue(specialist.projects_in_progress_count)}
+            {formatValue(specialist.tasks_in_progress_count)}
           </div>
           <div>
             <strong>Ставка:</strong> {formatValue(specialist.appr_hourly_rate)}
