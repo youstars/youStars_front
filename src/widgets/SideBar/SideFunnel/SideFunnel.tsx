@@ -233,7 +233,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                         <div className={classes.funnelInfo}>
                             <div className={classes.sum}>
                                 <p>Бюджет</p>
-                                <span>{budgetValue || "—"}</span>
+                                <span>{budgetValue ? `${budgetValue} ₽` : "—"}</span>
                             </div>
 
                             <div className={classes.sum}>

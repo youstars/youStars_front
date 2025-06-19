@@ -39,8 +39,7 @@
   left: -40px;
   top: 20px;
   background: #2E3235;
-  color: var( --primery-color);
-  border: none;
+  color: var(--primary-color);
   padding: 8px;
   border-radius: 8px 0 0 8px;
   cursor: pointer;
@@ -91,11 +90,11 @@
 
 .content {
   padding: 20px;
-  color: var( --primery-color);
+  color: var(--primary-color);
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: #4a4a4a --dark-grey;
+  scrollbar-color: #4a4a4a var(--dark-grey);
   position: relative;
 }
 
@@ -104,14 +103,14 @@
 }
 
 .content::-webkit-scrollbar-track {
-  background: --dark-grey;
+  background: var(--dark-grey);
   border-radius: 3px;
 }
 
 .content::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 6px;
-  border: 1px solid --dark-grey;
+  border: 1px solid var(--dark-grey);
   transition: background-color 0.2s ease;
 }
 
@@ -164,7 +163,7 @@
 
 .user_name p:nth-child(1) {
   font-size: 14px;
-  color:var( --primery-color);
+  color: var(--primary-color);
   font-weight: 600;
 }
 
@@ -202,7 +201,7 @@
 
   font-weight: 600;
   font-size: 12px;
-  color:var( --primery-color);
+  color: var(--primary-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -231,7 +230,7 @@
   font-size: 12px;
   font-family: sans-serif;
   font-weight: 400;
-  color:var( --primery-color);
+  color: var(--primary-color);
   margin: 0;
 }
 
@@ -243,7 +242,7 @@
 
 .fidback p {
   font-size: 12px;
-  color: var( --secondary-font-color);
+  color: var(--secondary-font-color);
   font-weight: 400;
 }
 
@@ -270,7 +269,7 @@
 }
 
 .sum span {
-  color:var( --primery-color);
+  color: var(--primary-color);
   font-size: 12px;
   font-weight: 400;
 }
@@ -297,7 +296,7 @@
   font-family: sans-serif;
   font-size: 12px;
   line-height: 1.5;
-  color:var( --primery-color);
+  color: var(--primary-color);
   margin: 0;
 }
 
@@ -384,7 +383,7 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 8px;
-  color:var( --primery-color);
+  color: var(--primary-color);
   font-family: sans-serif;
 }
 
@@ -471,14 +470,14 @@
 .uploadWrapper {
   margin: 15px 0;
   padding: 15px;
-  background: #383E41; 
+  background: #383E41;
   border-radius: 8px;
 }
 
 .uploadHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between; 
+  justify-content: space-between;
   padding-bottom: 10px;
 }
 
@@ -487,7 +486,7 @@
   font-size: 14px;
   font-weight: 600;
   margin: 0;
-  color: #FFC107; 
+  color: #FFC107;
 }
 
 .uploadIcon {
@@ -496,7 +495,7 @@
 }
 
 .uploadIcon .icon {
-  color: #FFC107; 
+  color: #FFC107;
 }
 
 .uploadBody {
@@ -512,15 +511,15 @@
 .fileItem {
   font-family: sans-serif;
   font-size: 12px;
-  color: #a0a0a0; 
+  color: #a0a0a0;
   padding: 5px 0;
   display: flex;
   align-items: center;
-  gap: 5px; 
+  gap: 5px;
 }
 
 .fileIcon {
-  font-size: 14px; 
+  font-size: 14px;
 }
 
 
@@ -541,7 +540,7 @@
   font-family: sans-serif;
   font-size: 14px;
   font-weight: 600;
-  color: var(--primery-color);
+  color: var(--primary-color);
   margin: 0;
 }
 
@@ -573,7 +572,7 @@
   font-family: sans-serif;
   font-size: 12px;
   line-height: 1.5;
-  color: var(--primery-color);
+  color: var(--primary-color);
   margin: 0;
 }
 
@@ -581,6 +580,5 @@
 .infoWrapper {
   overflow: hidden;
   max-height: 0;
-  transition: max-height 1s ease;
+  transition: max-height 0.5s ease;
 }
-

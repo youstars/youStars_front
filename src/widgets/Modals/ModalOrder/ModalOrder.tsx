@@ -49,7 +49,6 @@ const [formTouched, setFormTouched] = useState(false);
 
   const { data: me } = useAppSelector((state) => state.me);
   const userRole = me?.role;
-  const userId = me?.id;
 
   useEffect(() => {
     dispatch(getClients());
