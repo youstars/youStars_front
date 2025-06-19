@@ -23,9 +23,6 @@ import {updateOrderStatus} from "shared/store/slices/orderSlice";
 import {formatDate} from "shared/helpers/userUtils";
 import {useChatService} from "shared/hooks/useWebsocket";
 import {findChatByParticipantId} from "shared/helpers/chatUtils";
-import ChatsIcon from "shared/assets/icons/ChatsY.svg";
-import ChatIcon from "shared/assets/icons/chatY.svg";
-import InvitationStatus from "widgets/SideBar/SideFunnel/InvitationStatus/InvitationStatus";
 import Cookies from "js-cookie";
 
 import SideFunnelHeader from "./parts/SideFunnelHeader";
@@ -153,9 +150,6 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
         return <div>Loading order...</div>;
     }
 
-    const clientUser = order.client?.custom_user;
-    const clientName =
-        clientUser?.full_name || (order.client ? `ID ${order.client.id}` : "—");
     // const clientInitials = getInitials(clientName);
     const invitedSpecialists = order.invited_specialists || [];
     const approvedSpecialists = order.approved_specialists || [];
@@ -237,24 +231,24 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
 
                         {/* BUDGET & TRACKER */}
                         <div className={classes.funnelInfo}>
-                          <div className={classes.sum}>
-                            <p>Бюджет</p>
-                            <span>{budgetValue || "—"}</span>
-                          </div>
+                            <div className={classes.sum}>
+                                <p>Бюджет</p>
+                                <span>{budgetValue || "—"}</span>
+                            </div>
 
-                          <div className={classes.sum}>
-                            <p>Трекер</p>
-                            <span>
+                            <div className={classes.sum}>
+                                <p>Трекер</p>
+                                <span>
                               {order.tracker_data?.custom_user?.full_name ? (
-                                <span className={classes.avatarCircle}>
+                                  <span className={classes.avatarCircle}>
                                   {order.tracker_data.custom_user.full_name
-                                    .split(" ")
-                                    .map(s => s[0])
-                                    .join("")}
+                                      .split(" ")
+                                      .map(s => s[0])
+                                      .join("")}
                                 </span>
                               ) : "—"}
                             </span>
-                          </div>
+                            </div>
                         </div>
                         {/* INFO */}
                         <div className={classes.title}>
@@ -269,7 +263,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                         <div
                             ref={infoRef}
                             className={classes.infoWrapper}
-                            style={{ maxHeight: isInfoOpen ? `${infoRef.current?.scrollHeight}px` : "0px" }}
+                            style={{maxHeight: isInfoOpen ? `${infoRef.current?.scrollHeight}px` : "0px"}}
                         >
                             <OrderInfo
                                 status={order.status as OrderStatus}
@@ -295,15 +289,15 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                                     <div className={classes.actions}><span>принять</span><span>оплата</span></div>
                                 </div>
 
-                        <div className={classes.plusWrapper}>
-                            <img
-                              src={Plus}
-                              alt="Добавить"
-                              className={classes.plusIcon}
-                              onClick={() => navigate("/manager/specialists")}
-                              title="Добавить специалиста"
-                            />
-                        </div>
+                                <div className={classes.plusWrapper}>
+                                    <img
+                                        src={Plus}
+                                        alt="Добавить"
+                                        className={classes.plusIcon}
+                                        onClick={() => navigate("/manager/specialists")}
+                                        title="Добавить специалиста"
+                                    />
+                                </div>
 
                                 <InvitedSpecialistsList
                                     items={invitedSpecialists}

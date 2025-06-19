@@ -1,7 +1,6 @@
 import React from "react";
 import classes from "../SideFunnel.module.scss"
 import {OrderStatus} from "../SideFunnel";          // путь относительно вашей структуры
-import {getInitials} from "shared/helpers/userUtils";
 
 interface InfoCardProps {
     title: string;
@@ -34,7 +33,6 @@ interface OrderInfoProps {
 }
 
 export const OrderInfo: React.FC<OrderInfoProps> = ({
-                                                        status,
                                                         solving_problems,
                                                         product_or_service,
                                                         order_goal,
