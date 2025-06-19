@@ -3,7 +3,7 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import ru from "date-fns/locale/ru";
 import "react-datepicker/dist/react-datepicker.css";
 import styles from "./ModalOrder.module.scss";
-import { Calendar, Euro } from "lucide-react";
+import { Calendar, RussianRuble } from "lucide-react";
 import { createOrder, getFunnelData } from "shared/store/slices/funnelSlice";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { useAppSelector } from "shared/hooks/useAppSelector";
@@ -39,7 +39,6 @@ const ModalOrders: React.FC<ModalOrdersProps> = ({ closeModal }) => {
   const [extraWishes, setExtraWishes] = useState("");
   const [budgetFrom, setBudgetFrom] = useState<number | string>("");
   const [budgetTo, setBudgetTo] = useState<number | string>("");
-  const [budgetRange, setBudgetRange] = useState("");
   const [dateFrom, setDateFrom] = useState<Date | null>(null);
   const [dateTo, setDateTo] = useState<Date | null>(null);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
@@ -58,9 +57,9 @@ const [formTouched, setFormTouched] = useState(false);
 
 
 
-  
+
 const handleSubmit = async () => {
-  const estimated_budget = `${budgetFrom} - ${budgetTo}`;
+  const estimated_budget = `${budgetFrom.toString().trim()} - ${budgetTo.toString().trim()}`;
   const project_deadline = dateTo ? dateTo.toISOString() : null;
 setFormTouched(true);
 
@@ -77,7 +76,7 @@ setFormTouched(true);
 
   try {
     await orderSchema.validate(orderData, { abortEarly: false });
-    setErrors({}); 
+    setErrors({});
 
     // @ts-ignore
     await dispatch(createOrder(orderData));
@@ -161,7 +160,7 @@ setFormTouched(true);
         value={budgetFrom}
         onChange={(e) => setBudgetFrom(e.target.value)}
       />
-      <Euro className={styles.currencyIcon} size={20} />
+      <RussianRuble className={styles.currencyIcon} size={20} />
     </div>
     <div className={styles.budgetInput}>
       <input
@@ -170,7 +169,7 @@ setFormTouched(true);
         value={budgetTo}
         onChange={(e) => setBudgetTo(e.target.value)}
       />
-      <Euro className={styles.currencyIcon} size={20} />
+      <RussianRuble className={styles.currencyIcon} size={20} />
     </div>
   </div>
 
