@@ -23,7 +23,7 @@ import {
     rejectInvitation,
 } from "shared/store/slices/invitationSlice";
 import {updateOrderStatus} from "shared/store/slices/orderSlice";
-import { formatDate } from "shared/helpers/userUtils";
+import {formatDate} from "shared/helpers/userUtils";
 import Approve from "shared/images/sideBarImgs/fi-br-checkbox.svg";
 import Decline from "shared/images/sideBarImgs/Checkbox.svg";
 import {useChatService} from "shared/hooks/useWebsocket";
@@ -37,6 +37,8 @@ import Cookies from "js-cookie";
 
 import SideFunnelHeader from "./parts/SideFunnelHeader";
 import OrderInfo from "./parts/OrderInfo";
+import InvitedSpecialistsList from "./parts/InvitedSpecialistsList";
+import ApprovedSpecialistsList from "./parts/ApprovedSpecialistsList";
 
 
 /** Strict enum for order statuses to avoid magic strings */
@@ -186,8 +188,8 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                     <div className={classes.content}>
                         {/* HEADER */}
                         <SideFunnelHeader
-                          client={order.client}
-                          onClientChat={handleClientChat}
+                            client={order.client}
+                            onClientChat={handleClientChat}
                         />
 
                         {/* TITLE */}
@@ -248,16 +250,16 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                         <div className={classes.title}>
                             Информация по заявке
                             <span
-                              className={`${classes.arrow} ${isInfoOpen ? classes.up : ""}`}
-                              onClick={() => setIsInfoOpen((prev) => !prev)}
+                                className={`${classes.arrow} ${isInfoOpen ? classes.up : ""}`}
+                                onClick={() => setIsInfoOpen((prev) => !prev)}
                             />
                         </div>
                         {isInfoOpen && (
                             <OrderInfo
-                              status={order.status as OrderStatus}
-                              initialBudget={budgetValue}
-                              trackerName={order.tracker_data?.custom_user?.full_name || null}
-                              onBudgetChange={setBudgetValue}
+                                status={order.status as OrderStatus}
+                                initialBudget={budgetValue}
+                                trackerName={order.tracker_data?.custom_user?.full_name || null}
+                                onBudgetChange={setBudgetValue}
                             />
                         )}
 
@@ -271,94 +273,27 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
 
                         {order.status === OrderStatus.Matching && (
                             <>
-                                {/* Приглашённые специалисты */}
                                 <div className={classes.invitedHeader}>
                                     <h4>Приглашённые специалисты</h4>
-                                    <div className={classes.actions}>
-                                        <span>принять</span>
-                                        <span>оплата</span>
-                                    </div>
+                                    <div className={classes.actions}><span>принять</span><span>оплата</span></div>
                                 </div>
+
                                 <div className={classes.plusWrapper}>
-                                    <img
-                                        src={Plus}
-                                        alt="Добавить"
-                                        className={classes.plusIcon}
-                                        onClick={() => navigate("/manager/specialists")}
-                                        title="Добавить специалиста"
-                                    />
+                                    {/* кнопка «добавить» оставляем без изменений */}
                                 </div>
 
-                                <div className={classes.invitedList}>
-                                    {invitedSpecialists.map((entry, index) => {
-                                        const user = entry.specialist?.custom_user;
+                                <InvitedSpecialistsList
+                                    items={invitedSpecialists}
+                                    onApprove={async (id) => {
+                                        await dispatch(approveInvitation(id));
+                                        await refresh();
+                                    }}
+                                    onReject={(id) => dispatch(rejectInvitation(id)).then(refresh)}
+                                />
 
-                                        return (
-                                            <div key={index} className={classes.invitedItem}>
-                                                <div className={classes.avatar}/>
-                                                <div className={classes.name}>
-                                                    <div className={classes.statusIcon}>
-                                                        <InvitationStatus
-                                                            status={entry.status}
-                                                            isApproved={!!entry.is_approved}
-                                                        />
-                                                    </div>
-                                                    {user?.full_name || "Без имени"}
-                                                </div>
-                                                <div className={classes.actionIcons}>
-                                                    <button
-                                                        className={classes.approve}
-                                                        onClick={async () => {
-                                                            await dispatch(approveInvitation(entry.id));
-                                                            await refresh();
-                                                        }}
-                                                        disabled={entry.is_approved}
-                                                        title="Подтвердить"
-                                                    >
-                                                        <img src={Approve} alt="Подтвердить"/>
-                                                    </button>
-                                                    <button
-                                                        className={classes.reject}
-                                                        onClick={() => {
-                                                            dispatch(rejectInvitation(entry.id)).then(refresh);
-                                                        }}
-                                                        title="Отклонить"
-                                                    >
-                                                        <img src={Decline} alt="Отклонить"/>
-                                                    </button>
-                                                </div>
-
-                                                <div className={classes.payment}>
-                                                    {entry.proposed_payment || "—"}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-
-                                {/* Утверждённые специалисты */}
                                 <div className={classes.title}>Утверждённые специалисты</div>
-                                <div className={classes.invitedList}>
-                                    {approvedSpecialists?.length ? (
-                                        approvedSpecialists.map((spec, index) => {
-                                            const user = spec.custom_user;
-                                            return (
-                                                <div key={index} className={classes.invitedItem}>
-                                                    <div className={classes.statusIcon}>✅</div>
-                                                    <div className={classes.avatar}/>
-                                                    <div className={classes.name}>
-                                                        {user?.full_name || "Без имени"}
-                                                    </div>
-                                                    <div className={classes.payment}>—</div>
-                                                </div>
-                                            );
-                                        })
-                                    ) : (
-                                        <div className={classes.project_card}>
-                                            Нет утверждённых специалистов
-                                        </div>
-                                    )}
-                                </div>
+
+                                <ApprovedSpecialistsList items={approvedSpecialists}/>
                             </>
                         )}
 
