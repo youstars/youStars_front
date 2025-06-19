@@ -11,7 +11,7 @@ import {
 import classes from "./SideFunnel.module.scss";
 import {useAppDispatch} from "shared/hooks/useAppDispatch";
 import {useNavigate} from "react-router-dom";
-import { useOrder } from "shared/hooks/useOrder";
+import {useOrder} from "shared/hooks/useOrder";
 import Plus from "shared/assets/icons/plus.svg";
 import {
     updateOrderTitle,
@@ -23,7 +23,7 @@ import {
     rejectInvitation,
 } from "shared/store/slices/invitationSlice";
 import {updateOrderStatus} from "shared/store/slices/orderSlice";
-import {formatDate, getInitials} from "shared/helpers/userUtils";
+import { formatDate } from "shared/helpers/userUtils";
 import Approve from "shared/images/sideBarImgs/fi-br-checkbox.svg";
 import Decline from "shared/images/sideBarImgs/Checkbox.svg";
 import {useChatService} from "shared/hooks/useWebsocket";
@@ -34,6 +34,9 @@ import InvitationStatus from "widgets/SideBar/SideFunnel/InvitationStatus/Invita
 import {useSelector} from "react-redux";
 import {selectMe} from "shared/store/slices/meSlice";
 import Cookies from "js-cookie";
+
+import SideFunnelHeader from "./parts/SideFunnelHeader";
+import OrderInfo from "./parts/OrderInfo";
 
 
 /** Strict enum for order statuses to avoid magic strings */
@@ -71,7 +74,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                                                    orderId,
                                                }) => {
     const {chats, setActiveChat} = useChatService();
-    const { order, refresh } = useOrder(orderId);
+    const {order, refresh} = useOrder(orderId);
 
     const me = useSelector(selectMe);
     const userId = Number(Cookies.get("user_role_id"));
@@ -85,7 +88,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     const [isSubtasksOpen, setIsSubtasksOpen] = useState(true);
     const [editableTitle, setEditableTitle] = useState("");
     const [isEditingTitle, setIsEditingTitle] = useState(false);
-    const [isEditingBudget, setIsEditingBudget] = useState(false);
+    // const [isEditingBudget, setIsEditingBudget] = useState(false);
     const [budgetValue, setBudgetValue] = useState("");
     const [subtaskInput, setSubtaskInput] = useState("");
 
@@ -162,7 +165,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     const clientUser = order.client?.custom_user;
     const clientName =
         clientUser?.full_name || (order.client ? `ID ${order.client.id}` : "—");
-    const clientInitials = getInitials(clientName);
+    // const clientInitials = getInitials(clientName);
     const invitedSpecialists = order.invited_specialists || [];
     const approvedSpecialists = order.approved_specialists || [];
     return (
@@ -182,45 +185,10 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                 <div className={classes.contentWrapper}>
                     <div className={classes.content}>
                         {/* HEADER */}
-                        <header className={classes.header}>
-                            <div className={classes.bloks}>
-                                <div className={classes.user_img}>
-                                    {clientUser?.avatar ? (
-                                        <img
-                                            src={clientUser.avatar}
-                                            alt={clientName}
-                                            className={classes.avatarImg}
-                                        />
-                                    ) : (
-                                        <div className={classes.avatarCircle}>{clientInitials}</div>
-                                    )}
-                                </div>
-                                <div className={classes.user_name}>
-                                    <p>{clientName}</p>
-                                    <p>{order.client?.business_name || "Без компании"}</p>
-                                </div>
-
-                                <div className={classes.chats}>
-                                    <button
-                                        onClick={handleClientChat}
-                                        className={classes.chatButton}
-                                        title="Чат с клиентом"
-                                    >
-                                        <img
-                                            src={ChatIcon}
-                                            alt="Чат с клиентом"
-                                            className={classes.chatIcon}
-                                        />
-                                    </button>
-
-                                    <img
-                                        src={ChatsIcon}
-                                        alt="Чат с клиентом"
-                                        className={classes.chatIcon}
-                                    />
-                                </div>
-                            </div>
-                        </header>
+                        <SideFunnelHeader
+                          client={order.client}
+                          onClientChat={handleClientChat}
+                        />
 
                         {/* TITLE */}
                         <div className={classes.title}>
@@ -280,52 +248,17 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                         <div className={classes.title}>
                             Информация по заявке
                             <span
-                                className={`${classes.arrow} ${isInfoOpen ? classes.up : ""}`}
-                                onClick={() => setIsInfoOpen((prev) => !prev)}
+                              className={`${classes.arrow} ${isInfoOpen ? classes.up : ""}`}
+                              onClick={() => setIsInfoOpen((prev) => !prev)}
                             />
                         </div>
                         {isInfoOpen && (
-                            <div className={classes.funnelInfo}>
-                                <div className={classes.sum}>
-                                    <p>Бюджет</p>
-                                    {isEditingBudget ? (
-                                        <input
-                                            className={classes.budgetInput}
-                                            value={budgetValue}
-                                            onChange={(e) => setBudgetValue(e.target.value)}
-                                            onBlur={() => setIsEditingBudget(false)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === "Enter") setIsEditingBudget(false);
-                                            }}
-                                            autoFocus
-                                        />
-                                    ) : (
-                                        <span
-                                            onClick={() => {
-                                                if ([OrderStatus.Matching].includes(order.status as OrderStatus)) {
-                                                    setIsEditingBudget(true);
-                                                }
-                                            }}
-                                            title="Нажмите для редактирования"
-                                        >
-                      {budgetValue || "—"}
-                    </span>
-                                    )}
-                                </div>
-
-                                <div className={classes.sum}>
-                                    <p>Трекер</p>
-                                    <span>
-                    {order.tracker_data?.custom_user?.full_name ? (
-                        <span className={classes.avatarCircle}>
-                        {getInitials(order.tracker_data.custom_user.full_name)}
-                      </span>
-                    ) : (
-                        "—"
-                    )}
-                  </span>
-                                </div>
-                            </div>
+                            <OrderInfo
+                              status={order.status as OrderStatus}
+                              initialBudget={budgetValue}
+                              trackerName={order.tracker_data?.custom_user?.full_name || null}
+                              onBudgetChange={setBudgetValue}
+                            />
                         )}
 
                         {/* NOTE */}
