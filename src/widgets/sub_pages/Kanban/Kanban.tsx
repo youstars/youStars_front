@@ -54,7 +54,13 @@ const borderColors: Record<TaskStatus, string> = {
 const TaskCard: React.FC<{ task: Task; onClick: () => void }> = ({
   task,
   onClick,
-}) => (
+}) => {
+  const rawList = (task as any).assigned_specialist_data ?? [];
+
+  const specialists: any[] = Array.isArray(rawList)
+    ? rawList.map((item: any) => item?.custom_user ?? item)
+    : [];
+  return (
   <div
     className={classes.taskCard}
     draggable
@@ -86,18 +92,22 @@ const TaskCard: React.FC<{ task: Task; onClick: () => void }> = ({
         <span>Дедлайн</span> {new Date(task.deadline).toLocaleDateString()}
       </p>
       <div className={classes.specialists}>
-        {(task.assigned_specialist as SpecialistShort[])?.map((s) => (
-          <div key={s.id} className={classes.specialist}>
-            {s.avatar ? (
-              <img src={s.avatar} alt={s.full_name} />
-            ) : (
-              <div className={classes.avatarPlaceholder}>
-                {s.full_name?.[0]}
-              </div>
-            )}
-            <span>{s.full_name}</span>
-          </div>
-        ))}
+        { specialists.length ? (
+          specialists.map((u: any, idx: number) => (
+            <div key={u.id ?? idx} className={classes.specialist}>
+              {u.avatar ? (
+                <img src={u.avatar} alt={u.full_name ?? "avatar"} />
+              ) : (
+                <div className={classes.avatarPlaceholder}>
+                  {(u.full_name ?? "?")[0]}
+                </div>
+              )}
+              <span>{u.full_name ?? "Без имени"}</span>
+            </div>
+          ))
+        ) : (
+          <span>—</span>
+        )}
       </div>
 
       <p className={classes.notice}>
@@ -112,7 +122,8 @@ const TaskCard: React.FC<{ task: Task; onClick: () => void }> = ({
       </p>
     </div>
   </div>
-);
+  );
+};
 
 const Kanban: React.FC = () => {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
@@ -324,5 +335,4 @@ const Kanban: React.FC = () => {
     </div>
   );
 };
-
 export default Kanban;
