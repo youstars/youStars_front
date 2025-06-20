@@ -238,16 +238,24 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
 
                             <div className={classes.sum}>
                                 <p>Трекер</p>
-                                <span>
-                              {order.tracker_data?.custom_user?.full_name ? (
-                                  <span className={classes.avatarCircle}>
-                                  {order.tracker_data.custom_user.full_name
-                                      .split(" ")
-                                      .map(s => s[0])
-                                      .join("")}
-                                </span>
-                              ) : "—"}
-                            </span>
+
+                                {order.tracker_data?.custom_user?.full_name ? (
+                                    <div className={classes.trackers}>
+                                        <span
+                                            className={classes.avatarPlaceholder}
+                                            title={order.tracker_data.custom_user.full_name}
+                                            aria-label={order.tracker_data.custom_user.full_name}
+                                        >
+                                            {order.tracker_data.custom_user.full_name
+                                                .split(" ")
+                                                .map((s) => s[0])
+                                                .join("")}
+
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <span>—</span>
+                                )}
                             </div>
                         </div>
                         {/* INFO */}
