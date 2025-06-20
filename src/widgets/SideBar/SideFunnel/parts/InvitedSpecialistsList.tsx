@@ -30,11 +30,11 @@ const InvitedSpecialistsList: React.FC<Props> = ({
     if (!items.length) return <div className={classes.empty}>Нет приглашённых</div>;
 
     return (
-        <div className={classes.list}>
+        <div className={classes.invitedList}>
             {items.map((entry) => {
                 const user = entry.specialist?.custom_user;
                 return (
-                    <div key={entry.id} className={classes.item}>
+                    <div key={entry.id} className={classes.invitedItem}>
                         <div className={classes.avatar} />
                         <div className={classes.name}>
                             <InvitationStatus
