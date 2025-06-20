@@ -2,9 +2,29 @@ import { Task } from "shared/types/tasks";
 import { Tracker } from "./tracker";
 
 
+// Для списков проектов
+export interface ProjectSummary {
+  id: number;
+  name: string;
+  status: string;
+  deadline: string | null;
+  tracker: {
+    id: number;
+    full_name: string;
+  };
+  specialists: {
+    id: number;
+    full_name: string;
+  }[];
+  client: {
+    id: number;
+    full_name: string | null;
+  };
+}
 
-export interface Project {
-   id: number; 
+// Для страницы одного проекта
+export interface ProjectDetail {
+  id: number;
   name: string;
   start_date: string;
   updated_at: string;
@@ -23,7 +43,7 @@ export interface Project {
     mood: number;
   };
   project_team: {
-   tracker: Tracker;
+    tracker: Tracker;
     specialists: {
       id: number;
       full_name: string;
@@ -36,4 +56,21 @@ export interface Project {
   };
   file: any[];
   tasks?: Task[];
+}
+
+// Для узкого использования (например, список проектов у специалиста)
+export interface ProjectMinimal {
+  id: number | string;
+  name: string;
+  start_date: string;
+  end_date: string;
+  specialist?: {
+    id: number | string;
+    full_name: string;
+  } | null;
+  assigned_specialist?: {
+    id: number | string;
+    full_name: string;
+  } | null;
+  title?: string;
 }

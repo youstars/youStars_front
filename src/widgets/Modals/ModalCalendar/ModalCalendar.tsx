@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import styles from "./ModalCalendar.module.scss";
 import classes from "../ModalsProjects/ModalsProjects.module.scss";
 import type { Task } from "shared/types/tasks";
-import type { Project } from "shared/types/projects";
+import type { ProjectMinimal } from "shared/types/project";
 
 interface ModalCalendarProps {
   isOpen: boolean;
   onClose: () => void;
   onApply: (startDate: Date | null, endDate: Date | null) => void;
   /** Accept either Task[] or Project[] (both have id, start_date, end_date) */
-  tasks: Array<Task | Project>;
+  tasks: Array<Task | ProjectMinimal>;
   selectedTaskId: string | number | null;
 }
 

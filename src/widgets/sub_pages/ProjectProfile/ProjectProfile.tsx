@@ -15,14 +15,14 @@ import ProjectFiles from "shared/UI/ProjectFiles/ProjectFiles";
 import CustomTable from "shared/UI/CustomTable/CustomTable";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
-import { useSelector } from "react-redux";
 import {
   getProjectById,
-  selectProject,
-} from "shared/store/slices/projectSlice";
+  selectCurrentProject,
+} from "shared/store/slices/projectsSlice";
 import user_icon from "shared/images/user_icon.svg";
 import { TrackerNotes } from "../ClientProfile/components/TrackerNotes/TrackerNotes";
 import { uploadProjectFile } from "shared/api/files";
+import { useAppSelector } from "shared/hooks/useAppSelector";
 
 export default function ProjectProfile() {
   const steps = [
@@ -38,7 +38,7 @@ export default function ProjectProfile() {
   const { id } = useParams();
   const dispatch = useAppDispatch();
 
-  const { project } = useSelector(selectProject);
+  const project  = useAppSelector(selectCurrentProject);
 
   useEffect(() => {
     if (id) {

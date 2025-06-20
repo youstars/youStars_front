@@ -17,7 +17,8 @@ import { useNavigate } from "react-router-dom";
 import styles from "./ClientProfile.module.scss";
 import { useChatService } from "shared/hooks/useWebsocket";
 import { useClientProfileData } from "shared/hooks/useClientProfileData";
-import { Project } from "shared/types/project";
+import { ProjectDetail } from "shared/types/project";
+
 import ProjectFiles from "shared/UI/ProjectFiles/ProjectFiles";
 import { uploadClientFile } from "shared/api/files";
 
@@ -546,7 +547,7 @@ await dispatch(updateClient({
       <ProjectBlock
         title="Проекты в работе"
         projects={(client.projects || []).filter(
-          (p: Project) => p.status !== "completed"
+          (p: ProjectDetail) => p.status !== "completed"
         )}
       />
 
@@ -554,7 +555,7 @@ await dispatch(updateClient({
         <ProjectBlock
           title="Завершённые проекты"
           projects={(client.projects || []).filter(
-            (p: Project) => p.status === "completed"
+            (p: ProjectDetail) => p.status === "completed"
           )}
         />
       </div>

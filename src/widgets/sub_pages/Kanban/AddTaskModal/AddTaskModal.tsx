@@ -4,11 +4,10 @@ import ChatIcon from "shared/assets/icons/chatY.svg";
 import ChatsIcon from "shared/assets/icons/ChatsY.svg";
 import { Plus } from "lucide-react";
 import { useAppSelector } from "shared/hooks/useAppSelector";
-import { selectProject } from "shared/store/slices/projectSlice";
 import { useDispatch } from "react-redux";
 import { createTask, getTasks } from "shared/store/slices/tasksSlice";
 import { AppDispatch } from "shared/store";
-import { TaskStatus } from "shared/types/tasks";
+import { selectCurrentProject, } from "shared/store/slices/projectsSlice";
 
 interface AddTaskModalProps {
   isOpen: boolean;
@@ -25,7 +24,8 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
   const [showTitleInput, setShowTitleInput] = useState(false);
   const [showResultInput, setShowResultInput] = useState(false);
   const [showSpecialists, setShowSpecialists] = useState(false);
-  const { project } = useAppSelector(selectProject);
+const project = useAppSelector(selectCurrentProject);
+
   const dispatch = useDispatch<AppDispatch>();
 const [createdAt] = useState(new Date().toISOString());
 

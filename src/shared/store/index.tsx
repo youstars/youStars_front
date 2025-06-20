@@ -14,7 +14,6 @@ import projectFilesReducer from "./slices/projectFilesSlice";
 import clientsReducer from "./slices/clientsSlice";
 import knowledgeBaseReducer from "./slices/librarySlice";
 import { foldersReducer } from "./slices/foldersSlice";
-import { projectReducer } from "./slices/projectSlice";
 import trackerReducer from "./slices/trackerSlice"
 import trackersReducer from "./slices/trackersSlice"
 import invitationReducer from './slices/invitationSlice';
@@ -27,7 +26,6 @@ const store = configureStore({
     auth: authReducer,
     tasks: tasksSlice,
     projects: projectsSlice,
-    project: projectReducer,
     funnel: funnelSlice,
     specialists: specialistsReducer,
     chat: chatReducer,
