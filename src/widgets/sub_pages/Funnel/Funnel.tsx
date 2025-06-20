@@ -51,11 +51,7 @@ const Funnel = () => {
     dispatch(getFunnelData());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (selectedOrderId !== null) {
-      setIsSidebarOpen(true);
-    }
-  }, [selectedOrderId]);
+
 
   const filteredOrders = useMemo(() => {
     return funnelData.filter((order) =>
@@ -135,14 +131,15 @@ const Funnel = () => {
               <div className={styles.tasksList}>
                 {items.length > 0 ? (
                   items.map((order) => (
-                    <div
-                      className={styles.taskCard}
-                      key={order.id}
-                      onClick={() => {
-                        setSelectedOrderId(order.id);
-                        dispatch(getOrderById(order.id));
-                      }}
-                    >
+                   <div
+  className={styles.taskCard}
+  key={order.id}
+  onClick={() => {
+    setSelectedOrderId(order.id);
+    setIsSidebarOpen(true); 
+    dispatch(getOrderById(order.id));
+  }}
+>
                       <div className={styles.taskContent}>
                         <div className={styles.taskHeader}>
                           <div>

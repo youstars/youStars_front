@@ -32,6 +32,21 @@ export default function UserProjects() {
 
   console.log("projectssqwq", getData);
 
+  const getSpecialistsLabel = (project: any) => {
+    // API иногда присылает specialists либо students; нормализуем
+    const list = project.specialists ?? project.students ?? [];
+    if (Array.isArray(list) && list.length) {
+      return list
+        .map((s: any) => s?.custom_user?.full_name || s?.full_name || "Без имени")
+        .join(", ");
+    }
+    // если сервер шлёт count
+    if (typeof list === "number" && list > 0) {
+      return `${list} специалист(ов)`;
+    }
+    return "Нет специалистов";
+  };
+
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -137,7 +152,7 @@ export default function UserProjects() {
             src={status}
             alt="Заказчик"
           />{" "}
-  
+
         </div>
         <div className={classes.status}>
           <p>Чаты проектов</p>
@@ -162,7 +177,7 @@ export default function UserProjects() {
                 <p>{project.deadline || "Не указана"}</p>
               </div>
               <div className={classes.project_students}>
-                <p>{project.students || "Нет студентов"}</p>
+                <p>{getSpecialistsLabel(project)}</p>
               </div>
               <div className={classes.project_duration}>
                 <p>{project.client.full_name || "Не указана"}</p>
