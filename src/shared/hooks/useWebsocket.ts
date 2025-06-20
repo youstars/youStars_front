@@ -51,7 +51,17 @@ export const useChatService = () => {
     const isAdmin = userId === 1;
     const defaultType: ChatType = "admin-specialist";
 
-    dispatch(fetchChats(isAdmin ? undefined : defaultType));
+    if (isAdmin) {
+Promise.all([
+  dispatch(fetchChats("admin-specialist")),
+  dispatch(fetchChats("admin-client")),
+  dispatch(fetchChats("admin-project")),
+]);
+
+} else {
+  dispatch(fetchChats(defaultType));
+}
+
   }, [dispatch]);
 
   useEffect(() => {

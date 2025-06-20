@@ -28,8 +28,9 @@ export const fetchChats = createAsyncThunk<Chat[], ChatType | undefined>(
   "chat/fetchChats",
   async (chatType, { rejectWithValue }) => {
     const token = getCookie("access_token") || "";
-    const userId = parseInt(getCookie("user_id") || "1");
-    const isAdmin = userId === 1;
+const userId = parseInt(getCookie("user_id") || "1");
+const userRole = getCookie("user_role");
+const isAdmin = userRole === "admin";
 
     let url = `${API_BASE_URL}chat/chats/`;
     if (!isAdmin && chatType) {
@@ -48,19 +49,21 @@ export const fetchChats = createAsyncThunk<Chat[], ChatType | undefined>(
       if (!response.ok) throw new Error("Ошибка загрузки чатов");
 
       const data = await response.json();
-      // console.log("данные чатов!!!", data);
+      console.log("🔥 Получены чаты с сервера:", data);
 
       return data.map((chat: any) => {
-        const otherParticipant = chat.participants?.find(
-          (p: any) => parseInt(p.id) !== userId
-        );
+        const participants = chat.participants || [];
+
+        // Выбираем имя другого участника, если есть
+        const otherParticipant =
+          participants.length > 0
+            ? participants.find((p: any) => parseInt(p.id) !== userId)
+            : null;
 
         const displayName =
           otherParticipant?.username ||
-          (isAdmin
-            ? `Чат ${chat.id}`
-            : chat.participants?.find((p: any) => parseInt(p.id) === 1)
-                ?.username || "Админ");
+          participants[0]?.username || // хотя бы первый участник
+          `Чат ${chat.id}`; // fallback
 
         return {
           id: chat.id.toString(),
@@ -68,7 +71,7 @@ export const fetchChats = createAsyncThunk<Chat[], ChatType | undefined>(
           status: "Online",
           lastActive: chat.updated_at || new Date().toLocaleTimeString(),
           unread: 0,
-          messages: chat.messages
+          messages: Array.isArray(chat.messages)
             ? chat.messages.map((msg: any) => ({
                 id:
                   msg.id?.toString() ||
@@ -85,7 +88,7 @@ export const fetchChats = createAsyncThunk<Chat[], ChatType | undefined>(
             : [],
 
           type: chat.chat_type,
-          participants: chat.participants || [],
+          participants,
         };
       });
     } catch (err) {
@@ -140,7 +143,14 @@ const chatSlice = createSlice({
       })
       .addCase(fetchChats.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.chats = action.payload;
+        const newChats = action.payload;
+
+        newChats.forEach((newChat) => {
+          if (!state.chats.some((c) => c.id === newChat.id)) {
+            state.chats.push(newChat);
+          }
+        });
+
         state.error = null;
       })
       .addCase(fetchChats.rejected, (state, action) => {
