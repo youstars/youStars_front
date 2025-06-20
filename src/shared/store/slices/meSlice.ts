@@ -1,44 +1,20 @@
+// shared/store/slices/meSlice.ts
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { RootState } from "../index";
-import Cookies from "js-cookie";
+import { RootState } from "shared/store";
 import { getCookie } from "shared/utils/cookies";
-import { API_ME } from "shared/api/endpoints";
 import axiosInstance from "shared/api/api";
 
-export const updateMe = createAsyncThunk(
-  "me/update",
-  async (data: any, thunkAPI) => {
-    try {
-      const token = getCookie("access_token");
-
-      const response = await axiosInstance.patch(API_ME.update, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      return response.data;
-    } catch (error: any) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.detail || "Ошибка обновления профиля"
-      );
-    }
-  }
-);
-
-export const getMe = createAsyncThunk("me/fetch", async (_, thunkAPI) => {
-  try {
-    const response = await axiosInstance.get(API_ME.get);
-    return response.data;
-  } catch (error: any) {
-    console.error("Error fetching me:", error);
-    return thunkAPI.rejectWithValue(error.response?.data || "Ошибка запроса");
-  }
-});
+interface MeUser {
+  id: number;
+  role: string;
+  username: string;
+  full_name: string;
+  avatar?: string | null;
+  [key: string]: any;
+}
 
 interface MeState {
-  data: any;
+  data: MeUser | null;
   loading: boolean;
   error: string | null;
   initialized: boolean;
@@ -50,6 +26,39 @@ const initialState: MeState = {
   error: null,
   initialized: false,
 };
+
+
+export const getMe = createAsyncThunk<MeUser, void, { rejectValue: string }>(
+  "me/get",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axiosInstance.get("/auth/users/me/");
+      return response.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue("Не удалось получить пользователя");
+    }
+  }
+);
+
+export const updateMe = createAsyncThunk<MeUser, Partial<MeUser>, { rejectValue: string }>(
+  "me/update",
+  async (updateData, thunkAPI) => {
+    try {
+      const role = getCookie("user_role")?.toLowerCase();
+
+      let endpoint = "";
+      if (role === "client") endpoint = "/users/clients/me/";
+      else if (role === "specialist") endpoint = "/users/specialists/me/";
+      else if (role === "admin") endpoint = "/users/admins/me/";
+      else return thunkAPI.rejectWithValue("Неизвестная роль");
+
+      const response = await axiosInstance.patch(endpoint, updateData);
+      return response.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue("Не удалось обновить профиль");
+    }
+  }
+);
 
 const meSlice = createSlice({
   name: "me",
@@ -63,30 +72,18 @@ const meSlice = createSlice({
         state.initialized = false;
       })
       .addCase(getMe.fulfilled, (state, action) => {
-        state.loading = false;
         state.data = action.payload;
+        state.loading = false;
         state.initialized = true;
-
-        const role = action.payload?.custom_user?.role || action.payload?.role;
-        if (role) {
-          Cookies.set("user_role", role, {
-            expires: 7,
-            secure: true,
-            sameSite: "None",
-          });
-        }
       })
       .addCase(getMe.rejected, (state, action) => {
+        state.error = action.payload || "Ошибка загрузки";
         state.loading = false;
-        state.error = action.payload as string;
-        state.initialized = true; 
-
-        const token = getCookie("access_token");
-        if (token) {
-          state.data = { id: getCookie("user_id") || null };
-        } else {
-          state.data = null;
-        }
+        state.initialized = true;
+        state.data = null;
+      })
+      .addCase(updateMe.fulfilled, (state, action) => {
+        state.data = action.payload;
       });
   },
 });

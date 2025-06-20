@@ -357,6 +357,20 @@
   margin: 0;
 }
 
+.check_block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  color: var(--primery-color); 
+}
+
+.check_block p {
+  margin: 0;
+  font-size: 13px;
+  color: #f1f1f1; 
+}
+
 .submitButton {
   background: #FFC107;
   color: #000;

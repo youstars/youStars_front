@@ -1,3 +1,22 @@
+.pageContainer {
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    padding: 15px 10px;
+    gap: 15px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px 8px;
+    gap: 10px;
+  }
+}
+
 .main {
   height: 100vh;
   overflow-y: auto;
@@ -8,92 +27,97 @@
 }
 
 .container {
-    padding: 25px 20px;
-    border-radius: var(--border-radius-main);
-    background-color: var(--color-bg-primary);
-    
-.header {
-  display: flex;
-  align-items: center; // ✅ по центру по вертикали
-  justify-content: space-between;
-  gap: 15px;
-}
+  padding: 25px 20px;
+  border-radius: var(--border-radius-main);
+  background-color: var(--color-bg-primary);
 
-  
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  }
+
   .avatar {
     display: flex;
     align-items: center;
     gap: 15px;
-  
+
     h1 {
       font-size: 16px;
       font-weight: 600;
+
+      @media (max-width: 600px) {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      gap: 10px;
     }
   }
-  
-.rank {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center; 
-  justify-content: center;
-  min-width: 200px; 
-}
 
-  
-.progressBar {
-  width: 100%; // ✅ чтобы занимал всю доступную ширину в .rank
-  max-width: 400px; // можно ограничить при необходимости
-  margin: 0 auto; // ✅ по центру в колонке
-}
+  .rank {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 200px;
 
-  
+    background: rgba(255, 255, 0, 0.1);
+
+    @media (max-width: 768px) {
+      min-width: auto;
+      width: 100%;
+    }
+  }
+
+  .progressBar {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
   .rightBlock {
     display: flex;
     align-items: center;
     gap: 32px;
-  }
-  
+    background: rgba(255, 0, 255, 0.1);
 
-.projectDetails {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transition: max-height 0.4s ease, opacity 0.4s ease;
-
-  > * {
-    flex: 0 0 auto;
+    @media (max-width: 600px) {
+      flex-wrap: wrap;
+      gap: 16px;
+    }
   }
 
-  &.open {
-    max-height: 300px; // <= фиксированная высота
-    overflow-y: auto;
-    opacity: 1;
+  .projectDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+
+    > * {
+      flex: 0 0 auto;
+    }
+
+    &.open {
+      max-height: 300px;
+      overflow-y: auto;
+      opacity: 1;
+
+      @media (max-width: 600px) {
+        max-height: 400px;
+      }
+    }
   }
-}
-
-
-}
-
-.pageContainer {
-  height: calc(100vh - 100px); 
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 20px;
-}
-
-
-.rank {
-  background: rgba(255, 255, 0, 0.1);
-}
-.avatar {
-  background: rgba(0, 255, 255, 0.1);
-}
-.rightBlock {
-  background: rgba(255, 0, 255, 0.1);
 }

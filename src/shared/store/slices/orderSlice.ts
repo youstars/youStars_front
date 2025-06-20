@@ -10,7 +10,10 @@ const token = getCookie("access_token") || "";
 
 export const getOrderById = createAsyncThunk<Order, any>(
   "order/getOrderById",
-  async (id) => {
+  async (id, { rejectWithValue }) => {
+    const token = getToken(); 
+    if (!token) return rejectWithValue("Нет токена");
+
     const res = await fetch(`${baseUrl}/order/${id}/`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -19,7 +22,7 @@ export const getOrderById = createAsyncThunk<Order, any>(
     });
 
     if (!res.ok) {
-      throw new Error("Не удалось получить заявку");
+      return rejectWithValue("Не удалось получить заявку");
     }
 
     return await res.json();

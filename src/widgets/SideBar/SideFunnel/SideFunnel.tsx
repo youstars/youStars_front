@@ -1,28 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {
-  Calendar,
-  Clock,
-  ChevronLeft,
-  ChevronRight,
-  Upload,
-  CheckSquare,
-  PlusSquare,
-} from "lucide-react";
+import {Calendar,Clock, ChevronLeft, ChevronRight, Upload,CheckSquare, PlusSquare,} from "lucide-react";
 import classes from "./SideFunnel.module.scss";
 import { useAppSelector } from "shared/hooks/useAppSelector";
 import { getFunnelData } from "shared/store/slices/funnelSlice";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { useNavigate } from "react-router-dom";
 import Plus from "shared/assets/icons/plus.svg";
-import {
-  updateOrderTitle,
-  assignTrackerToOrder,
-  getOrderById,
-  confirmPrepayment,
-} from "shared/store/slices/orderSlice";
-import {
-  approveInvitation,
-  rejectInvitation,
+import {updateOrderTitle,assignTrackerToOrder,getOrderById,confirmPrepayment,} from "shared/store/slices/orderSlice";
+import {approveInvitation,rejectInvitation,
 } from "shared/store/slices/invitationSlice";
 import { updateOrderStatus } from "shared/store/slices/orderSlice";
 import { formatDate, getInitials } from "shared/helpers/userUtils";
@@ -33,8 +18,6 @@ import { findChatByParticipantId } from "shared/helpers/chatUtils";
 import ChatsIcon from "shared/assets/icons/ChatsY.svg";
 import ChatIcon from "shared/assets/icons/chatY.svg";
 import InvitationStatus from "widgets/SideBar/SideFunnel/InvitationStatus/InvitationStatus";
-import { useSelector } from "react-redux";
-import { selectMe } from "shared/store/slices/meSlice";
 import Cookies from "js-cookie";
 
 interface SideFunnelProps {
@@ -50,19 +33,18 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
 }) => {
   const { chats, setActiveChat } = useChatService();
   console.log("useChatService:", { chats, setActiveChat });
-  const order = useAppSelector((state) => state.order.current);
-  console.log("order:", order);
-  console.log(
-    "Redux state:",
-    useAppSelector((state) => state.order)
-  );
+  const orderState = useAppSelector((state) => state.order);
+  const order = orderState.current;
+  console.log("Redux state:", orderState);
 
-  const me = useSelector(selectMe);
+
   const userId = Number(Cookies.get("user_role_id"));
+
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  
   const sidebarRef = React.useRef<HTMLDivElement>(null);
   const [isInfoOpen, setIsInfoOpen] = useState(true);
   const [isSubtasksOpen, setIsSubtasksOpen] = useState(true);
@@ -73,10 +55,10 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
   const [subtaskInput, setSubtaskInput] = useState("");
 
   useEffect(() => {
-    if (orderId) {
+    if (orderId && (!order || order.id !== +orderId)) {
       dispatch(getOrderById(orderId));
     }
-  }, [orderId, dispatch]);
+  }, [orderId, order, dispatch]);
 
   useEffect(() => {
     if (order) {
@@ -88,6 +70,14 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
       );
     }
   }, [order]);
+
+const [loaded, setLoaded] = useState(false);
+
+useEffect(() => {
+  if (!loaded && orderId && (!order || order.id !== +orderId)) {
+    dispatch(getOrderById(orderId)).then(() => setLoaded(true));
+  }
+}, [orderId, order, dispatch, loaded]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -124,8 +114,10 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
           currentStatus: String(order!.status),
         })
       );
-      await dispatch(getOrderById(order!.id.toString()));
-      await dispatch(getFunnelData());
+      await Promise.all([
+        dispatch(getOrderById(orderId)),
+        dispatch(getFunnelData()),
+      ]);
     } catch (error) {
       console.error("Ошибка при сохранении:", error);
     } finally {

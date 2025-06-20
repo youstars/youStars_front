@@ -30,6 +30,8 @@ import { useAppSelector } from "shared/hooks/useAppSelector";
 import { selectMe } from "shared/store/slices/meSlice";
 import CreateAccountClient from "pages/CreateAccountClient/CreateAccountClient";
 import CreateAccount from "pages/CreatedAccount/ui/CreatedAccount";
+import ProfilePage from "widgets/sub_pages/ProfilePage/ProfilePage";
+import TrackerProfile from "widgets/TrackerProfile/TrackerProfile";
 
 function App() {
   const { theme } = useTheme();
@@ -48,9 +50,12 @@ function App() {
     location.pathname.startsWith(path)
   );
 
-  useEffect(() => {
+useEffect(() => {
+  console.log("🔥 DISPATCH getMe()");
+  if (!me.initialized) {
     dispatch(getMe());
-  }, [dispatch]);
+  }
+}, [dispatch, me.initialized]);
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -83,15 +88,18 @@ if (!isAuthed && !isPublic && !isLoading) {
             <Route path="orders" element={<BusinessApplication />} />
             <Route path="library" element={<Library />} />
             <Route path="admins" element={<AdminsPage />} />
+            <Route path="trackers/:id" element={<TrackerProfile />} />
+
             <Route path="settings" element={<Settings />} />
             <Route path="chats" element={<Chats />} />
             <Route path="auth_admin" element={<FormAuthAdmin />} />
-            <Route path="me" element={<SpecialistProfile  />} />
+            <Route path="me" element={<ProfilePage />} />
+    
             <Route path="overview" element={<Overview />}>
               <Route path="gantt" element={<Gantt />} />
               <Route path="kanban" element={<Kanban />} />
             </Route>
-            <Route path="projectProfile" element={<ProjectProfile />} />
+            <Route path="projects/:id" element={<ProjectProfile />} />
           </Route>
         </Routes>
       </Suspense>

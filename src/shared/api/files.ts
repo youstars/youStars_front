@@ -2,6 +2,7 @@
 import axios from "axios";
 import { getCookie } from "shared/utils/cookies";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 export const uploadEntityFile = async (
   entity: "specialist" | "client" | "project" | "order",
@@ -52,20 +53,36 @@ export const uploadProjectFile = (
   projectId: number,
   description = ""
 ) => uploadEntityFile("project", projectId, file, name, description);
-
-
-export const deleteFileById = async (
-  entity: "specialist" | "client" | "project" | "order",
-  fileId: number
+export const uploadTrackerFile = async (
+  file: File,
+  name: string,
+  trackerId: number
 ) => {
   const token = getCookie("access_token");
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("name", name);
+  formData.append("tracker", trackerId.toString());
 
-  const url = `http://127.0.0.1:8000/files/${entity}-files/${fileId}/`;
-
-  await axios.delete(url, {
+  const response = await axios.post(`${API_BASE_URL}/files/tracker-files/`, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    withCredentials: true,
   });
+
+  return response.data;
 };
+
+
+export async function deleteFileById(
+  model: "project" | "specialist" | "client" | "order" | "tracker", 
+  fileId: number
+) {
+  const token = getCookie("access_token");
+  const response = await axios.delete(`${API_BASE_URL}/files/${model}-files/${fileId}/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+}

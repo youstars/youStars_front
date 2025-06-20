@@ -16,7 +16,8 @@ import clientsReducer from "./slices/clientsSlice";
 import knowledgeBaseReducer from "./slices/librarySlice";
 import { foldersReducer } from "./slices/foldersSlice";
 import { projectReducer } from "./slices/projectSlice";
-import trackerReducer from "./slices/trackersSlice"
+import trackerReducer from "./slices/trackerSlice"
+import trackersReducer from "./slices/trackersSlice"
 import invitationReducer from './slices/invitationSlice';
 import orderReducer from "./slices/orderSlice";
 // import subtasksReducer from "./slices/subtaskSlice";
@@ -40,9 +41,10 @@ const store = configureStore({
     projectFiles: projectFilesReducer,
     knowledgeBase: knowledgeBaseReducer,
     folders: foldersReducer, 
-    trackers: trackerReducer,
+    trackers: trackersReducer,
     invitation: invitationReducer,
     order: orderReducer,
+    tracker: trackerReducer,
     // subtask: subtasksReducer,
   },
 });

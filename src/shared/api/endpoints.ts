@@ -33,8 +33,8 @@ export const API_KNOWLEDGE = {
 };
 
 export const API_ME = {
-  get: "auth/users/me/",
-  update: "auth/users/me/",
+  get: "/auth/users/me/",
+  update: "/auth/users/me/",
 };
 
 export const API_PROJECT = {

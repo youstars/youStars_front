@@ -7,7 +7,7 @@ export interface Order {
   estimated_budget: string;
   project_deadline: string | null;
   start_project_at?: string;
-
+  project_id?: number; 
   client: {
     id: number;
     business_name: string | null;
