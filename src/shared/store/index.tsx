@@ -9,7 +9,6 @@ import chatReducer from "shared/store/slices/chatSlice";
 import projectTasksReducer from 'shared/store/slices/projectTasksSlice';
 import adminRegistrationReducer from "shared/store/slices/adminRegistrationSlice";
 import meReducer from "shared/store/slices/meSlice";
-import tasksSpecialistReducer from "shared/store/slices/tasksSpecialistSlice";
 import clientReducer from "./slices/clientSlice";
 import projectFilesReducer from "./slices/projectFilesSlice";
 import clientsReducer from "./slices/clientsSlice";
@@ -35,7 +34,6 @@ const store = configureStore({
     adminRegistration: adminRegistrationReducer,
     specialist: specialistReducer,
     me: meReducer,
-    tasksSpecialist: tasksSpecialistReducer,
     client: clientReducer,
     clients: clientsReducer,
     projectFiles: projectFilesReducer,

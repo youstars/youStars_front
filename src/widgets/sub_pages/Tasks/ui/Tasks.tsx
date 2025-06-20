@@ -2,14 +2,15 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "shared/store";
 import {
-  fetchSpecialistTasks,
-  selectSpecialistTasks,
-  selectTasksLoading,
+  getTasks,
+  selectTasks,
+  selectTasksStatus,
   selectTasksError
-} from "shared/store/slices/tasksSpecialistSlice";
-import styles from "./Tasks.module.scss";
-import { TaskSpecialist } from "shared/store/slices/tasksSpecialistSlice";
+} from "shared/store/slices/tasksSlice";
 
+import styles from "./Tasks.module.scss";
+import { useAppSelector } from "shared/hooks/useAppSelector";
+import { Task } from "shared/types/tasks";
 const statusTitles: { [key: string]: string } = {
   to_do: "Нужно выполнить",
   in_progress: "В процессе",
@@ -24,19 +25,21 @@ const getStatusLabel = (status: string) => {
 
 const TaskTable = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const tasks = useSelector(selectSpecialistTasks);
-  const loading = useSelector(selectTasksLoading);
-  const error = useSelector(selectTasksError);
+const tasks = useAppSelector(selectTasks).results;
+const loading = useAppSelector(selectTasksStatus) === "pending";
+const error = useAppSelector(selectTasksError);
 
-  useEffect(() => {
-    dispatch(fetchSpecialistTasks());
-  }, [dispatch]);
 
-  const groupedTasks = tasks.reduce<{ [key: string]: typeof tasks }>((acc, task) => {
+useEffect(() => {
+  if (!tasks.length) {
+    dispatch(getTasks());
+  }
+}, [dispatch, tasks.length]);
+
+
+  const groupedTasks = tasks.reduce<Record<string, Task[]>>((acc, task) => {
     const statusTitle = getStatusLabel(task.status);
-    if (!acc[statusTitle]) {
-      acc[statusTitle] = [];
-    }
+    if (!acc[statusTitle]) acc[statusTitle] = [];
     acc[statusTitle].push(task);
     return acc;
   }, {});
