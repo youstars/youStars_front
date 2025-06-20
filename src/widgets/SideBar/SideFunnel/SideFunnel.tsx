@@ -81,7 +81,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     const [isInfoOpen, setIsInfoOpen] = useState(true);
     const [editableTitle, setEditableTitle] = useState("");
     const [isEditingTitle, setIsEditingTitle] = useState(false);
-    // const [isEditingBudget, setIsEditingBudget] = useState(false);
+    const [isEditingBudget, setIsEditingBudget] = useState(false);
     const [budgetValue, setBudgetValue] = useState("");
 
 
@@ -233,7 +233,29 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                         <div className={classes.funnelInfo}>
                             <div className={classes.sum}>
                                 <p>Бюджет</p>
-                                <span>{budgetValue ? `${budgetValue} ₽` : "—"}</span>
+                                {isEditingBudget ? (
+                                    <input
+                                        className={classes.budgetInput}
+                                        value={budgetValue}
+                                        onChange={(e) => setBudgetValue(e.target.value)}
+                                        onBlur={() => setIsEditingBudget(false)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") setIsEditingBudget(false);
+                                        }}
+                                        autoFocus
+                                    />
+                                ) : (
+                                    <span
+                                        onClick={() => {
+                                            if (order.status === OrderStatus.Matching) {
+                                                setIsEditingBudget(true);
+                                            }
+                                        }}
+                                        title="Нажмите для редактирования"
+                                    >
+                                        {budgetValue ? `${budgetValue} ₽` : "—"}
+                                    </span>
+                                )}
                             </div>
 
                             <div className={classes.sum}>
