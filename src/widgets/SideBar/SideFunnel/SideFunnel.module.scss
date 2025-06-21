@@ -7,11 +7,11 @@
   z-index: 1000;
   will-change: transform;
   transition: transform 0.3s ease;
-  transform: translateX(100%); 
+  transform: translateX(100%);
 }
 
 .containerOpen {
-  transform: translateX(0); 
+  transform: translateX(0);
 }
 
 .sidebar {
@@ -357,13 +357,13 @@
   align-items: center;
   gap: 8px;
   padding: 6px 0;
-  color: var(--primery-color); 
+  color: var(--primery-color);
 }
 
 .check_block p {
   margin: 0;
   font-size: 13px;
-  color: #f1f1f1; 
+  color: #f1f1f1;
 }
 
 .submitButton {

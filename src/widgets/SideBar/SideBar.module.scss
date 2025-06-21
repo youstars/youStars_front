@@ -7,7 +7,7 @@
   flex-direction: column;
   gap: 12px;
   transition: width 0.6s ease;
-  
+
 }
 
 
@@ -105,12 +105,12 @@
 .active {
   background-color: #ffc400;
   font-weight: 800;
-  
+
 }
 
 .arrow_back{
   all: unset;
-  display: inline-block; 
+  display: inline-block;
   padding: 10px 20px;
 
 }
@@ -125,7 +125,7 @@
   &.collapsed {
     width: 60px;
     transition: width 0.6s ease, padding 0.6s ease, margin 0.6s ease;
-    
+
 
     .proj_avatar {
       margin: 0 auto;
@@ -135,17 +135,17 @@
 
     .input_wrapper {
       width: 40px;
-      
+
     }
 
     .navigation {
       gap: 12px;
-      
+
 
       .navItem {
         justify-content: center;
         text-align: center;
-        
+
 
         img {
           margin: 0 auto;

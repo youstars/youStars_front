@@ -388,7 +388,7 @@ await dispatch(updateClient({
               Всего заказов: {client.orders_total ?? 0}
             </p>
             <p className={styles.clientMetric}>
-              Средняя стоимость: {client.order_cost_avg ?? 0} ₽
+              Средняя стоимость: {Math.round(client.order_cost_avg) ?? 0} ₽
             </p>
             <p className={styles.clientMetric}>
               Настроение: {client.mood ?? "—"}

@@ -49,9 +49,9 @@ const borderColors: Record<TaskStatus, string> = {
 };
 
 const TaskCard: React.FC<{ task: Task; onClick: () => void }> = ({
-                                                                     task,
-                                                                     onClick,
-                                                                 }) => {
+                                                                 task,
+                                                                 onClick,
+                                                             }) => {
     const rawList = (task as any).assigned_specialist_data ?? [];
 
     const specialists: any[] = Array.isArray(rawList)
@@ -278,6 +278,14 @@ const Kanban: React.FC = () => {
                                     </div>
                                 </div>
                             ) : null}
+                            {statusKey === "to_do" && (
+                                <button
+                                    className={classes.addTaskButton}
+                                    onClick={() => setIsModalOpen(true)}
+                                >
+                                    Добавить задачу
+                                </button>
+                            )}
                         </div>
                     ))}
 
@@ -305,13 +313,6 @@ const Kanban: React.FC = () => {
                     </button>
                 </div>
             </div>
-
-            <button
-                className={classes.addTaskButton}
-                onClick={() => setIsModalOpen(true)}
-            >
-                Добавить задачу
-            </button>
 
             {isModalOpen && (
                 <AddTaskModal
