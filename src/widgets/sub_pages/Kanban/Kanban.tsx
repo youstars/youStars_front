@@ -112,7 +112,7 @@ const TaskCard: React.FC<{ task: Task; onClick: () => void }> = ({
                 </p>
                 <p className={classes.dates_paragraph}>
                     <strong>Начало статуса</strong>{" "}
-                    {new Date(task.start_date).toLocaleDateString()}
+                    {new Date(task.updated_at).toLocaleDateString()}
                 </p>
                 <p className={classes.dates_paragraph}>
                     <strong>Подзадачи</strong> {task.subtasks_count}

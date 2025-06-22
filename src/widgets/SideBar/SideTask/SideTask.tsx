@@ -3,7 +3,7 @@ import {
     Calendar,
     ChevronLeft,
     ChevronRight,
-    Upload,
+    Clock, Equal, CalendarRange, Dot,
 } from "lucide-react";
 import classes from "./SideTask.module.scss";
 import {useAppDispatch} from "shared/hooks/useAppDispatch";
@@ -16,6 +16,17 @@ import {
 import ModalCalendar from "widgets/Modals/ModalCalendar/ModalCalendar";
 import ChatsIcon from "shared/assets/icons/ChatsY.svg";
 import ChatIcon from "shared/assets/icons/chatY.svg";
+import PaperclipIcon from "shared/assets/icons/paperclip.svg";
+import type {Task} from "shared/types/tasks";
+
+interface CustomUser {
+    id: number;
+    full_name: string;
+}
+
+interface Specialist {
+    custom_user: CustomUser;
+}
 
 interface Props {
     id: number;
@@ -25,7 +36,7 @@ interface Props {
 
 const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
     const dispatch = useAppDispatch();
-    const task = useAppSelector((state) => selectTaskById(state, id));
+    const task = useAppSelector((state): Task | undefined => selectTaskById(state, id));
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -33,15 +44,10 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
 
     const [material, setMaterial] = useState("");
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-    const [selectedTaskId, setSelectedTaskId] = useState<string | number | null>(
-        null
-    );
+    const [selectedTaskId, setSelectedTaskId] = useState<string | number | null>(null);
 
-    const [startDate, setStartDate] = useState<string | null>(null);
     const [deadline, setDeadline] = useState<string | null>(null);
     const [created_at, setCreated_at] = useState<string | null>(null);
-    const [updated_at, setUpdated_at] = useState<string | null>(null);
-    const [satisfaction_rate, setSatisfaction_rate] = useState<string | null>(null);
 
     const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -56,8 +62,6 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
             setNotice(task.notice || "");
             setDeadline(task.deadline || "");
             setCreated_at(task.created_at || "");
-            setUpdated_at(task.updated_at || "");
-            setSatisfaction_rate(task.satisfaction_rate || "");
             setMaterial(task.material || "");
         }
     }, [task]);
@@ -76,7 +80,6 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isOpen, toggleSidebar]);
     const handleApplyDates = (start: Date | null, end: Date | null) => {
-        if (start) setStartDate(start.toISOString());
         if (end) setDeadline(end.toISOString());
         setIsCalendarOpen(false);
     };
@@ -98,7 +101,12 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
     };
 
     if (!task) return null;
-    const specialists = task.assigned_specialist_data ?? [];
+
+    const rawList = (task as any).assigned_specialist_data ?? [];
+
+    const specialists: any[] = Array.isArray(rawList)
+        ? rawList.map((item: any) => item?.custom_user ?? item)
+        : [];
 
     return (
         <div
@@ -154,6 +162,34 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
                             onChange={(e) => setTitle(e.target.value)}
                         />
 
+                        <div className={classes.specialists}>
+                            {specialists.length ? (
+                                specialists.map((u: any, idx: number) => (
+                                    <div key={u.id ?? idx} className={classes.specialist}>
+                                        {u.avatar ? (
+                                            <img src={u.avatar} alt={u.full_name ?? "avatar"}/>
+                                        ) : (
+                                            <div className={classes.avatarPlaceholder}>
+                                                {(u.full_name ?? "?")[0]}
+                                            </div>
+                                        )}
+                                        <span>{u.full_name ?? "Без имени"}</span>
+                                    </div>
+                                ))
+                            ) : (
+                                <span>—</span>
+                            )}
+                        </div>
+
+                        <div className={classes.project_name}>
+                            <p>Оценка времени</p>
+                            <div className={classes.fidback}>
+                                <Equal size={14} className={classes.icon}/>
+                                <p>{task.execution_period ?? "—"} ч.</p>
+                            </div>
+
+                        </div>
+
                         <div className={classes.project_name}>
                             <p>Дедлайн</p>
                             <div
@@ -161,14 +197,31 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
                                 onClick={() => {
                                     setSelectedTaskId(task.id);
                                     setIsCalendarOpen(true);
-                                }}
-                            >
-                                <Calendar size={14} className={classes.icon}/>
+                                }}>
+
+                                <CalendarRange size={14} className={classes.icon}/>
                                 <p>
                                     {deadline ? new Date(deadline).toLocaleDateString() : "—"}
                                 </p>
                             </div>
                         </div>
+
+                        <div className={classes.project_name}>
+                            <p>Начало статуса</p>
+                            <div
+                                className={classes.fidback}
+                                onClick={() => {
+                                    setSelectedTaskId(task.id);
+                                    setIsCalendarOpen(true);
+                                }}>
+
+                                <Dot size={14} className={classes.icon}/>
+                                <p>
+                                    {task.updated_at ? new Date(task.updated_at).toLocaleDateString() : "—"}
+                                </p>
+                            </div>
+                        </div>
+
 
                         <div className={classes.project_name}>
                             <p>Создано</p>
@@ -178,40 +231,13 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
                                     setSelectedTaskId(task.id);
                                 }}
                             >
+                                <Clock size={14} className={classes.icon}/>
                                 <p>
                                     {created_at ? new Date(created_at).toLocaleDateString() : "—"}
                                 </p>
                             </div>
                         </div>
 
-                        <div className={classes.sum}>
-                            <p>Специалисты</p>
-
-                            {specialists.length ? (
-                                <div className={classes.trackers}>
-                                    {specialists.map((item: any) => {
-                                        const user = item.custom_user;
-                                        const initials = (user.full_name ?? "")
-                                            .split(" ")
-                                            .map((s: string) => s[0])
-                                            .join("");
-
-                                        return (
-                                            <span
-                                                key={user.id}
-                                                className={classes.avatarCircle}
-                                                title={user.full_name}
-                                                aria-label={user.full_name}
-                                            >
-            {initials}
-          </span>
-                                        );
-                                    })}
-                                </div>
-                            ) : (
-                                <span>—</span>
-                            )}
-                        </div>
 
                         <div className={classes.blok_paragraph}>
                             <h3>
@@ -225,7 +251,7 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
                         </div>
 
                         <div className={classes.blok_paragraph}>
-                            <h3>Комментарий</h3>
+                            <h3>Комментарии по задаче</h3>
                             <textarea
                                 className={classes.titleInput}
                                 value={notice}
@@ -233,20 +259,12 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
                             />
                         </div>
 
-                        <div className={classes.blok_paragraph}>
-                            <h3>Материалы</h3>
-                            <input
-                                className={classes.titleInput}
-                                value={material}
-                                onChange={(e) => setMaterial(e.target.value)}
-                            />
-                        </div>
 
                         <div className={classes.uploadWrapper}>
                             <div className={classes.uploadHeader}>
                                 <p>Файлы</p>
                                 <div className={classes.uploadIcon}>
-                                    <Upload size={16} className={classes.icon}/>
+                                    <img src={PaperclipIcon} alt="Прикрепить файл" className={classes.icon}/>
                                 </div>
                             </div>
                             <div className={classes.uploadBody}>
@@ -275,7 +293,7 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
                 isOpen={isCalendarOpen}
                 onClose={() => setIsCalendarOpen(false)}
                 onApply={handleApplyDates}
-                tasks={[task]}
+                tasks={[task as any]}
                 selectedTaskId={selectedTaskId}
             />
         </div>
