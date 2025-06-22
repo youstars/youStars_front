@@ -1,6 +1,5 @@
 import React, {useEffect, useState, useRef} from "react";
 import {
-    Calendar,
     ChevronLeft,
     ChevronRight,
     Clock, Equal, CalendarRange, Dot,
@@ -19,14 +18,6 @@ import ChatIcon from "shared/assets/icons/chatY.svg";
 import PaperclipIcon from "shared/assets/icons/paperclip.svg";
 import type {Task} from "shared/types/tasks";
 
-interface CustomUser {
-    id: number;
-    full_name: string;
-}
-
-interface Specialist {
-    custom_user: CustomUser;
-}
 
 interface Props {
     id: number;
