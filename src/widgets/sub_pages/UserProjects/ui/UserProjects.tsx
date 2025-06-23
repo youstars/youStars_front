@@ -122,11 +122,11 @@ export default function UserProjects() {
           />
         </div>
         <div className={classes.status}>
-          <p>Статус</p>
+          <p>Трекер</p>
           <img
-            onClick={() => handleOpenModal("status", 0)}
+            onClick={() => handleOpenModal("tracker", 0)}
             src={status}
-            alt="Статус"
+            alt="Трекер"
           />
         </div>
         <div className={classes.status}>
@@ -174,7 +174,7 @@ export default function UserProjects() {
                 <p>{project.tracker.full_name || "Не назначен"}</p>
               </div>
               <div className={classes.project_end_date}>
-                <p>{project.deadline || "Не указана"}</p>
+                <p>{project.deadline.replace(/(\d{4})-(\d{2})-(\d{2}).*/, "$3.$2.$1") || "Не указана"}</p>
               </div>
               <div className={classes.project_students}>
                 <p>{getSpecialistsLabel(project)}</p>
