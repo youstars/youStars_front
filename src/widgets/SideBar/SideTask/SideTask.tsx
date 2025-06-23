@@ -1,6 +1,5 @@
 import React, {useEffect, useState, useRef} from "react";
 import {
-    Calendar,
     ChevronLeft,
     ChevronRight,
     Clock, Equal, CalendarRange, Dot,
@@ -22,10 +21,6 @@ import type {Task} from "shared/types/tasks";
 interface CustomUser {
     id: number;
     full_name: string;
-}
-
-interface Specialist {
-    custom_user: CustomUser;
 }
 
 interface Props {
@@ -163,30 +158,30 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
                         />
 
                         <div className={classes.specialistsRow}>
-                          {specialists.length ? (
-                            specialists.map((u: any, idx: number) => (
-                              <div
-                                key={u.id ?? idx}
-                                className={classes.avatarWrapper}
-                                title={u.full_name ?? "Без имени"}
-                                aria-label={u.full_name ?? "Без имени"}
-                              >
-                                {u.avatar ? (
-                                  <img
-                                    src={u.avatar}
-                                    alt={u.full_name ?? "Без имени"}
-                                    className={classes.avatarImg}
-                                  />
-                                ) : (
-                                  <div className={classes.avatarPlaceholder}>
-                                    {(u.full_name.replace(/(\b\w)\w*\s*/g, '$1') ?? "?")}
-                                  </div>
-                                )}
-                              </div>
-                            ))
-                          ) : (
-                            <span>—</span>
-                          )}
+                            {specialists.length ? (
+                                specialists.map((u: any, idx: number) => (
+                                    <div
+                                        key={u.id ?? idx}
+                                        className={classes.avatarWrapper}
+                                        title={u.full_name ?? "Без имени"}
+                                        aria-label={u.full_name ?? "Без имени"}
+                                    >
+                                        {u.avatar ? (
+                                            <img
+                                                src={u.avatar}
+                                                alt={u.full_name ?? "Без имени"}
+                                                className={classes.avatarImg}
+                                            />
+                                        ) : (
+                                            <div className={classes.avatarPlaceholder}>
+                                                {(u.full_name.replace(/(\b\w)\w*\s*/g, '$1') ?? "?")}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <span>—</span>
+                            )}
                         </div>
 
                         <div className={classes.project_name}>
