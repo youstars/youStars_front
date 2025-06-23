@@ -4,15 +4,20 @@
   background: var(--dark-grey);
   position: relative;
   overflow: hidden;
+  display: flex;
+  justify-content: center; /* центрируем группу колонок */
 }
 
 .statusColumnsWrapper {
-  width: calc(214px * 4 + 160px);
+  width: 100%;
   overflow: hidden;
   margin: 0 auto;
+
 }
 
 .statusColumns {
+  width: max-content;
+  margin: 0 auto;
   display: flex;
   height: auto;
   gap: 12px;

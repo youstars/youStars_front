@@ -216,8 +216,8 @@ const Kanban: React.FC = () => {
     }, [dispatch, currentProjectId]);
 
     const canScrollLeft = startIndex > 0;
-    const canScrollRight = startIndex < orderedStatusKeys.length - 4;
-    const visibleStatuses = orderedStatusKeys.slice(startIndex, startIndex + 4);
+    const canScrollRight = startIndex < orderedStatusKeys.length - 6;
+    const visibleStatuses = orderedStatusKeys.slice(startIndex, startIndex + 6);
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
