@@ -112,7 +112,7 @@ const TaskCard: React.FC<{ task: Task; onClick: () => void }> = ({
                 </p>
                 <p className={classes.dates_paragraph}>
                     <strong>Начало статуса</strong>{" "}
-                    {new Date(task.start_date).toLocaleDateString()}
+                    {new Date(task.updated_at).toLocaleDateString()}
                 </p>
                 <p className={classes.dates_paragraph}>
                     <strong>Подзадачи</strong> {task.subtasks_count}
@@ -133,6 +133,17 @@ const Kanban: React.FC = () => {
         (state: RootState) => state.tasks.tasks
     );
     const [startIndex, setStartIndex] = useState(0);
+    // Сколько колонок помещается по ширине окна (динамический расчёт)
+    const [columnsCount, setColumnsCount] = useState(() => {
+        const COLUMN_WIDTH = 300; // px — ширина одной колонки (совпадает с CSS)
+        if (typeof window !== "undefined") {
+            return Math.min(
+                orderedStatusKeys.length,
+                Math.max(1, Math.floor(window.innerWidth / COLUMN_WIDTH))
+            );
+        }
+        return 1; // SSR fallback
+    });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [hoveredStatus, setHoveredStatus] = useState<TaskStatus | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -144,6 +155,26 @@ const Kanban: React.FC = () => {
             console.error("Ошибка при получении задач:", err)
         );
     }, [dispatch]);
+
+    // перерасчёт columnsCount при ресайзе
+    useEffect(() => {
+        const COLUMN_WIDTH_PX = 300; // px — ширина одной колонки
+        const updateCount = () => {
+            const count = Math.max(1, Math.floor(window.innerWidth / COLUMN_WIDTH_PX));
+            setColumnsCount(
+                count > orderedStatusKeys.length ? orderedStatusKeys.length : count
+            );
+        };
+        updateCount();               // первичный расчёт
+        window.addEventListener("resize", updateCount);
+        return () => window.removeEventListener("resize", updateCount);
+    }, []);
+
+    useEffect(() => {
+        if (startIndex > orderedStatusKeys.length - columnsCount) {
+            setStartIndex(Math.max(0, orderedStatusKeys.length - columnsCount));
+        }
+    }, [columnsCount, startIndex]);
 
     console.log(tasks);
     useEffect(() => {
@@ -216,8 +247,8 @@ const Kanban: React.FC = () => {
     }, [dispatch, currentProjectId]);
 
     const canScrollLeft = startIndex > 0;
-    const canScrollRight = startIndex < orderedStatusKeys.length - 4;
-    const visibleStatuses = orderedStatusKeys.slice(startIndex, startIndex + 4);
+    const canScrollRight = startIndex < orderedStatusKeys.length - columnsCount;
+    const visibleStatuses = orderedStatusKeys.slice(startIndex, startIndex + columnsCount);
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -278,6 +309,14 @@ const Kanban: React.FC = () => {
                                     </div>
                                 </div>
                             ) : null}
+                            {statusKey === "to_do" && (
+                                <button
+                                    className={classes.addTaskButton}
+                                    onClick={() => setIsModalOpen(true)}
+                                >
+                                    Добавить задачу
+                                </button>
+                            )}
                         </div>
                     ))}
 
@@ -305,13 +344,6 @@ const Kanban: React.FC = () => {
                     </button>
                 </div>
             </div>
-
-            <button
-                className={classes.addTaskButton}
-                onClick={() => setIsModalOpen(true)}
-            >
-                Добавить задачу
-            </button>
 
             {isModalOpen && (
                 <AddTaskModal

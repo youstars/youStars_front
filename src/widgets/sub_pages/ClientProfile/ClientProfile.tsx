@@ -76,7 +76,6 @@ interface ClientProfileProps {
 
 export const ClientProfile: React.FC<ClientProfileProps> = ({
   client: externalClient,
-  isSelf,
 }) => {
 
 
@@ -90,7 +89,7 @@ const isAdmin = me?.role === "Admin";
   const meError = useAppSelector((state) => state.me.error);
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
-  const { client, loading, error } = useClientProfileData(externalClient);
+  const { client, loading } = useClientProfileData(externalClient);
   console.log("в компоненте client.position =", client?.position);
 
   const [edit, setEdit] = useState(false);
@@ -388,7 +387,7 @@ await dispatch(updateClient({
               Всего заказов: {client.orders_total ?? 0}
             </p>
             <p className={styles.clientMetric}>
-              Средняя стоимость: {client.order_cost_avg ?? 0} ₽
+              Средняя стоимость: {Math.round(client.order_cost_avg) ?? 0} ₽
             </p>
             <p className={styles.clientMetric}>
               Настроение: {client.mood ?? "—"}
