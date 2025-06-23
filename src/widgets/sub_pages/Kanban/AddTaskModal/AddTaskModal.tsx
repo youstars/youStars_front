@@ -108,15 +108,15 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
                         {tracker && (
                             <div className={styles.trackerBlock}>
                                 <div className={styles.trackerInfo}>
-                                    <div className={styles.avatar}>
+                                    <div>
                                         {tracker.avatar ? (
                                             <img
                                                 src={tracker.avatar}
                                                 alt={tracker.full_name}
                                             />
                                         ) : (
-                                            <div className={styles.avatarFallback}>
-                                                {tracker.full_name[0]}
+                                            <div className={styles.avatarSmall}>
+                                                {tracker.full_name.replace(/(\b\w)\w*\s*/g, '$1')}
                                             </div>
                                         )}
                                     </div>
