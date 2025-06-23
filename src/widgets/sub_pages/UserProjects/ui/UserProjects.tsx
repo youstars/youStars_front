@@ -28,19 +28,20 @@ export default function UserProjects() {
   const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
   const dispatch = useDispatch<AppDispatch>();
 
-  const getData = useSelector((state: any) => state.projects.projects);
+const getData = useSelector((state: any) => state.projects.list);
+
 
   console.log("projectssqwq", getData);
 
   const getSpecialistsLabel = (project: any) => {
-    // API иногда присылает specialists либо students; нормализуем
+
     const list = project.specialists ?? project.students ?? [];
     if (Array.isArray(list) && list.length) {
       return list
         .map((s: any) => s?.custom_user?.full_name || s?.full_name || "Без имени")
         .join(", ");
     }
-    // если сервер шлёт count
+
     if (typeof list === "number" && list > 0) {
       return `${list} специалист(ов)`;
     }

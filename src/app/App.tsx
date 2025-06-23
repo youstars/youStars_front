@@ -93,6 +93,7 @@ if (!isAuthed && !isPublic && !isLoading) {
             <Route path="chats" element={<Chats />} />
             <Route path="auth_admin" element={<FormAuthAdmin />} />
             <Route path="me" element={<ProfilePage />} />
+  
             <Route path="overview" element={<Overview />}>
               <Route path="gantt" element={<Gantt />} />
               <Route path="kanban" element={<Kanban />} />

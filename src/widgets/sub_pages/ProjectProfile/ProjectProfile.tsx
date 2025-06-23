@@ -16,11 +16,11 @@ import CustomTable from "shared/UI/CustomTable/CustomTable";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { useSelector } from "react-redux";
-import { updateProjectStatus } from "shared/store/slices/projectSlice";
+import { updateProjectStatus } from "shared/store/slices/projectsSlice";
 import {
   getProjectById,
-  selectProject,
-} from "shared/store/slices/projectSlice";
+  selectCurrentProject,
+} from "shared/store/slices/projectsSlice";
 import user_icon from "shared/images/user_icon.svg";
 import { TrackerNotes } from "../ClientProfile/components/TrackerNotes/TrackerNotes";
 import { uploadProjectFile } from "shared/api/files";
@@ -29,7 +29,9 @@ import OrdersDropdown from "widgets/OrderDropdown/OrderDropdown";
 export default function ProjectProfile() {
   const { id } = useParams();
   const dispatch = useAppDispatch();
-  const { project } = useSelector(selectProject);
+const project = useSelector(selectCurrentProject);
+
+  
   const steps = [
     "Обработка",
     "Метчинг",
