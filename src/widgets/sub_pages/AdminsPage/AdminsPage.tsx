@@ -15,6 +15,7 @@ import {
 } from "shared/store/slices/trackersSlice";
 import { AppDispatch } from "shared/store";
 import Avatar from "shared/UI/Avatar/Avatar";
+import CreateButton from "shared/UI/CreateButton/CreateButton";
 
 const AdminsPage = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -90,6 +91,7 @@ const AdminsPage = () => {
 
         <div className={classes.sum_clients}>
           <p> Найдено {filteredAdmins.length} трекеров:</p>
+          <CreateButton label="Добавить трекера" onClick={() => navigate("/manager/auth_admin")}/>
         </div>
 
         {filteredAdmins.map((item: any) => (

@@ -89,12 +89,10 @@ if (!isAuthed && !isPublic && !isLoading) {
             <Route path="library" element={<Library />} />
             <Route path="admins" element={<AdminsPage />} />
             <Route path="trackers/:id" element={<TrackerProfile />} />
-
             <Route path="settings" element={<Settings />} />
             <Route path="chats" element={<Chats />} />
             <Route path="auth_admin" element={<FormAuthAdmin />} />
             <Route path="me" element={<ProfilePage />} />
-    
             <Route path="overview" element={<Overview />}>
               <Route path="gantt" element={<Gantt />} />
               <Route path="kanban" element={<Kanban />} />

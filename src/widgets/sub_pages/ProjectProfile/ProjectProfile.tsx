@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./ProjectProfile.module.scss";
 import Avatar from "shared/UI/Avatar/Avatar";
 import Checklist from "shared/assets/icons/stripesY.svg";
@@ -16,6 +16,7 @@ import CustomTable from "shared/UI/CustomTable/CustomTable";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { useSelector } from "react-redux";
+import { updateProjectStatus } from "shared/store/slices/projectSlice";
 import {
   getProjectById,
   selectProject,
@@ -23,8 +24,12 @@ import {
 import user_icon from "shared/images/user_icon.svg";
 import { TrackerNotes } from "../ClientProfile/components/TrackerNotes/TrackerNotes";
 import { uploadProjectFile } from "shared/api/files";
+import OrdersDropdown from "widgets/OrderDropdown/OrderDropdown";
 
 export default function ProjectProfile() {
+  const { id } = useParams();
+  const dispatch = useAppDispatch();
+  const { project } = useSelector(selectProject);
   const steps = [
     "Обработка",
     "Метчинг",
@@ -35,10 +40,20 @@ export default function ProjectProfile() {
     "Отзыв",
   ];
 
-  const { id } = useParams();
-  const dispatch = useAppDispatch();
+  const statusOptions = [
+    { value: "in_progress", label: "В работе" },
+    { value: "completed", label: "Завершён" },
+  ];
 
-  const { project } = useSelector(selectProject);
+  const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
+  const toggleStatusDropdown = () => {
+    setIsStatusDropdownOpen((prev) => !prev);
+  };
+  const handleStatusChange = async (newStatus: string) => {
+    if (!project?.id || project.status === newStatus) return;
+    await dispatch(updateProjectStatus({ id: project.id, status: newStatus }));
+    setIsStatusDropdownOpen(false);
+  };
 
   useEffect(() => {
     if (id) {
@@ -46,8 +61,14 @@ export default function ProjectProfile() {
     }
   }, [id, dispatch]);
 
+  const handleStatusToggle = async () => {
+    if (!project?.id || !project.status) return;
+    const newStatus =
+      project.status === "in_progress" ? "completed" : "in_progress";
+    await dispatch(updateProjectStatus({ id: project.id, status: newStatus }));
+  };
 
-const handleFileSelect = async (file: File) => {
+  const handleFileSelect = async (file: File) => {
     try {
       await uploadProjectFile(file, file.name, project.id, "Описание");
     } catch (error) {
@@ -142,9 +163,29 @@ const handleFileSelect = async (file: File) => {
         </div>
 
         <div className={styles.buttons}>
-          <IconButton icon={Checklist} alt="checklist" size="lg"  border="none" />
-          <IconButton icon={GroupChat} alt="group chat" size="lg" border="none" />
-          <IconButton icon={Chat} alt="chat" size="lg" border="none"  />
+          <div style={{ position: "relative" }}>
+            <IconButton
+              icon={Checklist}
+              alt="checklist"
+              size="lg"
+              border="none"
+              onClick={toggleStatusDropdown}
+            />
+            <OrdersDropdown
+              items={statusOptions}
+              isOpen={isStatusDropdownOpen}
+              onSelect={(status) => handleStatusChange(status.value)}
+              renderItem={(status) => status.label}
+            />
+          </div>
+
+          <IconButton
+            icon={GroupChat}
+            alt="group chat"
+            size="lg"
+            border="none"
+          />
+          <IconButton icon={Chat} alt="chat" size="lg" border="none" />
         </div>
       </div>
 
@@ -174,7 +215,7 @@ const handleFileSelect = async (file: File) => {
             </p>
           </div>
         </div>
-          
+
         <div className={styles.projectFields}>
           <TextAreaField
             label="Задача проекта"
@@ -198,7 +239,7 @@ const handleFileSelect = async (file: File) => {
           />
         </div>
       </div>
-                <TrackerNotes />
+      <TrackerNotes />
       <div className={styles.teamProject}>
         <h1>Команда проекта</h1>
         <CustomTable
@@ -215,8 +256,10 @@ const handleFileSelect = async (file: File) => {
         />
       </div>
       <div className={styles.projectFiles}>
-        <ProjectFiles files={project?.file || []} onFileSelect={handleFileSelect} />
-
+        <ProjectFiles
+          files={project?.file || []}
+          onFileSelect={handleFileSelect}
+        />
       </div>
     </div>
   );

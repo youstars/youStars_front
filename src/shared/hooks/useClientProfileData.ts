@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { useAppDispatch } from "./useAppDispatch";
 import { useAppSelector } from "./useAppSelector";
 import { getClientById } from "shared/store/slices/clientSlice";
-
 export function useClientProfileData(externalClient?: any) {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();

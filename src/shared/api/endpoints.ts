@@ -6,6 +6,7 @@ export const API_ENDPOINTS = {
     logout: "auth/token/logout/",
     registerSpecialist: "auth/users/specialist/registration/",
     registerClient: "auth/users/client/registration/",
+    registerAdmin: "/auth/users/admin/registration/",
   },
 };
 export const API_CLIENT = {

@@ -22,6 +22,9 @@ function Specialists() {
   const userId = Number(Cookies.get("user_role_id"));
   console.log("userId", userId);
 
+const [isStatusOpen, setIsStatusOpen] = useState(false);
+const statusRef = useRef(null);
+
 
   
 
