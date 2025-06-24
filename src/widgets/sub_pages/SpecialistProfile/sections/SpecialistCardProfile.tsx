@@ -30,6 +30,7 @@ import {
 } from "shared/types/specialist";
 import Header from "./Header/Header";
 import About from "./About/About";
+import WorkExperience from "./WorkExperience/WorkExperience";
 
 const SpecialistCard: React.FC<SpecialistCardProps> = ({
                                                            specialist,
@@ -580,101 +581,12 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
                         />
                     )}
                 </div>
-                <div className={styles.experienceBlock}>
-                    <h3 className={styles.title}>Опыт работы</h3>
-                    {isEditMode ? (
-                        <>
-                            {Array.isArray(workExperiences) && workExperiences.length > 0 ? (
-                                workExperiences.map((exp, index) => (
-                                    <div key={exp.id || `new-${index}`} className={styles.item}>
-                                        <input
-                                            type="text"
-                                            value={exp.company_name || ""}
-                                            onChange={(e) =>
-                                                handleExperienceChange(
-                                                    index,
-                                                    "company_name",
-                                                    e.target.value
-                                                )
-                                            }
-                                            placeholder="Компания"
-                                            className={styles.inputField}
-                                        />
-                                        <input
-                                            type="text"
-                                            onChange={(e) =>
-                                                handleExperienceChange(
-                                                    index,
-                                                    "position",
-                                                    e.target.value
-                                                )
-                                            }
-                                            placeholder="Должность"
-                                            className={styles.inputField}
-                                        />
-                                        <input
-                                            type="date"
-                                            value={exp.started_at || ""}
-                                            onChange={(e) =>
-                                                handleExperienceChange(
-                                                    index,
-                                                    "started_at",
-                                                    e.target.value
-                                                )
-                                            }
-                                            className={styles.inputField}
-                                        />
-                                        <input
-                                            type="date"
-                                            value={exp.left_at || ""}
-                                            onChange={(e) =>
-                                                handleExperienceChange(index, "left_at", e.target.value)
-                                            }
-                                            className={styles.inputField}
-                                        />
-                                        <textarea
-                                            value={exp.duties || ""}
-                                            onChange={(e) =>
-                                                handleExperienceChange(index, "duties", e.target.value)
-                                            }
-                                            placeholder="Обязанности"
-                                            className={styles.inputField}
-                                        />
-                                    </div>
-                                ))
-                            ) : (
-                                <p>Нет опыта работы для редактирования</p>
-                            )}
-                            <button onClick={addExperience} className={styles.editButton}>
-                                Добавить опыт
-                            </button>
-                        </>
-                    ) : Array.isArray(specialist.work_experiences) &&
-                    specialist.work_experiences.length > 0 ? (
-                        specialist.work_experiences.map((job, index) => (
-                            <div className={styles.item} key={index}>
-                                <p className={styles.label}>
-                                    {job.place_of_work?.company_name || "Компания не указана"}
-                                </p>
-                                <p className={styles.text}>
-                                    {job.position || "Должность не указана"},{" "}
-                                    {job.started_at || "дата начала не указана"} —{" "}
-                                    {job.left_at || "по настоящее время"}
-                                </p>
-                                {job.duties && (
-                                    <p className={styles.text}>Обязанности: {job.duties}</p>
-                                )}
-                            </div>
-                        ))
-                    ) : (
-                        <IconButton
-                            alt="Добавить"
-                            border="none"
-                            icon={Plus}
-                            onClick={() => setIsEditMode(true)}
-                        />
-                    )}
-                </div>
+                <WorkExperience
+                    isEditMode={isEditMode}
+                    workExperiences={workExperiences}
+                    onChange={handleExperienceChange}
+                    onAdd={addExperience}
+                    />
             </div>
         </div>
     );
