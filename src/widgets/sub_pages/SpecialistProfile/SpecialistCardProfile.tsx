@@ -6,8 +6,6 @@ import {useAppDispatch} from "shared/hooks/useAppDispatch";
 import {useAppSelector} from "shared/hooks/useAppSelector";
 import TagSection from "./sections/Other/TagSelection/TagSection";
 import ProjectFiles from "shared/UI/ProjectFiles/ProjectFiles";
-import RateItem from "shared/UI/RateItem/RateItem";
-import CustomDivTable from "shared/UI/CutomDivTable/CustomDivTable";
 import {TrackerNotes} from "widgets/sub_pages/ClientProfile/components/TrackerNotes/TrackerNotes";
 import {updateMe} from "shared/store/slices/meSlice";
 import Spinner from "shared/UI/Spinner/Spinner";
@@ -31,7 +29,10 @@ import {
 import Header from "./sections/Header/Header";
 import About from "./sections/About/About";
 import WorkExperience from "./sections/WorkExperience/WorkExperience";
-import FilesAndTags from "widgets/sub_pages/SpecialistProfile/sections/FilesAndTags/FilesAndTags";
+import FilesAndTags from "./sections/FilesAndTags/FilesAndTags";
+import ActiveProjects from "./sections/Projects/ActiveProjects";
+import FinishedProjects from "./sections/Projects/FinishedProjects";
+import RateBlock from "./sections/RateBlock/RateBlock";
 
 const SpecialistCard: React.FC<SpecialistCardProps> = ({
                                                            specialist,
@@ -137,26 +138,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
         ]);
     };
 
-    const hourlyRateOptions = [
-        "Not defined",
-        "From 200 rub",
-        "200-300 rub",
-        "300-500 rub",
-        "500-700 rub",
-        "700-1000 rub",
-        "1000-1500 rub",
-        "1500-3000 rub",
-        "More than 3000 rub",
-    ];
-    const hoursPerWeekOptions = [
-        "Not defined",
-        "Up to 5 hours",
-        "5-10 hours",
-        "10-20 hours",
-        "20-30 hours",
-        "30-40 hours",
-        "More than 40 hours",
-    ];
 
     if (!specialist?.custom_user) return <Spinner/>;
 
@@ -440,115 +421,16 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
                     onFileSelect={handleFileSelect}
                     onFileDelete={handleDeleteFile}
                 />
-                <div className={styles.rateBlock}>
-                    <RateItem
-                        title="Примерная ставка в час"
-                        value={
-                            isEditMode ? (
-                                <select
-                                    className={styles.inputField}
-                                    value={formData.hourlyRate}
-                                    onChange={(e) =>
-                                        handleInputChange("hourlyRate", e.target.value)
-                                    }
-                                >
-                                    {hourlyRateOptions.map((option) => (
-                                        <option key={option} value={option}>
-                                            {option}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : formData.hourlyRate &&
-                            formData.hourlyRate !== "Not defined" ? (
-                                formData.hourlyRate
-                            ) : (
-                                "Не указано"
-                            )
-                        }
-                    />
-                    <RateItem
-                        title="Занятость в неделю"
-                        value={
-                            isEditMode ? (
-                                <select
-                                    className={styles.inputField}
-                                    value={formData.hoursPerWeek}
-                                    onChange={(e) =>
-                                        handleInputChange("hoursPerWeek", e.target.value)
-                                    }
-                                >
-                                    {hoursPerWeekOptions.map((option) => (
-                                        <option key={option} value={option}>
-                                            {option}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : formData.hoursPerWeek &&
-                            formData.hoursPerWeek !== "Not defined" ? (
-                                formData.hoursPerWeek
-                            ) : (
-                                "Не указано"
-                            )
-                        }
-                    />
-                    <RateItem
-                        title="Часовой пояс"
-                        value={custom_user.time_zone || "Не указано"}
-                    />
-                </div>
+                <RateBlock
+                    isEditMode={isEditMode}
+                    formData={formData}
+                    onFieldChange={handleInputChange}
+                    customUser={custom_user}
+                />
                 <div className={styles.projects}>
-                    {specialistProjects.length === 0 ? (
-                        <p>Нет активных проектов</p>
-                    ) : (
-                        <CustomDivTable
-                            activeProjects={activeProjects}
-                            headers={[
-                                "Название",
-                                "Клиент",
-                                "Трекер",
-                                "Таймлайн",
-                                "Сумма",
-                                "Осталось",
-                            ]}
-                            rows={activeProjects.map((project) => [
-                                project.name || "Нет названия",
-                                project.client || "—",
-                                project.tracker || "—",
-                                project.timeline || "Нет дат",
-                                project.task_total_sum?.toString() ?? "Нет суммы",
-                                project.tasks_left?.toString() ?? "Нет данных",
-                            ])}
-                        />
-                    )}
+                    <ActiveProjects projects={activeProjects}/>
                 </div>
-                {finishedProjects.length > 0 && (
-                    <div className={styles.finishedProjects}>
-                        <div className={styles.header}>
-                            <h3 className={styles.title}>Выполненные проекты</h3>
-                            <span className={styles.count}>{finishedProjects.length}</span>
-                        </div>
-                        <div className={styles.table}>
-                            <div className={`${styles.row} ${styles.head}`}>
-                                <div>Название</div>
-                                <div>Клиент</div>
-                                <div>Трекер</div>
-                                <div>Таймлайн</div>
-                                <div>Оценка трекеров</div>
-                                <div>Оценка заказчика</div>
-                            </div>
-                            {finishedProjects.map((project, index) => (
-                                <div className={styles.row} key={index}>
-                                    <div>{project.name || "Нет названия"}</div>
-                                    <div>{project.client || "—"}</div>
-                                    <div>{project.tracker || "—"}</div>
-                                    <div>{project.timeline || "Нет дат"}</div>
-                                    <div>{project.tracker_rating || "0"}</div>
-                                    <div>{project.client_rating || "0"}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <FinishedProjects projects={finishedProjects}/>
                 <div className={styles.trackerNotes}>
                     <TrackerNotes/>
                 </div>
@@ -579,7 +461,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
                     workExperiences={workExperiences}
                     onChange={handleExperienceChange}
                     onAdd={addExperience}
-                    />
+                />
             </div>
         </div>
     );

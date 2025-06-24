@@ -1,0 +1,57 @@
+.projects,
+.finishedProjects {
+
+  margin-top: 30px;
+  background-color: var(--dark-lighter-bg-color);
+  border-radius: 12px;
+  padding: 20px;
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .count {
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+
+  .subinfo {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #b0b0b0;
+    margin-bottom: 16px;
+  }
+
+  .table {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-x: auto;
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: #1f1f1f;
+      font-size: 13px;
+      align-items: center;
+
+      &.head {
+        background: transparent;
+        color: #b0b0b0;
+        font-weight: 600;
+      }
+    }
+  }
+}
