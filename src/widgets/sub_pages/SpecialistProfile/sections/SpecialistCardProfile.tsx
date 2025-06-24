@@ -414,6 +414,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
           onChatClick={handleChatClick}
           isAdmin={isAdmin}
           isSelfViewing={isSelfViewing}
+          specialist={specialist}
         />
         <div className={styles.about}>
           <h3 className={styles.title}>О специалисте</h3>
