@@ -9,7 +9,7 @@ import Mail from "shared/images/clientImgs/mail.svg";
 import Web from "shared/images/clientImgs/network.svg";
 import ProjectFiles, { FileItem } from "shared/UI/ProjectFiles/ProjectFiles";
 import RateItem from "shared/UI/RateItem/RateItem";
-import TagSection from "widgets/sub_pages/SpecialistProfile/sections/TagSection";
+import TagSection from "widgets/sub_pages/SpecialistProfile/sections/Other/TagSelection/TagSection";
 import { TrackerNotes } from "widgets/sub_pages/ClientProfile/components/TrackerNotes/TrackerNotes";
 
 const TrackerProfile = () => {

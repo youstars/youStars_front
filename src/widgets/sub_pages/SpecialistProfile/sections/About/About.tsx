@@ -1,5 +1,5 @@
 import styles from "./About.module.scss";
-import TagSection from "../TagSection";
+import TagSection from "../Other/TagSelection/TagSection";
 import IconButton from "shared/UI/IconButton/IconButton";
 import Plus from "shared/assets/icons/plus.svg";
 import type { Specialist, SpecialistFormData } from "shared/types/specialist";

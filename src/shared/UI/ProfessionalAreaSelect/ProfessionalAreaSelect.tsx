@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import styles from "../../../widgets/sub_pages/SpecialistProfile/sections/EducationForm.module.scss";
+import styles from "widgets/sub_pages/SpecialistProfile/sections/Other/EducationForm/EducationForm.module.scss";
 import { Option } from "shared/types/professionalArea";
 import { ProfessionalArea } from "shared/types/professionalArea";
 import { ProfessionalAreaSelectProps } from "shared/types/professionalArea";

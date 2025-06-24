@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useAppDispatch} from "shared/hooks/useAppDispatch";
 import {useAppSelector} from "shared/hooks/useAppSelector";
-import TagSection from "./TagSection";
+import TagSection from "./sections/Other/TagSelection/TagSection";
 import ProjectFiles from "shared/UI/ProjectFiles/ProjectFiles";
 import RateItem from "shared/UI/RateItem/RateItem";
 import CustomDivTable from "shared/UI/CutomDivTable/CustomDivTable";
@@ -19,7 +19,7 @@ import {
     updateProfessionalProfile,
     updateSpecialist,
 } from "shared/store/slices/specialistSlice";
-import EducationForm from "./EducationForm";
+import EducationForm from "./sections/Other/EducationForm/EducationForm";
 import {selectMe} from "shared/store/slices/meSlice";
 import {getProfessionalAreas} from "shared/store/slices/specialistSlice";
 import {Service} from "shared/types/professionalArea";
@@ -28,9 +28,10 @@ import {
     WorkExperienceFormData,
     SpecialistCardProps,
 } from "shared/types/specialist";
-import Header from "./Header/Header";
-import About from "./About/About";
-import WorkExperience from "./WorkExperience/WorkExperience";
+import Header from "./sections/Header/Header";
+import About from "./sections/About/About";
+import WorkExperience from "./sections/WorkExperience/WorkExperience";
+import FilesAndTags from "widgets/sub_pages/SpecialistProfile/sections/FilesAndTags/FilesAndTags";
 
 const SpecialistCard: React.FC<SpecialistCardProps> = ({
                                                            specialist,
@@ -425,28 +426,20 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
                     specialist={specialist}
                     onEnterEdit={() => setIsEditMode(true)}
                 />
-                <div className={styles.experience}>
-                    <ProjectFiles
-                        files={specialist.file?.map((f) => ({
-                            id: f.id,
-                            name: f.name,
-                            fileUrl: f.file,
-                        }))}
-                        onFileSelect={handleFileSelect}
-                        onFileDelete={handleDeleteFile}
-                    />
-
-                    <TagSection
-                        title="Опыт в нишах"
-                        tags={
-                            specialist.professional_profiles
-                                ?.map((p) => p.profession?.name)
-                                .filter(Boolean) || []
-                        }
-                        align="center"
-                        className={styles.column}
-                    />
-                </div>
+                <FilesAndTags
+                    files={specialist.file?.map((f) => ({
+                        id: f.id,
+                        name: f.name,
+                        fileUrl: f.file,
+                    }))}
+                    tags={
+                        specialist.professional_profiles
+                            ?.map((p) => p.profession?.name)
+                            .filter(Boolean) || []
+                    }
+                    onFileSelect={handleFileSelect}
+                    onFileDelete={handleDeleteFile}
+                />
                 <div className={styles.rateBlock}>
                     <RateItem
                         title="Примерная ставка в час"

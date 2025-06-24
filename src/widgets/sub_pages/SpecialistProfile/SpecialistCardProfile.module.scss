@@ -106,19 +106,7 @@
     }
   }
 
-  .experience {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-top: 30px;
 
-
-    > * {
-      flex: 1 1 calc(50% - 10px);
-      min-width: 300px;
-    }
-
-  }
 
   .rateBlock {
     display: flex;

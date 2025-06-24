@@ -13,7 +13,7 @@ import ProjectProfile from "widgets/sub_pages/ProjectProfile/ProjectProfile";
 import BusinessApplication from "widgets/sub_pages/BusinessApplication/BusinessApplication";
 import Funnel from "widgets/sub_pages/Funnel/Funnel";
 import Gantt from "widgets/sub_pages/Gantt/Gantt";
-import SpecialistProfile from "widgets/sub_pages/SpecialistProfile/UserProfilePage";
+import SpecialistProfile from "widgets/sub_pages/SpecialistProfile/sections/Other/UserProfilePage";
 import { ClientProfile } from "widgets/sub_pages/ClientProfile/ClientProfile";
 import Chats from "widgets/sub_pages/Chats/Chats";
 import Specialists from "widgets/sub_pages/Specialists/Specialists";
