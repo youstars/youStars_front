@@ -177,7 +177,7 @@ export default function UserProjects() {
                             </td>
                             <td>{project.tracker?.full_name || "Не назначен"}</td>
                             <td>{getSpecialistsLabel(project)}</td>
-                            <td>{project.client.full_name || "Не указана"}</td>
+                            <td>{project.client?.full_name || "Не указана"}</td>
                             <td>
                                 <img src={message} alt="Chat icon"/>
                             </td>
