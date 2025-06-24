@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "shared/store";
 import { getCookie } from "shared/utils/cookies";
 import axiosInstance from "shared/api/api";
+import { API_ME } from "shared/api/endpoints";
 
 interface MeUser {
   id: number;
@@ -32,7 +33,7 @@ export const getMe = createAsyncThunk<MeUser, void, { rejectValue: string }>(
   "me/get",
   async (_, thunkAPI) => {
     try {
-      const response = await axiosInstance.get("/auth/users/me/");
+      const response = await axiosInstance.get(API_ME.get);
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue("Не удалось получить пользователя");
@@ -47,9 +48,9 @@ export const updateMe = createAsyncThunk<MeUser, Partial<MeUser>, { rejectValue:
       const role = getCookie("user_role")?.toLowerCase();
 
       let endpoint = "";
-      if (role === "client") endpoint = "/users/clients/me/";
-      else if (role === "specialist") endpoint = "/users/specialists/me/";
-      else if (role === "admin") endpoint = "/users/admins/me/";
+      if (role === "client") endpoint = API_ME.update.client;
+      else if (role === "specialist") endpoint = API_ME.update.specialist;
+      else if (role === "admin") endpoint = API_ME.update.admin;
       else return thunkAPI.rejectWithValue("Неизвестная роль");
 
       const response = await axiosInstance.patch(endpoint, updateData);
@@ -59,7 +60,6 @@ export const updateMe = createAsyncThunk<MeUser, Partial<MeUser>, { rejectValue:
     }
   }
 );
-
 const meSlice = createSlice({
   name: "me",
   initialState,

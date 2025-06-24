@@ -2,6 +2,7 @@ import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
 import axiosInstance from "shared/api/api";
 import {getToken} from "shared/utils/cookies";
 import {Order} from "../../types/orders";
+import { API_ORDERS } from "shared/api/endpoints";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -13,43 +14,43 @@ interface GetOrdersResponse {
 }
 
 export const getOrders = createAsyncThunk<Order[], void, { rejectValue: string }>(
-    "funnel/getOrders",
-    async (_, {rejectWithValue}) => {
-        try {
-            const token = getToken();
-            if (!token) return rejectWithValue("Токен отсутствует");
+  "funnel/getOrders",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      if (!token) return rejectWithValue("Токен отсутствует");
 
-            const response = await axiosInstance.get<GetOrdersResponse>(`${API_BASE_URL}orders/`, {
-                headers: {Authorization: `Bearer ${token}`},
-            });
-
-            return response.data.results;
-        } catch (error: any) {
-            console.error("Ошибка запроса /orders:", error);
-            return rejectWithValue(error.response?.data || "Произошла ошибка при загрузке заявок");
+      const response = await axiosInstance.get<GetOrdersResponse>(
+        `${API_BASE_URL}${API_ORDERS.list}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
+      );
+
+      return response.data.results;
+    } catch (error: any) {
+      console.error("Ошибка запроса /orders:", error);
+      return rejectWithValue(error.response?.data || "Произошла ошибка при загрузке заявок");
     }
+  }
 );
 
 export const createOrder = createAsyncThunk<void, Partial<Order>, { rejectValue: string }>(
-    "funnel/createOrder",
-    async (orderData, {rejectWithValue}) => {
-        try {
-            const token = getToken();
-            if (!token) return rejectWithValue("Токен отсутствует");
+  "funnel/createOrder",
+  async (orderData, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      if (!token) return rejectWithValue("Токен отсутствует");
 
-            await axiosInstance.post(`${API_BASE_URL}orders/`, orderData, {
-                headers: {Authorization: `Bearer ${token}`},
-            });
-        } catch (error: any) {
-            console.error("Ошибка при создании заявки:", error);
-            return rejectWithValue(error.response?.data || "Ошибка при создании заявки");
-        }
+      await axiosInstance.post(`${API_BASE_URL}${API_ORDERS.create}`, orderData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (error: any) {
+      console.error("Ошибка при создании заявки:", error);
+      return rejectWithValue(error.response?.data || "Ошибка при создании заявки");
     }
+  }
 );
-
-
-
 
 
 interface FunnelState {

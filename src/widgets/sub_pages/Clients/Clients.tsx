@@ -118,12 +118,12 @@ const Clients = () => {
 
             <div className={classes.payment_block}>
               <div className={classes.payment_text}>
-                <p className="todo">
+                <p>
                   Заказов на сумму:{" "}
-                  <span>{client.total_orders_sum || "—"}</span>
+                  <span>{client.orders_total || "—"}</span>
                 </p>
-                <p className="todo">
-                  Средний чек: <span>{client.avg_check || "—"}</span>
+                <p>
+                  Средний чек: <span>{client.order_cost_avg || "—"}</span>
                 </p>
                 <p>
                   Настроение:{" "}
@@ -134,11 +134,11 @@ const Clients = () => {
               </div>
 
               <div className={classes.payment_text}>
-                <p className="todo">
-                  Активные заявки: <span>{client.active_projects ?? "—"}</span>
+                <p>
+                  Активные заявки: <span>{client.orders_in_progress ?? "—"}</span>
                 </p>
-                <p className="todo">
-                  Все проекты: <span>{client.total_projects ?? "—"}</span>
+                <p>
+                  Все проекты: <span>{client.projects_count ?? "—"}</span>
                 </p>
                 <p className="todo">
                   Дата последнего контакта:{" "}

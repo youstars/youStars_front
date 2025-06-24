@@ -18,9 +18,9 @@ import styles from "./ClientProfile.module.scss";
 import { useChatService } from "shared/hooks/useWebsocket";
 import { useClientProfileData } from "shared/hooks/useClientProfileData";
 import { ProjectDetail } from "shared/types/project";
-
-import ProjectFiles from "shared/UI/ProjectFiles/ProjectFiles";
-import { uploadClientFile } from "shared/api/files";
+import ProjectFiles, { FileItem } from "shared/UI/ProjectFiles/ProjectFiles";
+import { deleteFileById, uploadClientFile } from "shared/api/files";
+import { useFileManager } from "shared/hooks/useFileManager";
 
 const employeeOptions = [
   "Not on the market",
@@ -78,12 +78,9 @@ interface ClientProfileProps {
 export const ClientProfile: React.FC<ClientProfileProps> = ({
   client: externalClient,
 }) => {
-
-
-  const me = useAppSelector((state) => state.me.data); 
-const isAdmin = me?.role === "Admin";
-
-
+  
+  const me = useAppSelector((state) => state.me.data);
+  const isAdmin = me?.role === "Admin";
 
   const navigate = useNavigate();
   const { chats, setActiveChat } = useChatService();
@@ -92,6 +89,18 @@ const isAdmin = me?.role === "Admin";
   const dispatch = useAppDispatch();
   const { client, loading } = useClientProfileData(externalClient);
   console.log("в компоненте client.position =", client?.position);
+  
+const { files, handleFileSelect, handleDeleteFile } = useFileManager(
+  client?.file ?? [],
+  (file) => {
+    if (!client?.id) return Promise.reject("Нет client.id");
+    return uploadClientFile(file, file.name, client.id);
+  },
+  client?.id ?? 0,
+  "client"
+);
+
+
 
   const [edit, setEdit] = useState(false);
   const [form, setForm] = useState({
@@ -110,23 +119,6 @@ const isAdmin = me?.role === "Admin";
     tg_nickname: "",
     full_name: "",
   });
-
-const handleFileSelect = async (file: File) => {
-  if (!client?.id) {
-    console.error("Client ID отсутствует");
-    alert("Невозможно загрузить файл: ID клиента не найден.");
-    return;
-  }
-
-  try {
-await uploadClientFile(file, file.name, client.id);
-
-    dispatch(getClientById(+id!));
-  } catch (error) {
-    console.error("Ошибка загрузки файла клиента:", error);
-    alert("Не удалось загрузить файл. Попробуйте снова.");
-  }
-};
 
 
   useEffect(() => {
@@ -163,96 +155,96 @@ await uploadClientFile(file, file.name, client.id);
     ) =>
       setForm((p) => ({ ...p, [field]: e.target.value }));
 
-const handleSave = async () => {
-  if (!client) return;
+  const handleSave = async () => {
+    if (!client) return;
 
-  const userDiff: Record<string, any> = {};
-  ["phone_number", "email", "tg_nickname", "full_name"].forEach((f) => {
-    const oldVal = client.custom_user?.[f] ?? "";
-    const newVal = form[f as keyof typeof form];
-    if (newVal !== oldVal) {
-      userDiff[f] = newVal !== undefined ? newVal : null;
+    const userDiff: Record<string, any> = {};
+    ["phone_number", "email", "tg_nickname", "full_name"].forEach((f) => {
+      const oldVal = client.custom_user?.[f] ?? "";
+      const newVal = form[f as keyof typeof form];
+      if (newVal !== oldVal) {
+        userDiff[f] = newVal !== undefined ? newVal : null;
+      }
+    });
+
+    const allowedValues = {
+      employee_count: employeeOptions,
+      revenue: revenueOptions,
+      years_on_market: yearsOptions,
+    };
+
+    const clientDiff: Record<string, any> = {};
+    const clientMap = {
+      position: client.position,
+      business_name: client.business_name,
+      description: client.description,
+      problems: client.problems,
+      tasks: client.tasks,
+      geography: client.geography,
+      employee_count: client.employee_count,
+      revenue: client.revenue,
+      years_on_market: client.years_on_market,
+      professional_areas: (client.professional_areas ?? []).join(","),
+    };
+
+    Object.entries(clientMap).forEach(([key, oldVal]) => {
+      const newVal = (form as any)[key];
+
+      if (newVal !== oldVal) {
+        if (
+          (key === "employee_count" ||
+            key === "revenue" ||
+            key === "years_on_market") &&
+          (!newVal ||
+            !allowedValues[key as keyof typeof allowedValues].includes(newVal))
+        ) {
+          return;
+        }
+
+        clientDiff[key] =
+          key === "professional_areas"
+            ? newVal
+              ? newVal
+                  .split(",")
+                  .map((x: string) => Number(x.trim()))
+                  .filter(Boolean)
+              : []
+            : newVal !== undefined
+            ? newVal
+            : null;
+      }
+    });
+
+    if (!Object.keys(userDiff).length && !Object.keys(clientDiff).length) {
+      console.log("Ничего не изменилось — запрос не отправляется");
+      setEdit(false);
+      return;
     }
-  });
 
-  const allowedValues = {
-    employee_count: employeeOptions,
-    revenue: revenueOptions,
-    years_on_market: yearsOptions,
-  };
-
-  const clientDiff: Record<string, any> = {};
-  const clientMap = {
-    position: client.position,
-    business_name: client.business_name,
-    description: client.description,
-    problems: client.problems,
-    tasks: client.tasks,
-    geography: client.geography,
-    employee_count: client.employee_count,
-    revenue: client.revenue,
-    years_on_market: client.years_on_market,
-    professional_areas: (client.professional_areas ?? []).join(","),
-  };
-
-  Object.entries(clientMap).forEach(([key, oldVal]) => {
-    const newVal = (form as any)[key];
-
-    if (newVal !== oldVal) {
-      if (
-        (key === "employee_count" ||
-          key === "revenue" ||
-          key === "years_on_market") &&
-        (!newVal || !allowedValues[key as keyof typeof allowedValues].includes(newVal))
-      ) {
-        return;
+    try {
+      if (Object.keys(userDiff).length) {
+        await dispatch(updateMe(userDiff)).unwrap();
       }
 
-      clientDiff[key] =
-        key === "professional_areas"
-          ? newVal
-            ? newVal
-                .split(",")
-                .map((x: string) => Number(x.trim()))
-                .filter(Boolean)
-            : []
-          : newVal !== undefined
-          ? newVal
-          : null;
+      if (Object.keys(clientDiff).length) {
+        const updateId = client?.custom_user?.id;
+        await dispatch(
+          updateClient({
+            id: isAdmin ? updateId : undefined,
+            data: clientDiff,
+          })
+        ).unwrap();
+      }
+
+      dispatch(getClientById(+id!)); // Выполняем только при сохранении формы
+      setEdit(false);
+    } catch (err: any) {
+      const serverMessage =
+        err?.response?.data?.detail || err?.message || "Неизвестная ошибка";
+      console.error("Ошибка обновления профиля клиента:", serverMessage);
+      alert(`Ошибка: ${serverMessage}`);
     }
-  });
-
-  if (!Object.keys(userDiff).length && !Object.keys(clientDiff).length) {
-    console.log("Ничего не изменилось — запрос не отправляется");
-    setEdit(false);
-    return;
-  }
-
-  try {
-    if (Object.keys(userDiff).length) {
-      await dispatch(updateMe(userDiff)).unwrap();
-    }
-
-    if (Object.keys(clientDiff).length) {
-const updateId = client?.custom_user?.id;
-await dispatch(updateClient({
-  id: isAdmin ? updateId : undefined,
-  data: clientDiff
-})).unwrap();
-
-
-    }
-
-    dispatch(getClientById(+id!));
-    setEdit(false);
-  } catch (err: any) {
-    const serverMessage =
-      err?.response?.data?.detail || err?.message || "Неизвестная ошибка";
-    console.error("Ошибка обновления профиля клиента:", serverMessage);
-    alert(`Ошибка: ${serverMessage}`);
-  }
-};
-
+  };
 
   if (loading || !client) return <Spinner />;
 
@@ -458,7 +450,6 @@ await dispatch(updateClient({
         </div>
 
         {/* ===== статистика-кнопки ===== */}
-
         <div className={styles.businessStatistics}>
           {/* география */}
           <div className={styles.businessStatBlock}>
@@ -559,8 +550,11 @@ await dispatch(updateClient({
         />
       </div>
 
-      <ProjectFiles files={client?.files} onFileSelect={handleFileSelect} />
-
+      <ProjectFiles
+        files={files}
+        onFileSelect={handleFileSelect}
+        onFileDelete={handleDeleteFile}
+      />
     </div>
   );
 };

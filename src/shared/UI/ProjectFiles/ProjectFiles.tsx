@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styles from "./ProjectFiles.module.scss";
 import PdfIcon from "shared/assets/icons/acrobat.svg";
 import PlusIcon from "shared/assets/icons/plus.svg";
+import EditIcon from "shared/assets/icons/edit.svg";
 
 export interface FileItem {
   id: number;
@@ -12,9 +13,7 @@ export interface FileItem {
 interface ProjectFilesProps {
   files?: FileItem[];
   onFileSelect?: (file: File) => void;
-onFileDelete?: (file: FileItem) => void | Promise<void>;
-
-  
+  onFileDelete?: (file: FileItem) => void | Promise<void>;
 }
 
 const ProjectFiles: React.FC<ProjectFilesProps> = ({
@@ -29,15 +28,19 @@ const ProjectFiles: React.FC<ProjectFilesProps> = ({
     file: FileItem | null;
   }>({ visible: false, x: 0, y: 0, file: null });
 
-  const handleContextMenu = (
-    e: React.MouseEvent,
-    file: FileItem
-  ) => {
+  const handleContextMenu = (e: React.MouseEvent, file: FileItem) => {
     e.preventDefault();
+
+
+    const x = e.clientX; 
+    const y = e.clientY; 
+
+    console.log("Context menu position:", { x, y, clientX: e.clientX, clientY: e.clientY });
+
     setContextMenu({
       visible: true,
-      x: e.pageX,
-      y: e.pageY,
+      x,
+      y,
       file,
     });
   };
@@ -49,8 +52,8 @@ const ProjectFiles: React.FC<ProjectFilesProps> = ({
     setContextMenu({ visible: false, x: 0, y: 0, file: null });
   };
 
-  const handleClickAnywhere = () => {
-    if (contextMenu.visible) {
+  const handleClickAnywhere = (e: React.MouseEvent) => {
+    if (contextMenu.visible && !(e.target as HTMLElement).closest(`.${styles.contextMenu}`)) {
       setContextMenu({ visible: false, x: 0, y: 0, file: null });
     }
   };
@@ -100,9 +103,23 @@ const ProjectFiles: React.FC<ProjectFilesProps> = ({
       {contextMenu.visible && (
         <ul
           className={styles.contextMenu}
-          style={{ top: contextMenu.y, left: contextMenu.x }}
+          style={{
+            top: `${contextMenu.y}px`,
+            left: `${contextMenu.x}px`,
+            position: "fixed", // Фиксируем относительно окна
+          }}
+          onClick={(e) => e.stopPropagation()} // Предотвращаем закрытие при клике внутри
         >
-          <li onClick={handleDeleteClick}>Удалить</li>
+          <li className={styles.contextMenuItem}>
+            Переименовать
+            <img src={EditIcon} className={styles.icon} alt="edit" />
+          </li>
+          <li
+            className={`${styles.contextMenuItem} ${styles.delete}`}
+            onClick={handleDeleteClick}
+          >
+            Удалить
+          </li>
         </ul>
       )}
     </div>

@@ -6,7 +6,7 @@ import Web from "shared/images/clientImgs/network.svg";
 import Chat from "shared/images/clientImgs/Chat.svg";
 import Write from "shared/images/clientImgs/Write.svg";
 import { deleteFileById, uploadSpecialistFile } from "shared/api/files";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { selectProjects } from "shared/store/slices/projectsSlice";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
@@ -36,6 +36,7 @@ import {
   SpecialistCardProps,
 } from "shared/types/specialist";
 import ProfessionalServiceSelect from "shared/UI/ServiceSelect/ServiceSelect";
+import { useFileManager } from "shared/hooks/useFileManager";
 
 const SpecialistCard: React.FC<SpecialistCardProps> = ({
   specialist,
@@ -57,9 +58,20 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
       dispatch(getProfessionalAreas());
     }
   }, [dispatch, professionalAreas]);
-  // console.log("professionalAreas:", professionalAreas);
 
   const allProjects = useAppSelector(selectProjects) || [];
+
+  const { files, handleFileSelect, handleDeleteFile } = useFileManager(
+    specialist.file?.map((f) => ({
+      id: f.id,
+      name: f.name,
+      fileUrl: f.file,
+    })) || [],
+    (file) => uploadSpecialistFile(file, file.name, specialist.id, "Описание"),
+    specialist.id,
+    "specialist"
+  );
+  console.log("🔄 Файлы для отображения:", files);
 
   const navigate = useNavigate();
   const { chats, setActiveChat } = useChatService();
@@ -73,16 +85,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
   const [isEditMode, setIsEditMode] = useState(false);
   const [showEduForm, setShowEduForm] = useState(false);
   const [formData, setFormData] = useState<SpecialistFormData | null>(null);
-
-  // console.log("ID из useParams:", id);
-  // console.log("Список специалистов:", specialistsList);
-  // console.log("Найденный специалист:", specialist);
-  console.log(" Me:", me);
-  console.log(" Role:", me?.role);
-  console.log(" Me ID:", me?.id);
-  console.log(" Specialist ID:", specialist?.id);
-  console.log(" Is Admin:", isAdmin);
-  console.log(" Is Self Viewing:", isSelfViewing);
 
   useEffect(() => {
     if (specialist?.custom_user) {
@@ -217,7 +219,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
         return;
       }
 
-      // Сборка опыта работы
       const filteredExperiences = workExperiences.map((item) => {
         const experience = {
           place_of_work: {
@@ -248,15 +249,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
         email: formData.email,
         tg_nickname: formData.website,
       };
-      if (
-        formData.website &&
-        formData.website.trim() !== "" &&
-        formData.website.trim() !== (specialist.custom_user.tg_nickname || "")
-      ) {
-        meFields.tg_nickname = formData.website.trim();
-      }
       const cleanedMeData: any = {};
-
       if (
         formData.phone &&
         formData.phone.trim() !== "" &&
@@ -264,7 +257,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
       ) {
         cleanedMeData.phone_number = formData.phone.trim();
       }
-
       if (
         formData.firstName &&
         formData.firstName.trim() !== "" &&
@@ -272,7 +264,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
       ) {
         cleanedMeData.first_name = formData.firstName.trim();
       }
-
       if (
         formData.lastName &&
         formData.lastName.trim() !== "" &&
@@ -280,7 +271,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
       ) {
         cleanedMeData.last_name = formData.lastName.trim();
       }
-
       if (
         formData.email &&
         formData.email.trim() !== "" &&
@@ -288,7 +278,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
       ) {
         cleanedMeData.email = formData.email.trim();
       }
-
       if (
         formData.website &&
         formData.website.trim() !== "" &&
@@ -333,7 +322,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
 
       if (selectedService) {
         const selected = findProfessionAndAreaByService(selectedService.id);
-
         if (selected) {
           console.log("📦 Отправляем профиль:", selected);
           await dispatch(
@@ -372,18 +360,23 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
         }
       }
 
-      setIsEditMode(false);
-      navigate(0);
+      setIsEditMode(false); // Закрываем режим редактирования
+      // Убираем navigate(0), заменяем на локальное обновление, если нужно
+      // Например, можно добавить диспетч для обновления данных, но это не обязательно
     } catch (error) {
       console.error("Ошибка при сохранении:", error);
     }
   };
+
   const handleAvatarUpload = (file: File) => {
     const formData = new FormData();
     formData.append("custom_user.avatar", file);
-    formData.append("id", specialist.id.toString()); // обязательно, если бэк ожидает id
+    formData.append("id", specialist.id.toString());
 
-    dispatch(updateSpecialist(formData));
+    dispatch(updateSpecialist(formData))
+      .unwrap()
+      .then(() => console.log("✅ Аватар обновлён"))
+      .catch((err) => console.error("❌ Ошибка при загрузке аватара", err));
   };
 
   const handleAddService = async (newService: string) => {
@@ -405,23 +398,12 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
     }
   };
 
-  const handleFileSelect = async (file: File) => {
-    try {
-      await uploadSpecialistFile(file, file.name, specialist.id, "Описание");
-    } catch (error) {
-      console.error("Ошибка загрузки файла:", error);
-    }
-  };
+  console.log("Рендеринг Avatar, specialist:", specialist);
+  if (!specialist?.custom_user || !specialist.id) {
+    console.error("specialist или specialist.id не определены:", specialist);
+    return <Spinner />;
+  }
 
-  const handleDeleteFile = async (file: FileItem) => {
-    try {
-      await deleteFileById("specialist", file.id);
-    } catch (e) {
-      console.error("Ошибка при удалении файла", e);
-    }
-  };
-
-  // console.log("me:", me);
   if (!specialist?.custom_user || !formData) return <Spinner />;
 
   return (
@@ -431,8 +413,8 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
           <div className={styles.info}>
             <div className={styles.avatar}>
               <Avatar
-                src={specialist.custom_user?.avatar}
-                size="52px"
+                src={specialist?.custom_user.avatar}
+                alt={specialist?.custom_user?.username}
                 onUpload={handleAvatarUpload}
               />
 
@@ -571,13 +553,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
             </p>
           )}
           <div className={styles.columns}>
-            {/* <TagSection
-  title="Профессии"
-  tags={professionalAreas || []}
-  className={styles.column}
-  onAddClick={() => {}}
-  addIcon={<img src={Plus} alt="Добавить" />}
-/> */}
             <div className={styles.container}>
               <div className={styles.header}>
                 <h3 className={styles.title}>Оказываемые услуги</h3>
@@ -628,11 +603,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
         </div>
         <div className={styles.experience}>
           <ProjectFiles
-            files={specialist.file?.map((f) => ({
-              id: f.id,
-              name: f.name,
-              fileUrl: f.file,
-            }))}
+            files={files}
             onFileSelect={handleFileSelect}
             onFileDelete={handleDeleteFile}
           />

@@ -11,6 +11,8 @@ import ProjectFiles, { FileItem } from "shared/UI/ProjectFiles/ProjectFiles";
 import RateItem from "shared/UI/RateItem/RateItem";
 import TagSection from "widgets/sub_pages/SpecialistProfile/sections/TagSection";
 import { TrackerNotes } from "widgets/sub_pages/ClientProfile/components/TrackerNotes/TrackerNotes";
+import { useFileManager } from "shared/hooks/useFileManager";
+import { uploadSpecialistFile, uploadTrackerFile } from "shared/api/files";
 
 const TrackerProfile = () => {
   const dispatch = useAppDispatch();
@@ -19,6 +21,25 @@ const TrackerProfile = () => {
   useEffect(() => {
     dispatch(getTrackerMe());
   }, [dispatch]);
+
+const trackerFiles = tracker?.files?.map((f) => ({
+  id: f.id,
+  name: f.name,
+  fileUrl: f.file,
+})) || [];
+
+const trackerId = tracker?.id || 0;
+
+const { files, handleFileSelect, handleDeleteFile } = useFileManager(
+  trackerFiles,
+  (file) =>
+    tracker?.id
+      ? uploadTrackerFile(file, file.name, tracker.id)
+      : Promise.reject("No tracker.id"),
+  trackerId,
+  "admin"
+);
+
 
   if (loading || !tracker) return null;
 
@@ -29,13 +50,6 @@ const TrackerProfile = () => {
     custom_user.full_name ||
     "—";
 
-  const handleFileSelect = async (file: File) => {
-    console.log("📂 Загрузка файла:", file.name);
-  };
-
-  const handleFileDelete = async (file: FileItem) => {
-    console.log("❌ Удаление файла ID:", file.id);
-  };
 
   return (
     <div className={styles.main}>
@@ -142,15 +156,12 @@ const TrackerProfile = () => {
 
      <div className={styles.filesExperienceBlock}>
   <div className={styles.filesBlock}>
-    <ProjectFiles
-      files={tracker.files?.map((f) => ({
-        id: f.id,
-        name: f.name,
-        fileUrl: f.file,
-      })) || []}
-      onFileSelect={handleFileSelect}
-      onFileDelete={handleFileDelete}
-    />
+<ProjectFiles
+  files={files}
+  onFileSelect={handleFileSelect}
+  onFileDelete={handleDeleteFile}
+/>
+
   </div>
 
   <div className={styles.about}>

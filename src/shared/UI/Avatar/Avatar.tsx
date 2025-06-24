@@ -13,12 +13,17 @@ const Avatar: React.FC<AvatarProps> = ({ src, alt, size = "40px", onUpload }) =>
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleClick = () => {
-    inputRef.current?.click();
+    if (onUpload) {
+      inputRef.current?.click();
+    } else {
+      console.log("onUpload не передан, загрузка отключена");
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && onUpload) {
+      console.log("Файл выбран:", file.name);
       onUpload(file);
     }
   };
@@ -35,13 +40,15 @@ const Avatar: React.FC<AvatarProps> = ({ src, alt, size = "40px", onUpload }) =>
         className={styles.avatar}
         style={{ width: size, height: size }}
       />
-      <input
-        type="file"
-        accept="image/*"
-        ref={inputRef}
-        style={{ display: "none" }}
-        onChange={handleFileChange}
-      />
+      {onUpload && (
+        <input
+          type="file"
+          accept="image/*"
+          ref={inputRef}
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+        />
+      )}
     </div>
   );
 };

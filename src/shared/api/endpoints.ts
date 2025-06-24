@@ -9,6 +9,13 @@ export const API_ENDPOINTS = {
     registerAdmin: "/auth/users/admin/registration/",
   },
 };
+
+
+export const API_ORDERS = {
+  list: "orders/",
+  create: "orders/",
+};
+
 export const API_CLIENT = {
   getById: (id: number) => `users/client/${id}`,
   update: (id?: number) =>
@@ -35,8 +42,13 @@ export const API_KNOWLEDGE = {
 
 export const API_ME = {
   get: "/auth/users/me/",
-  update: "/auth/users/me/",
+  update: {
+    client: "/users/clients/me/",
+    specialist: "/users/specialists/me/",
+    admin: "/users/admins/me/",
+  },
 };
+
 
 export const API_PROJECT = {
   getById: (id: string | number) => `project/${id}`,

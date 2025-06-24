@@ -2,7 +2,7 @@ import { Task } from "shared/types/tasks";
 import { Tracker } from "./tracker";
 
 
-// Для списков проектов
+
 export interface ProjectSummary {
   id: number;
   name: string;
@@ -22,7 +22,7 @@ export interface ProjectSummary {
   };
 }
 
-// Для страницы одного проекта
+
 export interface ProjectDetail {
   id: number;
   name: string;
@@ -58,7 +58,7 @@ export interface ProjectDetail {
   tasks?: Task[];
 }
 
-// Для узкого использования (например, список проектов у специалиста)
+
 export interface ProjectMinimal {
   id: number | string;
   name: string;

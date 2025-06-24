@@ -81,6 +81,11 @@ export const updateSpecialist = createAsyncThunk(
           ...(isFormData ? {} : { "Content-Type": "application/json" }),
         },
       });
+      console.log("📩 PATCH URL:", url);
+      console.log(
+        "📩 PATCH Body:",
+        data instanceof FormData ? "FormData" : data
+      );
 
       console.log("🔄 Профиль специалиста обновлён:", response.data);
       return response.data;
@@ -160,9 +165,11 @@ const specialistSlice = createSlice({
       .addCase(getSpecialistById.fulfilled, (state, action) => {
         state.data = action.payload;
         state.loadingGetById = false;
+        console.log("Данные специалиста загружены:", action.payload);
       })
       .addCase(getSpecialistById.rejected, (state, action) => {
         state.loadingGetById = false;
+        console.error("Ошибка загрузки специалиста:", action.payload);
         state.error = (action.payload as string) || "Ошибка загрузки";
       })
       .addCase(updateSpecialist.pending, (state) => {
@@ -187,8 +194,7 @@ const specialistSlice = createSlice({
       })
       .addCase(getProfessionalAreas.rejected, (state, action) => {
         state.loading = false;
-        state.error =
-          (action.payload as string) || "Ошибка загрузки профессий";
+        state.error = (action.payload as string) || "Ошибка загрузки профессий";
       })
       .addCase(updateProfessionalProfile.pending, (state) => {
         state.loading = true;
