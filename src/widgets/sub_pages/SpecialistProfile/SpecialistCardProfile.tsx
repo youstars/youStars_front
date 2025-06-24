@@ -4,8 +4,6 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useAppDispatch} from "shared/hooks/useAppDispatch";
 import {useAppSelector} from "shared/hooks/useAppSelector";
-import TagSection from "./sections/Other/TagSelection/TagSection";
-import ProjectFiles from "shared/UI/ProjectFiles/ProjectFiles";
 import {TrackerNotes} from "widgets/sub_pages/ClientProfile/components/TrackerNotes/TrackerNotes";
 import {updateMe} from "shared/store/slices/meSlice";
 import Spinner from "shared/UI/Spinner/Spinner";
@@ -41,9 +39,9 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
     const dispatch = useAppDispatch();
 
     //services
-    const allServices = useAppSelector(
-        (state) => state.specialist.professionalAreas
-    ).flatMap((area) => area.services || []);
+    // const allServices = useAppSelector(
+    //     (state) => state.specialist.professionalAreas
+    // ).flatMap((area) => area.services || []);
 
     const [selectedService, setSelectedService] = useState<Service | null>(null);
     const {professionalAreas} = useAppSelector((state) => state.specialist);
@@ -65,7 +63,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
 
 
     const [isEditMode, setIsEditMode] = useState(false);
-    const [showEduForm, setShowEduForm] = useState(false);
+    // const [showEduForm, setShowEduForm] = useState(false);
     const [formData, setFormData] = useState<SpecialistFormData | null>(null);
 
     // console.log("ID из useParams:", id);
