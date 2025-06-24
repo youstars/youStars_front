@@ -1,14 +1,7 @@
 import styles from "./SpecialistCardProfile.module.scss";
-import Avatar from "shared/UI/Avatar/Avatar";
-import Phone from "shared/images/clientImgs/phone.svg";
-import Mail from "shared/images/clientImgs/mail.svg";
-import Web from "shared/images/clientImgs/network.svg";
-import Chat from "shared/images/clientImgs/Chat.svg";
-import Write from "shared/images/clientImgs/Write.svg";
 import { deleteFileById, uploadSpecialistFile } from "shared/api/files";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { selectProjects } from "shared/store/slices/projectsSlice";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { useAppSelector } from "shared/hooks/useAppSelector";
 import TagSection from "./TagSection";
@@ -35,13 +28,12 @@ import {
   WorkExperienceFormData,
   SpecialistCardProps,
 } from "shared/types/specialist";
-import ProfessionalServiceSelect from "shared/UI/ServiceSelect/ServiceSelect";
+import Header from "./Header/Header";
 
 const SpecialistCard: React.FC<SpecialistCardProps> = ({
   specialist,
   isSelf = false,
 }) => {
-  const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
 
   //services
@@ -59,7 +51,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
   }, [dispatch, professionalAreas]);
   // console.log("professionalAreas:", professionalAreas);
 
-  const allProjects = useAppSelector(selectProjects) || [];
 
   const navigate = useNavigate();
   const { chats, setActiveChat } = useChatService();
@@ -68,7 +59,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
   const isAdmin = me?.role?.toLowerCase() === "admin";
   const isSelfViewing = meId && specialist?.id === meId;
 
-  const [selectedServices, setSelectedServices] = useState<Service[]>([]);
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [showEduForm, setShowEduForm] = useState(false);
@@ -77,12 +67,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
   // console.log("ID из useParams:", id);
   // console.log("Список специалистов:", specialistsList);
   // console.log("Найденный специалист:", specialist);
-  console.log(" Me:", me);
-  console.log(" Role:", me?.role);
-  console.log(" Me ID:", me?.id);
-  console.log(" Specialist ID:", specialist?.id);
-  console.log(" Is Admin:", isAdmin);
-  console.log(" Is Self Viewing:", isSelfViewing);
 
   useEffect(() => {
     if (specialist?.custom_user) {
@@ -174,10 +158,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
   if (!specialist?.custom_user) return <Spinner />;
 
   const { custom_user } = specialist;
-  const nameToShow =
-    custom_user.first_name && custom_user.last_name
-      ? `${custom_user.first_name} ${custom_user.last_name}`
-      : custom_user.full_name || "ФИО не указано";
   const specialistProjects = specialist.projects || [];
   const activeProjects = specialistProjects.filter(
     (project) => project.status === "in_progress"
@@ -335,7 +315,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
         const selected = findProfessionAndAreaByService(selectedService.id);
 
         if (selected) {
-          console.log("📦 Отправляем профиль:", selected);
           await dispatch(
             updateProfessionalProfile({
               specialist: specialist.id,
@@ -349,11 +328,6 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
         }
       }
 
-      console.log("📤 Отправка админом:", {
-        ...cleanedSpecialistData,
-        id: specialist.id,
-        custom_user: cleanedMeData,
-      });
 
       if (isAdmin && !isSelfViewing) {
         await dispatch(
@@ -427,134 +401,20 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
   return (
     <div className={styles.main}>
       <div className={styles.container}>
-        <div className={styles.client}>
-          <div className={styles.info}>
-            <div className={styles.avatar}>
-              <Avatar
-                src={specialist.custom_user?.avatar}
-                size="52px"
-                onUpload={handleAvatarUpload}
-              />
-
-              <p className={styles.days}>3 дня</p>
-            </div>
-            <div className={styles.text}>
-              {isEditMode ? (
-                <>
-                  <input
-                    type="text"
-                    value={formData.firstName}
-                    onChange={(e) =>
-                      handleInputChange("firstName", e.target.value)
-                    }
-                    className={styles.inputField}
-                    placeholder="Имя"
-                  />
-                  <input
-                    type="text"
-                    value={formData.lastName}
-                    onChange={(e) =>
-                      handleInputChange("lastName", e.target.value)
-                    }
-                    className={styles.inputField}
-                    placeholder="Фамилия"
-                  />
-                </>
-              ) : (
-                <h3 className={styles.name}>{nameToShow}</h3>
-              )}
-              <p className={styles.position}>Специалист</p>
-              <p className={styles.rating}>
-                Рейтинг: {specialist.overall_rating || 0}/5
-              </p>
-              <p className={styles.availability}>
-                {isEditMode ? (
-                  <select
-                    className={styles.inputField}
-                    value={formData.is_busy}
-                    onChange={(e) =>
-                      handleInputChange("is_busy", e.target.value)
-                    }
-                  >
-                    <option value="Available">Доступен к проектам</option>
-                    <option value="Not available">Сейчас не доступен</option>
-                  </select>
-                ) : formData.is_busy === "Available" ? (
-                  "Доступен к проектам"
-                ) : (
-                  "Сейчас не доступен"
-                )}
-              </p>
-
-              <button
-                className={styles.editButton}
-                onClick={isEditMode ? handleSave : () => setIsEditMode(true)}
-              >
-                {isEditMode ? "Сохранить изменения" : "Изм. профиль"}
-              </button>
-            </div>
-          </div>
-          <div className={styles.contacts}>
-            <p className={styles.contact}>
-              <img src={Phone} alt="Телефон" />
-              {isEditMode ? (
-                <input
-                  type="text"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
-                  className={styles.inputField}
-                />
-              ) : (
-                <span>{formData.phone || "Не указано"}</span>
-              )}
-            </p>
-            <p className={styles.contact}>
-              <img src={Mail} alt="Почта" />
-              {isEditMode ? (
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                  className={styles.inputField}
-                />
-              ) : (
-                <span>{formData.email || "Не указано"}</span>
-              )}
-            </p>
-            <p className={styles.contact}>
-              <img src={Web} alt="Web" />
-              {isEditMode ? (
-                <input
-                  type="text"
-                  value={formData.website}
-                  onChange={(e) => handleInputChange("website", e.target.value)}
-                  className={styles.inputField}
-                />
-              ) : (
-                <span>{formData.website || "—"}</span>
-              )}
-            </p>
-          </div>
-          <div className={styles.metrics}>
-            <p className={styles.metric}>
-              Активность: {specialist.proj_per_quarter_count ?? 0} заявок
-            </p>
-            <p className={styles.metric}>
-              Стоимость: {specialist.specialist_cost_total ?? 0} ₽
-            </p>
-            <p className={styles.metric}>
-              Настроение: {specialist.satisfaction_rate ?? "—"}/5
-            </p>
-          </div>
-          <div className={styles.icons}>
-            <button className={styles.icon} onClick={handleChatClick}>
-              <img src={Chat} alt="Chat" />
-            </button>
-            <button className={styles.icon}>
-              <img src={Write} alt="Write" />
-            </button>
-          </div>
-        </div>
+        <Header
+          customUser={custom_user}
+          isBusy={formData.is_busy !== "Available"}
+          overallRating={Number(specialist.overall_rating) || 0}
+          isEditMode={isEditMode}
+          formData={formData}
+          onFieldChange={handleInputChange}
+          onAvatarUpload={handleAvatarUpload}
+          onToggleEdit={() => setIsEditMode((prev) => !prev)}
+          onSave={handleSave}
+          onChatClick={handleChatClick}
+          isAdmin={isAdmin}
+          isSelfViewing={isSelfViewing}
+        />
         <div className={styles.about}>
           <h3 className={styles.title}>О специалисте</h3>
           {isEditMode ? (
