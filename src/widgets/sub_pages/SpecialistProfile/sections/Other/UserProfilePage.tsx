@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "shared/store";
 import { getSpecialistById, selectSpecialist } from "shared/store/slices/specialistSlice";
 import { useEffect } from "react";
-import SpecialistCard from "./sections/SpecialistCardProfile";
+import SpecialistCard from "../../SpecialistCardProfile";
 
 const UserProfilePage = () => {
   const { id } = useParams<{ id: string }>();

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "../../../widgets/sub_pages/SpecialistProfile/sections/EducationForm.module.scss";
+import styles from "widgets/sub_pages/SpecialistProfile/sections/Other/EducationForm/EducationForm.module.scss";
 import { ProfessionalServiceSelectProps } from "shared/types/professionalArea";
 
 const ProfessionalServiceSelect: React.FC<ProfessionalServiceSelectProps> = ({

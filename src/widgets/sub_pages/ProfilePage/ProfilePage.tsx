@@ -1,6 +1,6 @@
 import { useAppSelector } from "shared/hooks/useAppSelector";
 import { selectMe } from "shared/store/slices/meSlice";
-import SpecialistCard from "widgets/sub_pages/SpecialistProfile/sections/SpecialistCardProfile";
+import SpecialistCard from "widgets/sub_pages/SpecialistProfile/SpecialistCardProfile";
 import { ClientProfile } from "widgets/sub_pages/ClientProfile/ClientProfile";
 import TrackerProfile from "widgets/TrackerProfile/TrackerProfile";
 import Spinner from "shared/UI/Spinner/Spinner";

@@ -15,7 +15,7 @@ import {
     updateProfessionalProfile,
     updateSpecialist,
 } from "shared/store/slices/specialistSlice";
-import EducationForm from "./Other/EducationForm/EducationForm";
+import EducationForm from "./sections/Other/EducationForm/EducationForm";
 import {selectMe} from "shared/store/slices/meSlice";
 import {getProfessionalAreas} from "shared/store/slices/specialistSlice";
 import {Service} from "shared/types/professionalArea";
@@ -24,13 +24,14 @@ import {
     WorkExperienceFormData,
     SpecialistCardProps,
 } from "shared/types/specialist";
-import Header from "./Header/Header";
-import About from "./About/About";
-import WorkExperience from "./WorkExperience/WorkExperience";
-import FilesAndTags from "./FilesAndTags/FilesAndTags";
-import ActiveProjects from "./Projects/ActiveProjects";
-import FinishedProjects from "./Projects/FinishedProjects";
-import RateBlock from "./RateBlock/RateBlock";
+import Header from "./sections/Header/Header";
+import About from "./sections/About/About";
+import WorkExperience from "./sections/WorkExperience/WorkExperience";
+import FilesAndTags from "./sections/FilesAndTags/FilesAndTags";
+import ActiveProjects from "./sections/Projects/ActiveProjects";
+import FinishedProjects from "./sections/Projects/FinishedProjects";
+import RateBlock from "./sections/RateBlock/RateBlock";
+
 const SpecialistCard: React.FC<SpecialistCardProps> = ({
                                                            specialist,
                                                            isSelf = false,
