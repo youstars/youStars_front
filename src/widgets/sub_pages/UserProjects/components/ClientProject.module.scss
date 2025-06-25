@@ -1,0 +1,291 @@
+$grey-900: #353A3D;
+$grey-800: #2A2B2E;
+$grey-600: #888888;
+$grey-400: #B3B3B3;
+$white: #FFFFFF;
+$yellow: #FFC400;
+
+/* root container */
+.card {
+  position: relative;
+  width: calc(100% - 100px);
+  height: 238px;
+  background: $grey-900;
+  border-radius: 10px;
+  padding: 40px;
+  margin: 40px;
+
+
+  /* layout */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  font-family: 'Myriad Pro', sans-serif;
+  color: $white;
+}
+
+/* ──── TOP BLOCK ──── */
+.top {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 133px;
+  width: 100%;
+  height: 48px;
+
+}
+
+/* Заявка №… */
+.orderBox {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px;
+  gap: 10px;
+
+  width: 220px;
+  height: 30px;
+
+  background: $grey-800;
+  border-radius: 10px;
+
+  font-size: 14px;
+  line-height: 17px;
+}
+
+/* Название + мета */
+.mainMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 220px;
+  height: 48px;
+
+  .name {
+    font-size: 14px;
+    line-height: 17px;
+  }
+
+  .metaRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 220px;
+    height: 14px;
+
+    span {
+      font-size: 12px;
+      line-height: 14px;
+    }
+  }
+}
+
+/* Статус‑конвейер */
+.pipeline {
+  position: relative;
+  width: 389px;
+  height: 26px;
+
+  /* базовые подписи */
+  .stage {
+    position: relative;
+    font-size: 12px;
+    line-height: 14px;
+    color: $grey-400;
+    padding-left: 4px;
+    padding-right: 12px;
+
+    &.active {
+      color: $white;
+    }
+  }
+
+  /* нижняя линия прогресса */
+  .progressLine {
+    position: absolute;
+    left: 24px;
+    top: 3px;
+    width: 348px;
+    height: 2px;
+    background: $yellow;
+    border-radius: 10px;
+    /* кружочки по всей линии */
+    &::before,
+    &::after {
+      content: '';
+    }
+  }
+}
+
+/* Иконки действий */
+.icons {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+  width: 96px;
+  height: 32px;
+
+  .iconBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+/* ──── PROGRESS BLOCK ──── */
+.progressBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 220px;
+  height: 51px;
+
+  .progressLabel {
+    font-size: 16px;
+    line-height: 19px;
+  }
+
+
+  .min,
+  .max {
+    position: absolute;
+    top: 12px;
+    font-size: 12px;
+    line-height: 14px;
+    color: $grey-600;
+  }
+
+  .min {
+    left: 28px;
+  }
+
+  .max {
+    right: 0;
+  }
+
+  .progressBar {
+    position: absolute;
+    left: 28px;
+    top: 0;
+    width: 192px;
+    height: 10px;
+    background: $grey-600;
+    border-radius: 10px;
+
+    .progressFill {
+      height: 100%;
+      background: $yellow;
+      border-radius: 5px 0 0 5px;
+      transition: width 0.3s ease;
+    }
+  }
+
+  .percentValue {
+    position: absolute;
+    left: 0;
+    top: -14px;
+    font-size: 10px;
+    line-height: 10px;
+    color: $white;
+    transform: translateX(calc(#{'var(--percent)'} * 1%));
+  }
+}
+
+/* ──── Empty state (если нет данных) ──── */
+.empty {
+  font-size: 14px;
+  color: $grey-400;
+  text-align: center;
+  width: 100%;
+}
+
+
+/* ─────────────────── Responsive ─────────────────── */
+
+@media (max-width: 1200px) {
+  .top {
+    gap: 64px;
+  }
+}
+
+@media (max-width: 992px) {
+  .top {
+    gap: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 24px;
+    margin: 20px 10px;
+    width: calc(100% - 20px);
+  }
+
+  .top {
+    flex-wrap: wrap;
+    gap: 16px 0;
+    justify-content: flex-start;
+  }
+
+  .orderBox,
+  .mainMeta {
+    width: 48%;
+  }
+
+  .pipeline {
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .icons {
+    width: auto;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  .progressBlock {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 16px;
+  }
+
+  .orderBox,
+  .mainMeta {
+    width: 100%;
+  }
+
+  .pipeline .stage {
+    font-size: 10px;
+  }
+
+  .progressBlock {
+    gap: 4px;
+  }
+
+  .progressBlock .progressBar {
+    left: 0;
+    width: calc(100% - 56px);
+  }
+
+  .progressBlock .min {
+    left: 0;
+  }
+}
