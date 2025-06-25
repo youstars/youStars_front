@@ -9,6 +9,7 @@ import chatIcons from "shared/images/chats.svg";
 import chatIcon from "shared/images/chat.svg";
 import SideFunnel from "widgets/SideBar/SideFunnel/SideFunnel";
 import { getInitials } from "shared/helpers/userUtils";
+import { formatCurrency } from "shared/helpers/formatCurrency";
 import { useDragScroll } from "shared/hooks/useDragScroll";
 import { useAppSelector } from "shared/hooks/useAppSelector";
 import { getOrderById } from "shared/store/slices/orderSlice";
@@ -167,17 +168,7 @@ const Funnel = () => {
                           </div>
                         </div>
                         <p className={styles.amount}>
-                              {
-                                  order.approved_budget
-                                      ? (
-                                          String(order.approved_budget).includes('-')
-                                              ? String(order.approved_budget)
-                                              : `${Number(order.approved_budget).toLocaleString('ru-RU')} ₽`
-                                      )
-                                      : order.estimated_budget
-                                          ? `${order.estimated_budget} ₽`
-                                          : "Бюджет не указан"
-                              }
+                            {formatCurrency(order.approved_budget, order.estimated_budget)}
                         </p>
 
                         <div className={styles.taskDetails}>
