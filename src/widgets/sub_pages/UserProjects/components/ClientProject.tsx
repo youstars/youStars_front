@@ -69,7 +69,7 @@ export default function ClientProject({ project }: { project: Project }) {
           <div className={classes.metaRow}>
             <span className={classes.budget}>{project.budget ?? "—"}</span>
             <span className={classes.timeline}>
-              {project.timeline ?? deadlineRu}
+              {project.timeline.replace(/(\d{2})-(\d{2})-\d{4}/g, '$1.$2') ?? deadlineRu}
             </span>
           </div>
         </div>
@@ -120,6 +120,7 @@ export default function ClientProject({ project }: { project: Project }) {
             />
           </div>
           <span className={classes.max}>{project.tasks_count}</span>
+          <span className={classes.count}>{tasksDone}</span>
           {percent > 0 && (
             <span className={classes.percentValue}>{percent}%</span>
           )}

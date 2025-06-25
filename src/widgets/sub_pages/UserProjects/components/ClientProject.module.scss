@@ -151,45 +151,61 @@ $yellow: #FFC400;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  position: relative;       /* establish containing block for abs‑positioned items */
   width: 220px;
   height: 51px;
 
+
   .progressLabel {
+    margin: 0 auto;
     font-size: 16px;
     line-height: 19px;
   }
 
 
   .min,
+  .count,
   .max {
     position: absolute;
-    top: 12px;
     font-size: 12px;
     line-height: 14px;
     color: $grey-600;
+    margin-top: 20px;
+
   }
 
   .min {
-    left: 28px;
+    top: 12px;
+    left: calc(50% - 96px);   /* 96px = ½ of progress bar width (192px) */
+  }
+
+  .count{
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    color: $grey-900;
   }
 
   .max {
-    right: 0;
+    top: 12px;
+    left: calc(50% + 96px);
   }
 
   .progressBar {
     position: absolute;
-    left: 28px;
+    left: 50%;
+    transform: translateX(-50%);
     top: 0;
     width: 192px;
-    height: 10px;
+    height: 12px;
     background: $grey-600;
     border-radius: 10px;
+    margin-top: 20px;
 
     .progressFill {
       height: 100%;
       background: $yellow;
-      border-radius: 5px 0 0 5px;
+      border-radius: 5px;
       transition: width 0.3s ease;
     }
   }

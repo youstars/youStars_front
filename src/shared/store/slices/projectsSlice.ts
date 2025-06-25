@@ -9,12 +9,19 @@ export const getProjects = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = getCookie("access_token");
-      const clientId = getCookie("user_role_id");
-      if (!clientId) {
-        throw new Error("Client id not found in cookies");
+      const role = getCookie("user_role"); // e.g. "tracker" or "client"
+      let url = `${API_BASE_URL}projects/`;
+      if (role && role.toLowerCase().includes("client")) {
+        const clientId = getCookie("user_role_id"); // cookie stores the current client.id
+        if (!clientId) {
+          throw new Error("Client id not found in cookies");
+        }
+        url = `${API_BASE_URL}client/${clientId}/projects`;
       }
-      const response = await axiosInstance.get(`${API_BASE_URL}client/${clientId}/projects/`,
-          {
+
+      const response = await axiosInstance.get(
+        url,
+        {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
