@@ -12,8 +12,97 @@ $yellow: #FFC400;
   height: 238px;
   background: $grey-900;
   border-radius: 10px;
-  padding: 40px;
+  padding: 30px;
   margin: 40px;
+
+  &-Header {
+    display: flex;
+    align-items: center; // выравнивание по вертикали
+    gap: 16px; // промежуток между orderBox и mainMeta
+    margin-bottom: 24px; // отступ снизу, если нужно
+  }
+
+  .orderName {
+    position: static;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    height: 30px;
+    width: auto;
+    background: $grey-800;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 17px;
+
+  }
+
+  .metaRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 14px;
+    margin-top: 8px;
+    margin-left: 10px;
+    margin-right: 10px;
+
+  }
+
+  span {
+    font-size: 12px;
+    line-height: 14px;
+
+  }
+
+
+  /* ──── TOP BLOCK ──── */
+  .top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between; // первый прижмётся влево, последний — вправо
+    width: 100%;
+    height: 48px;
+
+  }
+
+  /* Иконки действий */
+  .icons {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+    width: 32px;
+    height: 32px;
+
+    .iconBtn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      width: 32px;
+      height: 32px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+
+      img {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
+  .goal {
+    width: 41rem;
+
+    .goalTitle {
+      font-size: 0.945rem;
+
+      .goalText {
+        font-size: 0.75rem;
+      }
+    }
+  }
 
 
   /* layout */
@@ -25,62 +114,6 @@ $yellow: #FFC400;
   color: $white;
 }
 
-/* ──── TOP BLOCK ──── */
-.top {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 133px;
-  width: 100%;
-  height: 48px;
-
-}
-
-/* Заявка №… */
-.orderBox {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 10px;
-  gap: 10px;
-
-  width: 220px;
-  height: 30px;
-
-  background: $grey-800;
-  border-radius: 10px;
-
-  font-size: 14px;
-  line-height: 17px;
-}
-
-/* Название + мета */
-.mainMeta {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 220px;
-  height: 48px;
-
-  .name {
-    font-size: 14px;
-    line-height: 17px;
-  }
-
-  .metaRow {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 220px;
-    height: 14px;
-
-    span {
-      font-size: 12px;
-      line-height: 14px;
-    }
-  }
-}
 
 /* Статус‑конвейер */
 .pipeline {
@@ -119,39 +152,12 @@ $yellow: #FFC400;
   }
 }
 
-/* Иконки действий */
-.icons {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 8px;
-  width: 96px;
-  height: 32px;
-
-  .iconBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px;
-    width: 32px;
-    height: 32px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-
-    img {
-      width: 20px;
-      height: 20px;
-    }
-  }
-}
 
 /* ──── PROGRESS BLOCK ──── */
 .progressBlock {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  position: relative;       /* establish containing block for abs‑positioned items */
+  position: relative; /* establish containing block for abs‑positioned items */
   width: 220px;
   height: 51px;
 
@@ -176,10 +182,10 @@ $yellow: #FFC400;
 
   .min {
     top: 12px;
-    left: calc(50% - 96px);   /* 96px = ½ of progress bar width (192px) */
+    left: calc(50% - 96px); /* 96px = ½ of progress bar width (192px) */
   }
 
-  .count{
+  .count {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
@@ -196,7 +202,7 @@ $yellow: #FFC400;
     left: 50%;
     transform: translateX(-50%);
     top: 0;
-    width: 192px;
+    width: 100%;
     height: 12px;
     background: $grey-600;
     border-radius: 10px;

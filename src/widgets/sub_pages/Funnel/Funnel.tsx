@@ -75,6 +75,8 @@ const Funnel = () => {
     return groups;
   }, [filteredOrders]);
 
+
+
   const calculateTotalBudget = (orders: Order[]) => {
     return orders.reduce(
       (acc, cur) => acc + parseFloat(cur.estimated_budget || "0"),
@@ -136,7 +138,7 @@ const Funnel = () => {
   key={order.id}
   onClick={() => {
     setSelectedOrderId(order.id);
-    setIsSidebarOpen(true); 
+    setIsSidebarOpen(true);
     dispatch(getOrderById(order.id));
   }}
 >
@@ -165,13 +167,17 @@ const Funnel = () => {
                           </div>
                         </div>
                         <p className={styles.amount}>
-                          {order.approved_budget
-                            ? `${Number(order.approved_budget).toLocaleString(
-                                "ru-RU"
-                              )} ₽`
-                            : order.estimated_budget
-                            ? `${order.estimated_budget} ₽`
-                            : "Бюджет не указан"}
+                              {
+                                  order.approved_budget
+                                      ? (
+                                          String(order.approved_budget).includes('-')
+                                              ? String(order.approved_budget)
+                                              : `${Number(order.approved_budget).toLocaleString('ru-RU')} ₽`
+                                      )
+                                      : order.estimated_budget
+                                          ? `${order.estimated_budget} ₽`
+                                          : "Бюджет не указан"
+                              }
                         </p>
 
                         <div className={styles.taskDetails}>
@@ -245,7 +251,7 @@ const Funnel = () => {
         })}
       </div>
 
-    
+
       {isOrderReady && (
         <SideFunnel
           isOpen={true}
