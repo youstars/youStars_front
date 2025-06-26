@@ -74,10 +74,15 @@ const specialistsSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(getSpecialists.fulfilled, (state, action) => {
-        state.loading = false;
-        state.list = action.payload;
-      })
+.addCase(getSpecialists.fulfilled, (state, action) => {
+  state.loading = false;
+  state.list = (action.payload as Specialist[]).map((item) => ({
+    ...item,
+    custom_user: item.custom_user,
+  }));
+})
+
+
       .addCase(getSpecialists.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;

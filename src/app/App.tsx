@@ -8,7 +8,7 @@ import { useTheme } from "shared/providers/theme/useTheme";
 import Header from "widgets/Header";
 import UserProjects from "widgets/sub_pages/UserProjects/ui/UserProjects";
 import FormAuthAdmin from "widgets/sub_pages/FormAuthAdmin/FormAuthAdmin";
-import AdminsPage from "widgets/sub_pages/AdminsPage/AdminsPage";
+import AdminsPage from "widgets/sub_pages/AdminsPage/Admins";
 import ProjectProfile from "widgets/sub_pages/ProjectProfile/ProjectProfile";
 import BusinessApplication from "widgets/sub_pages/BusinessApplication/BusinessApplication";
 import Funnel from "widgets/sub_pages/Funnel/Funnel";
@@ -32,6 +32,8 @@ import CreateAccountClient from "pages/CreateAccountClient/CreateAccountClient";
 import CreateAccount from "pages/CreatedAccount/ui/CreatedAccount";
 import ProfilePage from "widgets/sub_pages/ProfilePage/ProfilePage";
 import TrackerProfile from "widgets/TrackerProfile/TrackerProfile";
+import Admins from "widgets/sub_pages/AdminsPage/Admins";
+import { getCookie } from "shared/utils/cookies";
 
 function App() {
   const { theme } = useTheme();
@@ -50,10 +52,14 @@ function App() {
     location.pathname.startsWith(path)
   );
 
+
 useEffect(() => {
-  console.log("🔥 DISPATCH getMe()");
-  if (!me.initialized) {
+  const role = getCookie("user_role");
+  if (!me.initialized && role) {
+    console.log("✅ getCookie нашёл роль:", role);
     dispatch(getMe());
+  } else if (!role) {
+    console.log("⛔️ getMe не вызван, куки нет");
   }
 }, [dispatch, me.initialized]);
 
@@ -87,7 +93,7 @@ if (!isAuthed && !isPublic && !isLoading) {
             <Route path="funnel" element={<Funnel />} />
             <Route path="orders" element={<BusinessApplication />} />
             <Route path="library" element={<Library />} />
-            <Route path="admins" element={<AdminsPage />} />
+            <Route path="admins" element={<Admins />} />
             <Route path="trackers/:id" element={<TrackerProfile />} />
             <Route path="settings" element={<Settings />} />
             <Route path="chats" element={<Chats />} />

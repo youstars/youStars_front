@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { useAppSelector } from "shared/hooks/useAppSelector";
@@ -78,7 +78,6 @@ interface ClientProfileProps {
 export const ClientProfile: React.FC<ClientProfileProps> = ({
   client: externalClient,
 }) => {
-  
   const me = useAppSelector((state) => state.me.data);
   const isAdmin = me?.role === "Admin";
 
@@ -89,17 +88,32 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
   const dispatch = useAppDispatch();
   const { client, loading } = useClientProfileData(externalClient);
   console.log("в компоненте client.position =", client?.position);
-  
-const { files, handleFileSelect, handleDeleteFile } = useFileManager(
-  client?.file ?? [],
-  (file) => {
-    if (!client?.id) return Promise.reject("Нет client.id");
-    return uploadClientFile(file, file.name, client.id);
-  },
-  client?.id ?? 0,
-  "client"
-);
 
+
+
+
+const fileItems: FileItem[] = useMemo(() => {
+  return client?.file?.map((f: { id: number; name: string; file: string }) => ({
+    id: f.id,
+    name: f.name,
+    fileUrl: f.file,
+  })) ?? [];
+}, [client?.file]);
+
+const refreshClient = useCallback(() => {
+  if (id) {
+    dispatch(getClientById(+id));
+  }
+}, [id, dispatch]);
+
+
+const { files, handleFileSelect, handleDeleteFile } = useFileManager(
+  fileItems,
+  (file, id) => uploadClientFile(file, file.name, id),
+  client?.id ?? 0,
+  "client",
+  refreshClient 
+);
 
 
   const [edit, setEdit] = useState(false);
@@ -120,10 +134,6 @@ const { files, handleFileSelect, handleDeleteFile } = useFileManager(
     full_name: "",
   });
 
-
-  useEffect(() => {
-    if (id) dispatch(getClientById(+id));
-  }, [id, dispatch]);
 
   useEffect(() => {
     if (client) console.log("[ClientProfile] получен клиент:", client);
@@ -542,19 +552,12 @@ const { files, handleFileSelect, handleDeleteFile } = useFileManager(
       />
 
       <div className={styles.projects}>
-        <ProjectBlock
-          title="Завершённые проекты"
-          projects={(client.projects || []).filter(
-            (p: ProjectDetail) => p.status === "completed"
-          )}
+        <ProjectFiles
+          files={client?.file ?? []}
+          onFileSelect={handleFileSelect}
+          onFileDelete={handleDeleteFile}
         />
       </div>
-
-      <ProjectFiles
-        files={files}
-        onFileSelect={handleFileSelect}
-        onFileDelete={handleDeleteFile}
-      />
     </div>
   );
 };

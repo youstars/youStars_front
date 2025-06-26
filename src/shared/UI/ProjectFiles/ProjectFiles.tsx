@@ -57,6 +57,7 @@ const ProjectFiles: React.FC<ProjectFilesProps> = ({
       setContextMenu({ visible: false, x: 0, y: 0, file: null });
     }
   };
+console.log("🧾 FILES В ProjectFiles:", files);
 
   return (
     <div className={styles.container} onClick={handleClickAnywhere}>
@@ -106,9 +107,9 @@ const ProjectFiles: React.FC<ProjectFilesProps> = ({
           style={{
             top: `${contextMenu.y}px`,
             left: `${contextMenu.x}px`,
-            position: "fixed", // Фиксируем относительно окна
+            position: "fixed", 
           }}
-          onClick={(e) => e.stopPropagation()} // Предотвращаем закрытие при клике внутри
+          onClick={(e) => e.stopPropagation()} 
         >
           <li className={styles.contextMenuItem}>
             Переименовать

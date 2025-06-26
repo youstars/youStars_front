@@ -16,34 +16,8 @@ import {useNavigate} from "react-router-dom";
 import {useUserRole} from "shared/hooks/useUserRole";
 import ClientProject from "../components/ClientProject";
 
-<<<<<<< HEAD
-export default function UserProjects() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [isModalSpecialistOpen, setIsModalSpecialistOpen] = useState(false);
-  const [isModalCustomerOpen, setIsModalCustomerOpen] = useState(false);
-  const [activeModalColumn, setActiveModalColumn] = useState<string>("");
-  const [selectedTaskId, setSelectedTaskId] = useState<string | number | null>(
-    null
-  );
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
-  const dispatch = useDispatch<AppDispatch>();
 
-const getData = useSelector((state: any) => state.projects.list);
-
-
-  console.log("projectssqwq", getData);
-
-  const getSpecialistsLabel = (project: any) => {
-
-=======
-/**
- * Вспомогательная функция для трекер‑версии: красиво собирает список специалистов.
- */
 const getSpecialistsLabel = (project: any): string => {
->>>>>>> feature/miltos_feature
     const list = project.specialists ?? project.students ?? [];
     if (Array.isArray(list) && list.length) {
         return list
@@ -52,10 +26,6 @@ const getSpecialistsLabel = (project: any): string => {
             )
             .join(", ");
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> feature/miltos_feature
     if (typeof list === "number" && list > 0) {
         return `${list} специалист(ов)`;
     }
@@ -77,11 +47,11 @@ export default function UserProjects() {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
 
-    // ─────────────────────────────────── role
-    const role = useUserRole(); // например: "tracker", "client", "client_manager"
+    
+    const role = useUserRole(); 
     const isClient = role?.toLowerCase().includes("client");
 
-    // ─────────────────────────────────── data
+
     const projects = useSelector((s: any) => s.projects.projects);
     const filteredProjects = useMemo(() => {
         if (!projects) return [];
@@ -91,12 +61,11 @@ export default function UserProjects() {
         );
     }, [projects, searchTerm]);
 
-    // ─────────────────────────────────── fetch once
     useEffect(() => {
         dispatch(getProjects()).catch(console.error);
     }, [dispatch]);
 
-    // ─────────────────────────────────── common UI blocks
+
     const SearchBar = (
         <div className={classes.search_and_filter}>
             <div className={classes.search}>
@@ -113,7 +82,7 @@ export default function UserProjects() {
                     <img src={searchIcon} alt="search" className={classes.search_icon}/>
                 </div>
             </div>
-            {/* фильтры оставляем только для tracker‑версии */}
+      
             {!isClient && (
                 <div className={classes.filter}>
                     <p>Сбросить фильтры</p>
@@ -123,7 +92,6 @@ export default function UserProjects() {
         </div>
     );
 
-    // ─────────────────────────────────── event helpers (трекерская версия)
     const handleOpenModal = (column: string, id: string | number) => {
         setSelectedTaskId(id);
         switch (column) {

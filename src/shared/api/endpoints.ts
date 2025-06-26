@@ -41,13 +41,19 @@ export const API_KNOWLEDGE = {
 };
 
 export const API_ME = {
-  get: "/auth/users/me/",
+
+  base: "/auth/users/me/",
+
+  specialist: "/users/specialists/me/",
+  client:     "/users/clients/me/",
+  admin:      "/users/admins/me/",
+
   update: {
     client: "/users/clients/me/",
     specialist: "/users/specialists/me/",
     admin: "/users/admins/me/",
   },
-};
+} as const;
 
 
 export const API_PROJECT = {

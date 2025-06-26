@@ -33,10 +33,10 @@ const statusRef = useRef(null);
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
   const sortButtonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    if (!list.length) dispatch(getSpecialists());
-    if (!allOrders.length) dispatch(getFunnelData());
-  }, [dispatch, list.length, allOrders.length]);
+useEffect(() => {
+  dispatch(getSpecialists());
+  dispatch(getFunnelData());
+}, [dispatch]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

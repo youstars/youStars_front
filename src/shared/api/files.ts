@@ -32,12 +32,22 @@ export const uploadEntityFile = async (
   return data;
 };
 
+// shared/api/files.ts
 export const uploadSpecialistFile = (
   file: File,
   name: string,
-  specialistId: number,
+  specialistId?: number,
   description = ""
-) => uploadEntityFile("specialist", specialistId, file, name, description); 
+) => {
+  const roleId = parseInt(getCookie("user_role_id") || "0", 10);
+
+
+  const isAdmin = getCookie("user_role") === "admin";
+  const id = !isAdmin ? roleId : (specialistId ?? roleId);
+
+  console.log("[uploadSpecialistFile] final id →", id);
+  return uploadEntityFile("specialist", id, file, name, description);
+};
 
 
 export const uploadClientFile = (

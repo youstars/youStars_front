@@ -29,7 +29,7 @@ export const getTrackerById = createAsyncThunk(
   async (id: number | string, { rejectWithValue }) => {
     try {
       const token = getCookie("access_token");
-      const response = await axiosInstance.get(`/users/trackers/${id}/`, {
+      const response = await axiosInstance.get(`/users/admin/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -70,7 +70,7 @@ export const updateTracker = createAsyncThunk(
     try {
       const token = getCookie("access_token");
       const response = await axiosInstance.patch(
-        `/users/trackers/${trackerData.id}/`,
+        `/users/admin/${trackerData.id}/`,
         trackerData,
         {
           headers: {
