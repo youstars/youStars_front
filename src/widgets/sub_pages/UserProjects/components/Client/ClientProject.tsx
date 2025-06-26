@@ -15,8 +15,18 @@ interface Project {
     id: number;
     order: number;
     name: string;
-    specialists: number[];
-    tracker: number | null;
+    specialists: {
+        id: number;
+        custom_user: {
+            full_name: string;
+        };
+    }[];
+    tracker: {
+        id: number;
+        custom_user: {
+            full_name: string;
+        };
+    } | null;
     deadline: string | null;
     status: string;
     budget: string | null;
@@ -63,6 +73,17 @@ export default function ClientProject({project}: { project: Project }) {
             ? Math.round((tasksDone / project.tasks_count) * 100)
             : 0;
 
+    const trackerName =
+        project.tracker?.custom_user?.full_name ?? "—";
+
+    const specialistNames =
+        project.specialists && project.specialists.length > 0
+            ? project.specialists
+                  .map((s) => s.custom_user?.full_name)
+                  .filter(Boolean)
+                  .join(", ")
+            : "—";
+
     /* ───────── render ─────────────────────────────────────────────── */
     return (
         <div className={classes.card}
@@ -82,7 +103,6 @@ export default function ClientProject({project}: { project: Project }) {
                             {project.timeline.replace(/(\d{2})-(\d{2})-\d{4}/g, '$1.$2') ?? deadlineRu}
                         </div>
                     </div>
-
                 </div>
 
                 {/* конвеер статусов */}
@@ -139,8 +159,8 @@ export default function ClientProject({project}: { project: Project }) {
                     </div>
                 </div>
 
-                <span className={classes.tracker}>{`Трекер: ${project.tracker ?? "—"}`}</span>
-                <span className={classes.specialists}>{`Специалисты: ${project.specialists?.length ?? 0}`}</span>
+                <span className={classes.tracker}>{`Трекер: ${trackerName}`}</span>
+                <span className={classes.specialists}>{`Специалисты: ${specialistNames}`}</span>
             </div>
             <div className={classes.goal}>
                 <div className={classes.goalTitle}>

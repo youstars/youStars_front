@@ -78,7 +78,6 @@ export default function UserProjects() {
             )}
         </div>
     );
-
     // ─────────────────────────────────── client view
     const renderClientView = () => (
         <div>
