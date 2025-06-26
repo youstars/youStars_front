@@ -1,0 +1,43 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* красная шапка */
+.table thead {
+  background: #272a2d;
+}
+
+/* все строки tbody зелёные */
+.table tbody tr {
+  background: var(--grey);
+}
+
+/* ячейки */
+.table th,
+.table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  vertical-align: top;
+  font-family: "Myriad Pro", sans-serif;
+  font-size: 0.875rem;
+  margin: 0; // убираем margin у <p>, если есть
+}
+
+/* подсветка строки по ховеру (можно оставить как есть либо подстроить) */
+.project_row:hover {
+  background: #3b3e42;
+}
+
+/* убираем стандартные margin */
+.table th,
+.table td {
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .options,
+  .project_card {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  }
+}
