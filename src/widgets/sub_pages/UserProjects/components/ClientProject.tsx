@@ -1,6 +1,8 @@
 import React from "react";
 import {useNavigate} from "react-router-dom";
-import ChatIcon from "shared/assets/icons/chatY.svg";
+import Checklist from "shared/assets/icons/stripesY.svg";
+import Chat from "shared/assets/icons/chatY.svg";
+import GroupChat from "shared/assets/icons/ChatsY.svg";
 import classes from "./ClientProject.module.scss";
 import ProgressBar from "shared/UI/ProgressBar/ProgressBar";
 
@@ -14,6 +16,7 @@ interface Project {
     order: number;
     name: string;
     specialists: number[];
+    tracker: number | null;
     deadline: string | null;
     status: string;
     budget: string | null;
@@ -24,13 +27,10 @@ interface Project {
 
 const STATUS_TITLES: Record<string, string> = {
     initial: "Обработка",
-    matching: "Метчинг",
-    pre_payment: "Предоплата",
     in_progress: "Работа",
-    post_payment: "Постоплата",
+    pre_payment: "Правки",
     done: "Готово",
 };
-
 
 
 /**
@@ -65,9 +65,8 @@ export default function ClientProject({project}: { project: Project }) {
 
     /* ───────── render ─────────────────────────────────────────────── */
     return (
-        <div
-            className={classes.card}
-            onClick={() => navigate(`/client/project/${project.id}`)}
+        <div className={classes.card}
+             onClick={() => navigate(`/client/project/${project.id}`)}
         >
             {/* ───── верхний блок ───── */}
             <div className={classes.top}>
@@ -75,16 +74,16 @@ export default function ClientProject({project}: { project: Project }) {
                 <div className={classes.orderBox}>
                     <div className={classes.orderName}>{`Заявка №${project.order} / ${project.name}`}</div>
                     {/* название, бюджет, сроки */}
-                    <div className={classes.mainMeta}>
-                        <div className={classes.metaRow}>
-                            <span className={classes.budget}>{`${Math.round(Number(project.budget)).toLocaleString("ru-RU")} ₽` ?? "—"}</span>
-                            <span className={classes.timeline}>
-              {project.timeline.replace(/(\d{2})-(\d{2})-\d{4}/g, '$1.$2') ?? deadlineRu}
-            </span>
+                    <div className={classes.gene}>
+                        <div className={classes.budget}>
+                            {`${Math.round(Number(project.budget)).toLocaleString("ru-RU")} ₽` ?? "—"}
                         </div>
-                    </div></div>
+                        <div className={classes.timeline}>
+                            {project.timeline.replace(/(\d{2})-(\d{2})-\d{4}/g, '$1.$2') ?? deadlineRu}
+                        </div>
+                    </div>
 
-
+                </div>
 
                 {/* конвеер статусов */}
                 <div className={classes.pipeline}>
@@ -96,37 +95,52 @@ export default function ClientProject({project}: { project: Project }) {
                 </div>
 
                 {/* иконки / действия */}
-                <div
-                    className={classes.icons}
-                    onClick={(e) => e.stopPropagation()} /* блокируем переход */
-                >
+                <div className={classes.icons} onClick={(e) => e.stopPropagation()}>
+                    <button
+                        className={classes.iconBtn}
+                        type="button"
+                        onClick={() => navigate(`/client/project/${project.id}/messages`)}
+                    >
+                        <img src={Checklist} alt="Chat"/>
+                    </button>
                     <button
                         type="button"
                         className={classes.iconBtn}
                         onClick={() => navigate(`/client/project/${project.id}/messages`)}
                     >
-                        <img src={ChatIcon} alt="Chat"/>
+                        <img src={Chat} alt="Chat"/>
+                    </button>
+                    <button
+                        type="button"
+                        className={classes.iconBtn}
+                        onClick={() => navigate(`/client/project/${project.id}/messages`)}
+                    >
+                        <img src={GroupChat} alt="Chat"/>
                     </button>
                 </div>
             </div>
-
-            {/* ───── блок прогресса задач ───── */}
-            <div className={classes.progressBlock}>
-                <span className={classes.progressLabel}>{percent}% выполненных задач</span>
-                <div
-                    className={classes.progressBarWrapper}
-                    style={{"--percent": percent} as React.CSSProperties}
-                >
-                    <span className={classes.min}>0</span>
-                    <div className={classes.progressBar}>
-                        <div
-                            className={classes.progressFill}
-                            style={{width: `${percent}%`}}
-                        />
+            {/* ───── мета‑строка: трекер, специалисты и прогресс задач ───── */}
+            <div className={classes.metaRow}>
+                <div className={classes.progressBlock}>
+                    <span className={classes.progressLabel}>{percent}% выполненных задач</span>
+                    <div
+                        className={classes.progressBarWrapper}
+                        style={{"--percent": percent} as React.CSSProperties}
+                    >
+                        <span className={classes.min}>0</span>
+                        <div className={classes.progressBar}>
+                            <div
+                                className={classes.progressFill}
+                                style={{width: `${percent}%`}}
+                            />
+                        </div>
+                        <span className={classes.max}>{project.tasks_count}</span>
+                        <span className={classes.count}>{tasksDone}</span>
                     </div>
-                    <span className={classes.max}>{project.tasks_count}</span>
-                    <span className={classes.count}>{tasksDone}</span>
                 </div>
+
+                <span className={classes.tracker}>{`Трекер: ${project.tracker ?? "—"}`}</span>
+                <span className={classes.specialists}>{`Специалисты: ${project.specialists?.length ?? 0}`}</span>
             </div>
             <div className={classes.goal}>
                 <div className={classes.goalTitle}>
@@ -134,6 +148,7 @@ export default function ClientProject({project}: { project: Project }) {
                     <div className={classes.goalText}>{project.goal}</div>
                 </div>
             </div>
+
         </div>
     );
 }

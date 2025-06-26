@@ -9,7 +9,7 @@ export const formatCurrency = (
     const num = Number(raw);
     if (Number.isNaN(num)) return String(raw);   // пришёл мусор
 
-    // «1 234 567 ₽»
+
     return new Intl.NumberFormat("ru-RU", {
         style: "currency",
         currency: "RUB",

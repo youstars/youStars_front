@@ -12,41 +12,91 @@ $yellow: #FFC400;
   height: 238px;
   background: $grey-900;
   border-radius: 10px;
-  padding: 30px;
+  padding: 25px;
   margin: 40px;
 
   &-Header {
     display: flex;
-    align-items: center; // выравнивание по вертикали
-    gap: 16px; // промежуток между orderBox и mainMeta
-    margin-bottom: 24px; // отступ снизу, если нужно
+    flex-direction: column; // теперь дети идут сверху вниз
+    align-items: flex-start; // выравнивание по левому краю
+    gap: 4px; // расстояние между orderName и gene
   }
 
-  .orderName {
-    position: static;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    height: 30px;
-    width: auto;
-    background: $grey-800;
-    border-radius: 10px;
-    font-size: 14px;
-    line-height: 17px;
-
-  }
-
-  .metaRow {
+  .top {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 14px;
-    margin-top: 8px;
-    margin-left: 10px;
-    margin-right: 10px;
+    align-items: flex-start;
+    justify-content: space-between; // первый прижмётся влево, последний — вправо
+    width: 100%;
+    height: 48px;
+
+    .orderBox {
+      display: flex;
+      flex-direction: column;  // теперь дети идут сверху вниз
+      align-items: flex-start; // выравнивание по левому краю
+      gap: 4px; // расстояние между orderName и gene
+
+      .orderName {
+        position: static;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        height: 30px;
+        width: auto;
+        background: $grey-800;
+        border-radius: 10px;
+        font-size: 14px;
+        line-height: 17px;
+
+      }
+
+      .gene {
+        padding: 0 10px;
+        display: flex;                // раскладываем детей в ряд
+        flex-direction: row;          // по-умолчанию, можно опустить
+        align-items: center;          // выравнивание по центру по высоте
+        justify-content: space-between; // если нужно, чтобы бюджет был слева, а timeline — справа
+        width: 100%;                  // растягиваем .gene на всю доступную ширину
+        gap: 16px;                    // при необходимости промежуток между ними
+        font-size: 12px;
+        line-height: 14px;
+
+        .budget{
+        }
+        .timeLine{
+        }
+      }
+
+    }
+
+
+    .icons {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 8px;
+      height: 36px;
+
+      .iconBtn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        width: 36px;
+        height: 36px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+
+        img {
+          width: 24px;
+          height: 24px;
+        }
+      }
+    }
 
   }
+
 
   span {
     font-size: 12px;
@@ -56,41 +106,10 @@ $yellow: #FFC400;
 
 
   /* ──── TOP BLOCK ──── */
-  .top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between; // первый прижмётся влево, последний — вправо
-    width: 100%;
-    height: 48px;
 
-  }
 
   /* Иконки действий */
-  .icons {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 8px;
-    width: 32px;
-    height: 32px;
 
-    .iconBtn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 6px;
-      width: 32px;
-      height: 32px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-
-      img {
-        width: 20px;
-        height: 20px;
-      }
-    }
-  }
 
   .goal {
     width: 41rem;
@@ -102,6 +121,30 @@ $yellow: #FFC400;
         font-size: 0.75rem;
       }
     }
+  }
+
+  /* ───────── alignment for tracker & specialists row ───────── */
+  .metaRow {
+    position: relative; /* allow absolute centring of tracker */
+    display: flex;
+    align-items: center; /* vertical centering */
+    gap: 20px;
+    width: 100%;
+  }
+
+  .tracker {
+    font-size: 16px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+
+  .specialists {
+    font-size: 16px;
+    margin-left: auto; /* push to the far right */
+    white-space: nowrap;
   }
 
 
@@ -226,6 +269,7 @@ $yellow: #FFC400;
     transform: translateX(calc(#{'var(--percent)'} * 1%));
   }
 }
+
 
 /* ──── Empty state (если нет данных) ──── */
 .empty {
