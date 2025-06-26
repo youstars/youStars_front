@@ -15,11 +15,42 @@ import CustomerModal from "widgets/Modals/CustomerModal/CustomerModal";
 import {useNavigate} from "react-router-dom";
 import {useUserRole} from "shared/hooks/useUserRole";
 import ClientProject from "../components/ClientProject";
+/**
+ * ──────────────────────────────────── types
+ * Более строгие типы проекта и связанных сущностей.
+ */
+interface CustomUser {
+    full_name?: string;
+}
+
+interface Specialist {
+    id?: number | string;
+    custom_user?: CustomUser;
+    full_name?: string;
+}
+
+interface Client {
+    full_name?: string;
+}
+
+interface Tracker {
+    full_name?: string;
+}
+
+export interface LeanProject {
+    id: number | string;
+    name?: string;
+    deadline?: string;
+    tracker?: Tracker;
+    specialists?: Specialist[];
+    students?: Specialist[];
+    client?: Client;
+}
 
 /**
  * Вспомогательная функция для трекер‑версии: красиво собирает список специалистов.
  */
-const getSpecialistsLabel = (project: any): string => {
+const getSpecialistsLabel = (project: LeanProject): string => {
     const list = project.specialists ?? project.students ?? [];
     if (Array.isArray(list) && list.length) {
         return list
@@ -54,7 +85,7 @@ export default function UserProjects() {
     const isClient = role?.toLowerCase().includes("client");
 
     // ─────────────────────────────────── data
-    const projects = useSelector((s: any) => s.projects.projects);
+    const projects = useSelector((s: any) => s.projects.projects) as LeanProject[] | undefined;
     const filteredProjects = useMemo(() => {
         if (!projects) return [];
         const q = searchTerm.toLowerCase();
@@ -187,7 +218,7 @@ export default function UserProjects() {
 
             <tbody>
             {filteredProjects && filteredProjects.length ? (
-                filteredProjects.map((project: any) => (
+                filteredProjects.map((project: LeanProject) => (
                     <tr
                         key={project.id}
                         className={classes.project_row}
@@ -255,7 +286,7 @@ export default function UserProjects() {
                                 console.log("Выбраны даты:", start, end);
                                 setIsCalendarOpen(false);
                             }}
-                            tasks={filteredProjects}
+                            tasks={filteredProjects as any[]}
                             selectedTaskId={selectedTaskId}
                         />
                     )}
