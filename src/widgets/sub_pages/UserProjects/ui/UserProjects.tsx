@@ -3,11 +3,10 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "shared/store";
 import {getProjects} from "shared/store/slices/projectsSlice";
 import classes from "./UserProjects.module.scss";
-import {Input} from "shared/index";
 import {useUserRole} from "shared/hooks/useUserRole";
 import ClientProject from "../components/Client/ClientProject";
 import TrackerProject from "../components/Tracker/TrackerProject";
-import searchIcon from "shared/images/sideBarImgs/search.svg";
+import SearchAndFilter from "./SearchAndFilter";
 
 interface CustomUser {
     full_name?: string;
@@ -67,30 +66,7 @@ export default function UserProjects() {
     useEffect(() => {
         dispatch(getProjects()).catch(console.error);
     }, [dispatch]);
-    const SearchBar = (
-        <div className={classes.search_and_filter}>
-            <div className={classes.search}>
-                <div className={classes.input_wrapper}>
-                    <Input
-                        className={classes.input}
-                        type="text"
-                        placeholder="Поиск"
-                        value={searchTerm}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            setSearchTerm(e.target.value)
-                        }
-                    />
-                    <img src={searchIcon} alt="search" className={classes.search_icon}/>
-                </div>
-            </div>
-            {!isClient && (
-                <div className={classes.filter}>
-                    <p>Сбросить фильтры</p>
-                    <p>Сохранить комбинацию</p>
-                </div>
-            )}
-        </div>
-    );
+
     // ─────────────────────────────────── client view
     const renderClientView = () => (
         <div className={classes.context}>
@@ -112,7 +88,11 @@ export default function UserProjects() {
     // ─────────────────────────────────── render
     return (
         <main className={classes.main}>
-            {SearchBar}
+            <SearchAndFilter
+                value={searchTerm}
+                onChange={setSearchTerm}
+                isClient={isClient}
+            />
             {isClient ? renderClientView() : renderTrackerView()}
         </main>
     );
