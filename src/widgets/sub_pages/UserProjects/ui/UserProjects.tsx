@@ -80,7 +80,7 @@ export default function UserProjects() {
     );
     // ─────────────────────────────────── client view
     const renderClientView = () => (
-        <div>
+        <div className={classes.context}>
             {filteredProjects && filteredProjects.length ? (
                 filteredProjects.map((project: any) => (
                     <ClientProject key={project.id} project={project}/>

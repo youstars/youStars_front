@@ -31,7 +31,7 @@ $yellow: #FFC400;
 
     .orderBox {
       display: flex;
-      flex-direction: column;  // теперь дети идут сверху вниз
+      flex-direction: column; // теперь дети идут сверху вниз
       align-items: flex-start; // выравнивание по левому краю
       gap: 4px; // расстояние между orderName и gene
 
@@ -52,18 +52,19 @@ $yellow: #FFC400;
 
       .gene {
         padding: 0 10px;
-        display: flex;                // раскладываем детей в ряд
-        flex-direction: row;          // по-умолчанию, можно опустить
-        align-items: center;          // выравнивание по центру по высоте
+        display: flex; // раскладываем детей в ряд
+        flex-direction: row; // по-умолчанию, можно опустить
+        align-items: center; // выравнивание по центру по высоте
         justify-content: space-between; // если нужно, чтобы бюджет был слева, а timeline — справа
-        width: 100%;                  // растягиваем .gene на всю доступную ширину
-        gap: 16px;                    // при необходимости промежуток между ними
+        width: 100%; // растягиваем .gene на всю доступную ширину
+        gap: 16px; // при необходимости промежуток между ними
         font-size: 12px;
         line-height: 14px;
 
-        .budget{
+        .budget {
         }
-        .timeLine{
+
+        .timeLine {
         }
       }
 
@@ -94,16 +95,13 @@ $yellow: #FFC400;
         }
       }
     }
-
   }
-
 
   span {
-    font-size: 12px;
-    line-height: 14px;
-
+    font-size: 16px;
+    line-height: 16px;
+    color: $white;
   }
-
 
   /* ──── TOP BLOCK ──── */
 
@@ -130,21 +128,23 @@ $yellow: #FFC400;
     align-items: center; /* vertical centering */
     gap: 20px;
     width: 100%;
-  }
 
-  .tracker {
-    font-size: 16px;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-  }
+    .specialists,
+    .tracker {
+      font-size: 20px;
+      color: #c8c8c8;
+      white-space: nowrap;
+    }
 
+    .tracker {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
 
-  .specialists {
-    font-size: 16px;
-    margin-left: auto; /* push to the far right */
-    white-space: nowrap;
+    .specialists {
+      margin-left: auto;
+    }
   }
 
 
@@ -152,7 +152,6 @@ $yellow: #FFC400;
   display: flex;
   flex-direction: column;
   gap: 20px;
-
   font-family: 'Myriad Pro', sans-serif;
   color: $white;
 }
@@ -204,13 +203,11 @@ $yellow: #FFC400;
   width: 220px;
   height: 51px;
 
-
   .progressLabel {
     margin: 0 auto;
     font-size: 16px;
     line-height: 19px;
   }
-
 
   .min,
   .count,
@@ -278,7 +275,6 @@ $yellow: #FFC400;
   text-align: center;
   width: 100%;
 }
-
 
 /* ─────────────────── Responsive ─────────────────── */
 

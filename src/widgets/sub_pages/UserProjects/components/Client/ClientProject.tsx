@@ -5,6 +5,7 @@ import Chat from "shared/assets/icons/chatY.svg";
 import GroupChat from "shared/assets/icons/ChatsY.svg";
 import classes from "./ClientProject.module.scss";
 import ProgressBar from "shared/UI/ProgressBar/ProgressBar";
+import { useTranslation } from "react-i18next";
 
 /**
  * Тип проекта (сокращённый)
@@ -19,12 +20,14 @@ interface Project {
         id: number;
         custom_user: {
             full_name: string;
+            avatar?: string;
         };
     }[];
     tracker: {
         id: number;
         custom_user: {
             full_name: string;
+            avatar?: string;
         };
     } | null;
     deadline: string | null;
@@ -49,6 +52,8 @@ const STATUS_TITLES: Record<string, string> = {
  * и прогресс‑бар по выполненным задачам.
  */
 export default function ClientProject({project}: { project: Project }) {
+    const { t } = useTranslation();
+
     const steps = Object.values(STATUS_TITLES);
 
     const currentStepIndex = steps.findIndex(
@@ -76,13 +81,11 @@ export default function ClientProject({project}: { project: Project }) {
     const trackerName =
         project.tracker?.custom_user?.full_name ?? "—";
 
-    const specialistNames =
-        project.specialists && project.specialists.length > 0
-            ? project.specialists
-                  .map((s) => s.custom_user?.full_name)
-                  .filter(Boolean)
-                  .join(", ")
-            : "—";
+    const specialistCount = project.specialists ? project.specialists.length : 0;
+
+    const specialistLabel = specialistCount
+        ? `${specialistCount} ${t("specialist", { count: specialistCount })}`
+        : "—";
 
     /* ───────── render ─────────────────────────────────────────────── */
     return (
@@ -160,7 +163,18 @@ export default function ClientProject({project}: { project: Project }) {
                 </div>
 
                 <span className={classes.tracker}>{`Трекер: ${trackerName}`}</span>
-                <span className={classes.specialists}>{`Специалисты: ${specialistNames}`}</span>
+                <span className={classes.specialists}>
+                    {`Специалисты: `}
+                    {project.specialists && project.specialists.length > 0 ? (
+                        project.specialists.map((s) => (
+                            <span key={s.id} className={classes.specialistItem}>
+                                {s.custom_user.full_name}
+                            </span>
+                        ))
+                    ) : (
+                        "—"
+                    )}
+                </span>
             </div>
             <div className={classes.goal}>
                 <div className={classes.goalTitle}>
@@ -168,7 +182,6 @@ export default function ClientProject({project}: { project: Project }) {
                     <div className={classes.goalText}>{project.goal}</div>
                 </div>
             </div>
-
         </div>
     );
 }

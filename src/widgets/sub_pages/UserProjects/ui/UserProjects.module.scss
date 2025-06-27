@@ -1,7 +1,15 @@
+.context{
+  position: relative;
+
+}
+
 .main {
   width: 100%;
   background: #272a2d;
-  min-height: 100dvh;
+  height: 100vh;
+  /* allow the page to scroll when content exceeds viewport */
+  overflow: scroll;
+  padding-bottom: 50px;
 }
 
 .status p {
@@ -16,7 +24,11 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 0.625rem;
-  margin-left: 0.0625rem;
+  overflow: unset;
+  position: sticky;
+  top: 0;
+  z-index: 10; /* keep it above project rows */
+  border-bottom: 1px solid #272a2d;
 }
 
 
