@@ -35,6 +35,8 @@ export interface LeanProject {
     specialists?: Specialist[];
     students?: Specialist[];
     client?: Client;
+    /** ID заявки (может приходить числом либо строкой, иногда как объект с name) */
+    order?: number | string | { name?: string };
 }
 
 export default function UserProjects() {
@@ -46,9 +48,20 @@ export default function UserProjects() {
     const filteredProjects = useMemo(() => {
         if (!projects) return [];
         const q = searchTerm.toLowerCase();
-        return projects.filter((p: any) =>
-            (p.name ?? "").toLowerCase().includes(q),
-        );
+        return projects.filter((p: any) => {
+            const projectName: string = p.project?.name ?? p.name ?? "";
+
+            let orderStr = "";
+            if (typeof p.order === "number" || typeof p.order === "string") {
+                orderStr = String(p.order);
+            } else if (p.order && typeof p.order === "object" && "name" in p.order) {
+                orderStr = (p.order.name as string) ?? "";
+            }
+            return (
+                projectName.toLowerCase().includes(q) ||
+                orderStr.toLowerCase().includes(q)
+            );
+        });
     }, [projects, searchTerm]);
 
     useEffect(() => {
