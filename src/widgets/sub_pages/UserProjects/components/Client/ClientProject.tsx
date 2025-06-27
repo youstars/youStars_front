@@ -5,12 +5,7 @@ import Chat from "shared/assets/icons/chatY.svg";
 import GroupChat from "shared/assets/icons/ChatsY.svg";
 import classes from "./ClientProject.module.scss";
 import ProgressBar from "shared/UI/ProgressBar/ProgressBar";
-import { useTranslation } from "react-i18next";
 
-/**
- * Тип проекта (сокращённый)
- * Подгоняем под те поля, что реально приходят с сервера.
- */
 interface Project {
     goal: string;
     id: number;
@@ -45,14 +40,7 @@ const STATUS_TITLES: Record<string, string> = {
     done: "Готово",
 };
 
-
-/**
- * Карточка проекта для клиента.
- * Содержит верхний блок с основными данными, «конвеер» статусов
- * и прогресс‑бар по выполненным задачам.
- */
 export default function ClientProject({project}: { project: Project }) {
-    const { t } = useTranslation();
 
     const steps = Object.values(STATUS_TITLES);
 
@@ -81,23 +69,14 @@ export default function ClientProject({project}: { project: Project }) {
     const trackerName =
         project.tracker?.custom_user?.full_name ?? "—";
 
-    const specialistCount = project.specialists ? project.specialists.length : 0;
-
-    const specialistLabel = specialistCount
-        ? `${specialistCount} ${t("specialist", { count: specialistCount })}`
-        : "—";
-
     /* ───────── render ─────────────────────────────────────────────── */
     return (
         <div className={classes.card}
              onClick={() => navigate(`/client/project/${project.id}`)}
         >
-            {/* ───── верхний блок ───── */}
             <div className={classes.top}>
-                {/* «Заявка №…» */}
                 <div className={classes.orderBox}>
                     <div className={classes.orderName}>{`Заявка №${project.order} / ${project.name}`}</div>
-                    {/* название, бюджет, сроки */}
                     <div className={classes.gene}>
                         <div className={classes.budget}>
                             {`${Math.round(Number(project.budget)).toLocaleString("ru-RU")} ₽` ?? "—"}
@@ -166,10 +145,11 @@ export default function ClientProject({project}: { project: Project }) {
                 <span className={classes.specialists}>
                     {`Специалисты: `}
                     {project.specialists && project.specialists.length > 0 ? (
-                        project.specialists.map((s) => (
-                            <span key={s.id} className={classes.specialistItem}>
-                                {s.custom_user.full_name}
-                            </span>
+                        project.specialists.map((s, idx) => (
+                            <React.Fragment key={s.id}>
+                                <span className={classes.specialistItem} >{s.custom_user.full_name}</span>
+                                {idx < project.specialists.length - 1 && ", "}
+                            </React.Fragment>
                         ))
                     ) : (
                         "—"
