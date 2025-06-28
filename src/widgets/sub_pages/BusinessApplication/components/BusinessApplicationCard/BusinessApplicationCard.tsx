@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useCallback} from "react";
+import React, {useState, useMemo, useCallback, useEffect} from "react";
 import styles from "./BusinessApplicationCard.module.scss";
 import Avatar from "shared/UI/Avatar/Avatar";
 import ProgressBar from "shared/UI/ProgressBar/ProgressBar";
@@ -24,6 +24,12 @@ export default function BusinessApplicationCard({order}: Props) {
     const [product, setProduct] = useState(order.product_or_service || "");
     const [wishes, setWishes] = useState(order.extra_wishes || "");
 
+    // синхронизируем локальный state, если придёт обновлённый order
+    useEffect(() => setGoal(order.order_goal || ""), [order.order_goal]);
+    useEffect(() => setProblems(order.solving_problems || ""), [order.solving_problems]);
+    useEffect(() => setProduct(order.product_or_service || ""), [order.product_or_service]);
+    useEffect(() => setWishes(order.extra_wishes || ""), [order.extra_wishes]);
+
     const statusStepsMap = {
         in_progress: "Обработка",
         matching: "Метчинг",
@@ -35,6 +41,19 @@ export default function BusinessApplicationCard({order}: Props) {
     };
 
     const steps = Object.values(statusStepsMap);
+
+    const priceRange = useMemo(
+        () => order.estimated_budget || "—",
+        [order.estimated_budget]
+    );
+
+    const dateRange = useMemo(
+        () =>
+            order.project_deadline
+                ? new Date(order.project_deadline).toLocaleDateString()
+                : "Без срока",
+        [order.project_deadline]
+    );
 
     const currentStepIndex = useMemo(
         () =>
@@ -56,8 +75,10 @@ export default function BusinessApplicationCard({order}: Props) {
 
     const handleFieldBlur = useCallback(
         (field: keyof Order, originalValue: string, newValue: string) => {
-            if (originalValue !== newValue) {
-                dispatch(updateOrder({id: order.id, [field]: newValue}));
+            const trimmedOriginal = originalValue.trim();
+            const trimmedNext = newValue.trim();
+            if (trimmedOriginal !== trimmedNext) {
+                dispatch(updateOrder({id: order.id, [field]: trimmedNext}));
             }
         },
         [dispatch, order.id]
@@ -68,12 +89,8 @@ export default function BusinessApplicationCard({order}: Props) {
             <div className={styles.header} onClick={() => setIsOpen(!isOpen)}>
                 <ApplicationCard
                     number={`№ ${order.id}`}
-                    priceRange={order.estimated_budget || "—"}
-                    dateRange={
-                        order.project_deadline
-                            ? new Date(order.project_deadline).toLocaleDateString()
-                            : "Без срока"
-                    }
+                    priceRange={priceRange}
+                    dateRange={dateRange}
                 />
 
                 <div className={styles.rank}>
