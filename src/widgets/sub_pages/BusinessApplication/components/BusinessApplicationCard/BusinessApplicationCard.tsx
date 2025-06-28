@@ -115,7 +115,10 @@ export default function BusinessApplicationCard({order}: Props) {
                             {order.project_name || order.order_name}
                         </h1>
                     </div>
-                    <IconButton icon={Chat} alt="chat" size="lg" borderColor="#FFD700"/>
+                    <div className={styles.iconButton}>
+                        <IconButton icon={Chat} alt="chat" size="lg" borderColor="#FFD700"/>
+                    </div>
+
                 </div>
             </div>
 

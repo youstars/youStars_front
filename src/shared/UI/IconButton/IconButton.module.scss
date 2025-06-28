@@ -7,12 +7,13 @@
   transition: transform 0.15s ease, background-color 0.15s ease;
   border: 1px solid white;
   border-radius: var(--border-radius-main);
+  flex-shrink: 0;
 
   &:active {
     transform: scale(0.92);
   }
 
   img {
-    display: block;
+
   }
 }

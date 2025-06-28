@@ -1,20 +1,31 @@
+// Breakpoints & shared constants
+$collapse-max: 1000px;
+$tablet: 768px;
+$mobile: 480px;
+$hover-ring-width: 5px;
+
 .container {
-  padding: 25px 20px;
+  padding: 20px;
   border-radius: var(--border-radius-main);
   background-color: var(--color-bg-primary);
   cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 0 0 $hover-ring-width var(--color-text-secondary);
+  }
 
   .header {
     display: flex;
+    flex-wrap: wrap; // позволяет элементам переноситься, если ширина недостаточна
     align-items: center;
     justify-content: space-between;
     gap: 15px;
     width: 100%;
     background-color: var(--color-bg-primary);
     border-radius: var(--border-radius-main);
-    padding: 16px 20px;
 
-    @media (max-width: 768px) {
+    @media (max-width: #{$tablet}) {
       flex-direction: column;
       align-items: flex-start;
       gap: 20px;
@@ -26,7 +37,7 @@
     display: flex;
     align-items: center;
     gap: 15px;
-    flex: 0 0 200px;
+    flex: 0 1 200px; // может сжиматься, если места мало
 
     h1 {
       font-size: 16px;
@@ -37,7 +48,7 @@
       }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: #{$tablet}) {
       flex: 1;
       justify-content: flex-start;
       gap: 10px;
@@ -51,7 +62,7 @@
     align-items: center;
     justify-content: center;
 
-    @media (max-width: 768px) {
+    @media (max-width: #{$tablet}) {
       width: 100%;
       align-items: flex-start;
     }
@@ -60,8 +71,10 @@
   .progressBar {
     width: 100%;
     max-width: 500px;
+    flex: 1 1 0;
+    min-width: 0; // предотвращает переполнение из-за длинного содержимого
 
-    @media (max-width: 768px) {
+    @media (max-width: #{$tablet}) {
       max-width: 100%;
     }
   }
@@ -69,20 +82,28 @@
   .rightBlock {
     display: flex;
     align-items: center;
+    margin-left: auto;
+    flex: 0 0 auto; // фиксированная ширина, не растягивается
+
+    .iconButton {
+      flex-shrink: 0; // не сжимается и не «сползает» за пределы контейнера
+      margin-left: 15px;
+    }
 
 
-    @media (max-width: 768px) {
+    @media (max-width: #{$tablet}) {
       flex: 1;
       justify-content: space-between;
       width: 100%;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: #{$mobile}) {
       flex-direction: column;
       align-items: flex-start;
       gap: 10px;
     }
   }
+
 
   .projectDetails {
     display: flex;
@@ -98,11 +119,11 @@
     }
 
     &.open {
-      max-height: 1000px;
+      max-height: $collapse-max;
       opacity: 1;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: #{$tablet}) {
       flex-direction: column;
       gap: 16px;
       padding: 15px 12px;
