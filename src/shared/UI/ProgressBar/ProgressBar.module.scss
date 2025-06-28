@@ -13,6 +13,7 @@ $yellow: #FFC400;
 }
 
 .progressBar {
+  left: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -23,7 +24,7 @@ $yellow: #FFC400;
     content: "";
     position: absolute;
     top: 14px;
-    left: 20px;
+    left: 21px;
     right: 16px;
     height: 2px;
     background-color: $yellow;

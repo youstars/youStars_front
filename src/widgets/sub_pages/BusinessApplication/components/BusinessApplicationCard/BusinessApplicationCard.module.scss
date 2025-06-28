@@ -80,20 +80,23 @@ $hover-ring-width: 5px;
   }
 
   .rightBlock {
+    width: 300px;
     display: flex;
     align-items: center;
+    justify-content: flex-end; // прижимаем содержимое к правой границе
     margin-left: auto;
     flex: 0 0 auto; // фиксированная ширина, не растягивается
 
     .iconButton {
       flex-shrink: 0; // не сжимается и не «сползает» за пределы контейнера
       margin-left: 15px;
+      right: 0;
     }
 
 
     @media (max-width: #{$tablet}) {
       flex: 1;
-      justify-content: space-between;
+      justify-content: flex-end;
       width: 100%;
     }
 

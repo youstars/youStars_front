@@ -88,7 +88,7 @@ export default function BusinessApplicationCard({order}: Props) {
         <div className={styles.container}>
             <div className={styles.header} onClick={() => setIsOpen(!isOpen)}>
                 <ApplicationCard
-                    number={`№ ${order.id}`}
+                    number={`${order.id}`}
                     priceRange={priceRange}
                     dateRange={dateRange}
                 />
