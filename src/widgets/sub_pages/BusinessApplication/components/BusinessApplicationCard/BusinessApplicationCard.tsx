@@ -31,6 +31,7 @@ export default function BusinessApplicationCard({order}: Props) {
     useEffect(() => setWishes(order.extra_wishes || ""), [order.extra_wishes]);
 
     const statusStepsMap = {
+        new: "Новая заявка",
         in_progress: "Обработка",
         matching: "Метчинг",
         prepayment: "Предоплата",
