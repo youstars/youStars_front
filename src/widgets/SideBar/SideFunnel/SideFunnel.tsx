@@ -37,6 +37,7 @@ import Subtasks from "./parts/Subtasks";
 
 
 export enum OrderStatus {
+  NewOrder = "new",
   InProgress = "in_progress",
   Matching = "matching",
   Prepayment = "prepayment",
@@ -102,20 +103,14 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
   }, [order]);
 
   useEffect(() => {
-    if (infoRef.current) {
+    if (!order) return;
 
+    if (infoRef.current) {
       infoRef.current.style.maxHeight = isInfoOpen
         ? `${infoRef.current.scrollHeight}px`
         : "0";
     }
-
-  }, [
-    isInfoOpen,
-    order.order_goal,
-    order.product_or_service,
-    order.solving_problems,
-    order.extra_wishes,
-  ]);
+  }, [isInfoOpen, order]);
 
   const handleClientChat = () => {
     const clientUserId = order?.client?.custom_user?.id;
@@ -228,7 +223,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
               <DeadlineBlock
                 label="Начало статуса"
                 icon={<Calendar size={14} className={classes.icon} />}
-                value="12.02.2025"
+                value={formatDate(order.updated_at)}
               />
               <DeadlineBlock
                 label="Последний контакт с заказчиком"
@@ -358,9 +353,12 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                     dispatch(rejectInvitation(id)).then(refresh)
                   }
                 />
+              </>
+            )}
 
+            {order.status !== OrderStatus.InProgress && order.status !== OrderStatus.NewOrder &&(
+              <>
                 <div className={classes.title}>Утверждённые специалисты</div>
-
                 <ApprovedSpecialistsList items={approvedSpecialists} />
               </>
             )}
