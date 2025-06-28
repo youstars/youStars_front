@@ -32,6 +32,7 @@ import CreateAccountClient from "pages/CreateAccountClient/CreateAccountClient";
 import CreateAccount from "pages/CreatedAccount/ui/CreatedAccount";
 import ProfilePage from "widgets/sub_pages/ProfilePage/ProfilePage";
 import TrackerProfile from "widgets/TrackerProfile/TrackerProfile";
+import ClientProject from "widgets/sub_pages/UserProjects/components/Client/ClientProject";
 
 function App() {
   const { theme } = useTheme();
@@ -89,6 +90,7 @@ if (!isAuthed && !isPublic && !isLoading) {
             <Route path="library" element={<Library />} />
             <Route path="admins" element={<AdminsPage />} />
             <Route path="trackers/:id" element={<TrackerProfile />} />
+            <Route path="clients/:id/projects/:id" element={<ClientProject project={undefined}/>}/>
 
             <Route path="settings" element={<Settings />} />
             <Route path="chats" element={<Chats />} />

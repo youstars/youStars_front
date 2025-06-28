@@ -5,6 +5,7 @@ import Chat from "shared/assets/icons/chatY.svg";
 import GroupChat from "shared/assets/icons/ChatsY.svg";
 import classes from "./ClientProject.module.scss";
 import ProgressBar from "shared/UI/ProgressBar/ProgressBar";
+import { getCookie } from "shared/utils/cookies";
 
 interface Project {
     goal: string;
@@ -39,6 +40,7 @@ const STATUS_TITLES: Record<string, string> = {
     pre_payment: "Правки",
     done: "Готово",
 };
+const client_id = getCookie("user_role_id");
 
 export default function ClientProject({project}: { project: Project }) {
 
@@ -72,7 +74,7 @@ export default function ClientProject({project}: { project: Project }) {
     /* ───────── render ─────────────────────────────────────────────── */
     return (
         <div className={classes.card}
-             onClick={() => navigate(`/client/project/${project.id}`)}
+             onClick={() => navigate(`/manager/clients/${client_id}/project/${project.id}`)}
         >
             <div className={classes.top}>
                 <div className={classes.orderBox}>
