@@ -7,8 +7,20 @@ interface ProgressBarProps {
 }
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ steps, currentStep }) => {
-  return (
+    // percentage of progress (0–100)
+    const progressPercentage =
+        steps.length > 1 ? (currentStep / (steps.length - 1)) * 100 : 0;
+
+    return (
     <div className={styles.progressBar}>
+        {/* full‑width background line */}
+        <div className={styles.progressTrack} />
+
+        {/* colored line up to currentStep */}
+        <div
+            className={styles.progressLine}
+            style={{ width: `${progressPercentage}%` }}
+        />
      {steps.map((label, index) => (
   <div
     className={`${styles.step} ${
