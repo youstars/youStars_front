@@ -18,6 +18,13 @@ export const getProjects = createAsyncThunk(
         }
         url = `${API_BASE_URL}client/${clientId}/projects`;
       }
+      else if (role && role.toLowerCase().includes("specialist")) {
+        const specialistId = getCookie("user_role_id"); // cookie stores the current specialist.id
+        if (!specialistId) {
+          throw new Error("Specialist id not found in cookies");
+        }
+        url = `${API_BASE_URL}specialist/${specialistId}/projects`;
+      }
 
       const response = await axiosInstance.get(
         url,
