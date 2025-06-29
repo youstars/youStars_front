@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "shared/store";
 import {getProjects} from "shared/store/slices/projectsSlice";
 import classes from "./UserProjects.module.scss";
-import {useUserRole} from "shared/hooks/useUserRole";
+import { getCookie } from 'shared/utils/cookies';
 import ClientProject from "../components/Client/ClientProject";
 import TrackerProject from "../components/Tracker/TrackerProject";
 import SearchAndFilter from "./SearchAndFilter";
@@ -41,7 +41,8 @@ export interface LeanProject {
 export default function UserProjects() {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const dispatch = useDispatch<AppDispatch>();
-    const role = useUserRole();
+    const role = getCookie("user_role");
+    console.log(role);
     const isClient = role?.toLowerCase().includes("client");
     const projects = useSelector((s: any) => s.projects.projects) as LeanProject[] | undefined;
     const filteredProjects = useMemo(() => {
