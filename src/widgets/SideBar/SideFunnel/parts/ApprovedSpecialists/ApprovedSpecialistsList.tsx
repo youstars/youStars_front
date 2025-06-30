@@ -1,9 +1,7 @@
 import React from "react";
-import Approved from "shared/images/sideBarImgs/approved.svg";
-import classes from "../SideFunnel.module.scss"
+import classes from "../../SideFunnel.module.scss"
 
 
-// Utility: derive initials like "И.И." from full name
 const getInitials = (name: string | null): string => {
     if (!name) return "";
     const parts = name.trim().split(/\s+/);
@@ -31,12 +29,9 @@ const ApprovedSpecialistsList: React.FC<Props> = ({ items }) => {
     }
 
     return (
-        <div className={classes.list}>
+        <div className={classes.invitedList}>
             {items.map((spec) => (
                 <div key={spec.id} className={classes.invitedItem}>
-                    <div className={classes.statusIcon}>
-                        <img src={Approved} alt="Утверждено" />
-                    </div>
                     <div className={classes.avatar}>
                         {spec.custom_user?.avatar ? (
                             <img

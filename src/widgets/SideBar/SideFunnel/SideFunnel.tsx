@@ -31,9 +31,9 @@ import Cookies from "js-cookie";
 import SideFunnelHeader from "./parts/SideFunnelHeader";
 import OrderInfo from "./parts/OrderInfo";
 import InvitedSpecialistsList from "./parts/InvitedSpecialistsList";
-import ApprovedSpecialistsList from "./parts/ApprovedSpecialistsList";
+import ApprovedSpecialistsList from "./parts/ApprovedSpecialists/ApprovedSpecialistsList";
 import OrderFiles from "./parts/OrderFiles";
-import Subtasks from "./parts/Subtasks";
+import SubTasks from "./parts/ApprovedSpecialists/SubTasks/SubTasks";
 
 
 export enum OrderStatus {
@@ -364,7 +364,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
             )}
 
             {/* SUBTASKS */}
-<Subtasks
+<SubTasks
   orderId={order.id}
   onAddSubtask={(text) => {
     // пока можно оставить заглушкой или логом
