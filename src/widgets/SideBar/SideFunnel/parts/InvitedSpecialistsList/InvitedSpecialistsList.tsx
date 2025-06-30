@@ -1,5 +1,5 @@
 import React from "react";
-import classes from "../SideFunnel.module.scss"
+import classes from "../../SideFunnel.module.scss"
 import InvitationStatus from "widgets/SideBar/SideFunnel/InvitationStatus/InvitationStatus";
 import Approve from "shared/images/sideBarImgs/fi-br-checkbox.svg";
 import Decline from "shared/images/sideBarImgs/Checkbox.svg";

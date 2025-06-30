@@ -1,6 +1,6 @@
 import React from "react";
-import classes from "../SideFunnel.module.scss";
-import { OrderStatus } from "../SideFunnel"; 
+import classes from "../../SideFunnel.module.scss";
+import { OrderStatus } from "../../SideFunnel";
 
 interface InfoCardProps {
   title: string;

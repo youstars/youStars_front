@@ -28,11 +28,11 @@ import { useChatService } from "shared/hooks/useWebsocket";
 import { findChatByParticipantId } from "shared/helpers/chatUtils";
 import Cookies from "js-cookie";
 
-import SideFunnelHeader from "./parts/SideFunnelHeader";
-import OrderInfo from "./parts/OrderInfo";
-import InvitedSpecialistsList from "./parts/InvitedSpecialistsList";
+import Header from "./parts/Header/Header";
+import OrderInfo from "./parts/OrderInfo/OrderInfo";
+import InvitedSpecialistsList from "./parts/InvitedSpecialistsList/InvitedSpecialistsList";
 import ApprovedSpecialistsList from "./parts/ApprovedSpecialists/ApprovedSpecialistsList";
-import OrderFiles from "./parts/OrderFiles";
+import OrderFiles from "./parts/OrderFiles/OrderFiles";
 import SubTasks from "widgets/SideBar/SideFunnel/parts/SubTasks/SubTasks";
 
 
@@ -175,7 +175,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
         <div className={classes.contentWrapper}>
           <div className={classes.content}>
             {/* HEADER */}
-            <SideFunnelHeader
+            <Header
               client={order.client}
               onClientChat={handleClientChat}
             />
