@@ -4,7 +4,6 @@ import SpecialistCard from "widgets/sub_pages/SpecialistProfile/SpecialistCardPr
 import { ClientProfile } from "widgets/sub_pages/ClientProfile/ClientProfile";
 import TrackerProfile from "widgets/TrackerProfile/TrackerProfile";
 import Spinner from "shared/UI/Spinner/Spinner";
-import { Specialist } from "shared/types/specialist";
 
 const ProfilePage = () => {
   const { data: user, loading, initialized } = useAppSelector(selectMe);

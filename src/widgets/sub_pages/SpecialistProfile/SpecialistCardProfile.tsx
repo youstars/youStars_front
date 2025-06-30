@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { useAppSelector } from "shared/hooks/useAppSelector";
 import { TrackerNotes } from "widgets/sub_pages/ClientProfile/components/TrackerNotes/TrackerNotes";
-import { updateMe } from "shared/store/slices/meSlice";
+import { getMe, updateMe } from "shared/store/slices/meSlice";
 import Spinner from "shared/UI/Spinner/Spinner";
 import { useChatService } from "shared/hooks/useWebsocket";
 import IconButton from "shared/UI/IconButton/IconButton";
@@ -38,20 +38,19 @@ const SpecialistCard: React.FC<{ specialistId: number; isSelf?: boolean }> = ({
   specialistId,
   isSelf = false,
 }) => {
-const dispatch = useAppDispatch();
-const { data: me } = useAppSelector(selectMe);
-const { data: specialistFromStore } = useAppSelector((state) => state.specialist);
+  const dispatch = useAppDispatch();
+  const { data: me } = useAppSelector(selectMe);
+  const { data: specialistFromStore } = useAppSelector(
+    (state) => state.specialist
+  );
 
-const specialist = isSelf ? me : specialistFromStore;
+  const specialist = isSelf ? me : specialistFromStore;
 
-
-useEffect(() => {
-  if (!isSelf) {
-    dispatch(getSpecialistById(specialistId));
-  }
-}, [dispatch, specialistId, isSelf]);
-
-
+  useEffect(() => {
+    if (!isSelf) {
+      dispatch(getSpecialistById(specialistId));
+    }
+  }, [dispatch, specialistId, isSelf]);
 
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const { professionalAreas } = useAppSelector((state) => state.specialist);
@@ -327,7 +326,7 @@ useEffect(() => {
   const handleAvatarUpload = (file: File) => {
     const formData = new FormData();
     formData.append("custom_user.avatar", file);
-    formData.append("id", specialist.id.toString()); 
+    formData.append("id", specialist.id.toString());
 
     dispatch(updateSpecialist(formData));
   };
@@ -350,23 +349,26 @@ useEffect(() => {
       console.error("Ошибка при обновлении ниш:", error);
     }
   };
-const handleFileSelect = async (file: File) => {
-  try {
-    const targetId = isAdmin && !isSelfViewing ? specialist.id : undefined;
+  const handleFileSelect = async (file: File) => {
+    try {
+      const targetId = isAdmin && !isSelfViewing ? specialist.id : undefined;
 
-    const newFile = await uploadSpecialistFile(
-      file,
-      file.name,
-      targetId,
-      "Описание"
-    );
+      const newFile = await uploadSpecialistFile(
+        file,
+        file.name,
+        targetId,
+        "Описание"
+      );
 
-
-    dispatch(getSpecialistById(specialist.id));
-  } catch (e) {
-    console.error("Ошибка загрузки файла", e);
-  }
-};
+      if (isAdmin && !isSelfViewing) {
+        dispatch(getSpecialistById(specialist.id));
+      } else {
+        dispatch(getMe());
+      }
+    } catch (e) {
+      console.error("Ошибка загрузки файла", e);
+    }
+  };
 
   const handleDeleteFile = async (file: FileItem) => {
     try {

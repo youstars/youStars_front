@@ -246,7 +246,7 @@ const { files, handleFileSelect, handleDeleteFile } = useFileManager(
         ).unwrap();
       }
 
-      dispatch(getClientById(+id!)); // Выполняем только при сохранении формы
+      dispatch(getClientById(+id!)); 
       setEdit(false);
     } catch (err: any) {
       const serverMessage =

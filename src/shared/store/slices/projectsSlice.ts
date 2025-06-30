@@ -19,7 +19,6 @@ const initialState: ProjectsState = {
   error: null,
 };
 
-
 export const getProjects = createAsyncThunk(
   "projects/getAll",
   async (_, { rejectWithValue }) => {
@@ -33,11 +32,12 @@ export const getProjects = createAsyncThunk(
       });
       return response.data.results as ProjectSummary[];
     } catch (error: any) {
-      return rejectWithValue(error.response?.data || "Ошибка при загрузке проектов");
+      return rejectWithValue(
+        error.response?.data || "Ошибка при загрузке проектов"
+      );
     }
   }
 );
-
 
 export const getProjectById = createAsyncThunk(
   "projects/getById",
@@ -77,6 +77,29 @@ export const updateProjectStatus = createAsyncThunk(
   }
 );
 
+export const updateProject = createAsyncThunk(
+  "project/updateProject",
+  async (
+    { id, updates }: { id: number; updates: Partial<ProjectDetail> },
+    thunkAPI
+  ) => {
+    try {
+      const token = getCookie("access_token");
+      const response = await axiosInstance.patch(
+        `${API_BASE_URL}project/${id}/`,
+        updates,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data as ProjectDetail;
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue("Ошибка при обновлении проекта");
+    }
+  }
+);
 
 const projectsSlice = createSlice({
   name: "projects",
@@ -92,12 +115,24 @@ const projectsSlice = createSlice({
         state.status = "pending";
         state.error = null;
       })
-      .addCase(getProjects.fulfilled, (state, action: PayloadAction<ProjectSummary[]>) => {
-        state.status = "fulfilled";
-        state.list = action.payload;
-      })
+      .addCase(
+        getProjects.fulfilled,
+        (state, action: PayloadAction<ProjectSummary[]>) => {
+          state.status = "fulfilled";
+          state.list = action.payload;
+        }
+      )
       .addCase(getProjects.rejected, (state, action) => {
         state.status = "rejected";
+        state.error = action.payload as string;
+      })
+      .addCase(
+        updateProject.fulfilled,
+        (state, action: PayloadAction<ProjectDetail>) => {
+          state.current = action.payload;
+        }
+      )
+      .addCase(updateProject.rejected, (state, action) => {
         state.error = action.payload as string;
       })
 
@@ -105,10 +140,13 @@ const projectsSlice = createSlice({
         state.status = "pending";
         state.error = null;
       })
-      .addCase(getProjectById.fulfilled, (state, action: PayloadAction<ProjectDetail>) => {
-        state.status = "fulfilled";
-        state.current = action.payload;
-      })
+      .addCase(
+        getProjectById.fulfilled,
+        (state, action: PayloadAction<ProjectDetail>) => {
+          state.status = "fulfilled";
+          state.current = action.payload;
+        }
+      )
       .addCase(getProjectById.rejected, (state, action) => {
         state.status = "rejected";
         state.error = action.payload as string;
@@ -118,7 +156,8 @@ const projectsSlice = createSlice({
 
 export const { clearCurrentProject } = projectsSlice.actions;
 
-export const selectProjects = (state: { projects: ProjectsState }) => state.projects.list;
+export const selectProjects = (state: { projects: ProjectsState }) =>
+  state.projects.list;
 export const selectCurrentProject = (state: { projects: ProjectsState }) =>
   state.projects.current;
 export const selectProjectsStatus = (state: { projects: ProjectsState }) =>

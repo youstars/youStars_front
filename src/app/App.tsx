@@ -56,10 +56,9 @@ function App() {
 useEffect(() => {
   const role = getCookie("user_role");
   if (!me.initialized && role) {
-    console.log("✅ getCookie нашёл роль:", role);
     dispatch(getMe());
   } else if (!role) {
-    console.log("⛔️ getMe не вызван, куки нет");
+
   }
 }, [dispatch, me.initialized]);
 
