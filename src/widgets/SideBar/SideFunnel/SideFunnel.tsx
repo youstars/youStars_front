@@ -33,7 +33,7 @@ import OrderInfo from "./parts/OrderInfo";
 import InvitedSpecialistsList from "./parts/InvitedSpecialistsList";
 import ApprovedSpecialistsList from "./parts/ApprovedSpecialists/ApprovedSpecialistsList";
 import OrderFiles from "./parts/OrderFiles";
-import SubTasks from "./parts/ApprovedSpecialists/SubTasks/SubTasks";
+import SubTasks from "widgets/SideBar/SideFunnel/parts/SubTasks/SubTasks";
 
 
 export enum OrderStatus {
