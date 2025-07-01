@@ -541,6 +541,7 @@
 .cardHeader {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
   margin-bottom: 8px;
 }
@@ -620,15 +621,41 @@
 }
 
 /* Editing action buttons */
+/* Align edit controls */
+.editControls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 8px;
+}
+
+.cardInput {
+  grid-column: 1 / -1;
+  flex: 1;
+  min-height: 32px;
+  height: auto;
+  overflow: hidden;
+  resize: none;
+  padding: 4px 8px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  color: var(--primary-color);
+  font-family: sans-serif;
+}
+
 .saveButton {
   background: #FFC107;
   color: #000;
   border: none;
   border-radius: 4px;
-  padding: 6px 12px;
+  padding: 0 12px;
+  height: 32px;
+  line-height: 32px;
   font-size: 12px;
   cursor: pointer;
-  margin-left: 8px;
+  grid-column: 1;
 }
 
 .cancelButton {
@@ -639,7 +666,7 @@
   padding: 6px 12px;
   font-size: 12px;
   cursor: pointer;
-  margin-left: 4px;
+  grid-column: 2;
 }
 
 /* Edit icon coloring */

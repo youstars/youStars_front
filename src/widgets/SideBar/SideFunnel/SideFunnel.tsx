@@ -14,6 +14,10 @@ import Plus from "shared/assets/icons/plus.svg";
 import {
     updateOrderTitle,
     updateOrderDeadline,
+    updateOrderGoal,
+    updateOrderProductOrService,
+    updateOrderProblems,
+    updateOrderExtraWishes,
     assignTrackerToOrder,
     confirmPrepayment,
 } from "shared/store/slices/orderSlice";
@@ -162,6 +166,46 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
       await handleTitleSave();
       await handleDeadlineSave();
       await refresh();
+    };
+
+    const handleGoalEdit = async (newText: string) => {
+      try {
+        await dispatch(updateOrderGoal({ orderId, orderGoal: newText }));
+        await refresh();
+        notify.success("Запрос сохранён");
+      } catch {
+        notify.error("Не удалось сохранить запрос");
+      }
+    };
+
+    const handleProductEdit = async (newText: string) => {
+      try {
+        await dispatch(updateOrderProductOrService({ orderId, productOrService: newText }));
+        await refresh();
+        notify.success("Продукт сохранён");
+      } catch {
+        notify.error("Не удалось сохранить продукт или услугу");
+      }
+    };
+
+    const handleProblemsEdit = async (newText: string) => {
+      try {
+        await dispatch(updateOrderProblems({ orderId, solvingProblems: newText }));
+        await refresh();
+        notify.success("Проблемы сохранены");
+      } catch {
+        notify.error("Не удалось сохранить проблемы");
+      }
+    };
+
+    const handleExtraEdit = async (newText: string) => {
+      try {
+        await dispatch(updateOrderExtraWishes({ orderId, extraWishes: newText }));
+        await refresh();
+        notify.success("Пожелания сохранены");
+      } catch {
+        notify.error("Не удалось сохранить пожелания");
+      }
     };
 
     const handleBecomeTracker = async () => {
@@ -365,11 +409,15 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                             }}
                         >
                             <OrderInfo
-                                status={order.status as OrderStatus}
-                                solving_problems={order.solving_problems || ""}
-                                product_or_service={order.product_or_service || ""}
-                                order_goal={order.order_goal || ""}
-                                extra_wishes={order.extra_wishes || ""}
+                              status={order.status as OrderStatus}
+                              solving_problems={order.solving_problems || ""}
+                              product_or_service={order.product_or_service || ""}
+                              order_goal={order.order_goal || ""}
+                              extra_wishes={order.extra_wishes || ""}
+                              onEditGoal={handleGoalEdit}
+                              onEditProductOrService={handleProductEdit}
+                              onEditSolvingProblems={handleProblemsEdit}
+                              onEditExtraWishes={handleExtraEdit}
                             />
                         </div>
 
