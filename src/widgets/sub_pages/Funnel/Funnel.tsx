@@ -5,14 +5,11 @@ import {AppDispatch} from "shared/store";
 import {Order} from "shared/types/orders";
 import styles from "./Funnel.module.scss";
 import searchIcon from "shared/images/sideBarImgs/search.svg";
-import chatIcons from "shared/images/chats.svg";
-import chatIcon from "shared/images/chat.svg";
 import SideFunnel from "widgets/SideBar/SideFunnel/SideFunnel";
-import {getInitials} from "shared/helpers/userUtils";
-import {formatCurrency} from "shared/helpers/formatCurrency";
 import {useDragScroll} from "shared/hooks/useDragScroll";
 import {useAppSelector} from "shared/hooks/useAppSelector";
 import {getOrderById} from "shared/store/slices/orderSlice";
+import TaskCard from "widgets/sub_pages/Funnel/components/TaskCard/TaskCard";
 
 const statusLabels: Record<string, string> = {
     new: "Новая заявка",
@@ -24,14 +21,6 @@ const statusLabels: Record<string, string> = {
     postprocessing: "Постобработка",
     done: "Завершен",
     canceled: "Отмена",
-};
-
-const formatDate = (dateStr: string | null): string => {
-    if (!dateStr) return "Дата не указана";
-    const date = new Date(dateStr);
-    return isNaN(date.getTime())
-        ? "Неверная дата"
-        : date.toLocaleDateString("ru-RU");
 };
 
 const Funnel = () => {
@@ -87,6 +76,12 @@ const Funnel = () => {
         <div
             className={styles.container}
             style={{marginRight: isSidebarOpen ? "16%" : "0"}}
+            onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                    setIsSidebarOpen(false);
+                    setSelectedOrderId(null);
+                }
+            }}
         >
             <div className={styles.search}>
                 <div className={styles.input_wrapper}>
@@ -123,104 +118,20 @@ const Funnel = () => {
                             <div className={styles.tasksList}>
                                 {items.length > 0 ? (
                                     items.map((order) => (
-                                        <div
-                                            className={styles.taskCard}
+                                        <TaskCard
                                             key={order.id}
-                                            onClick={() => {
-                                                setSelectedOrderId(order.id);
-                                                setIsSidebarOpen(true);
-                                                dispatch(getOrderById(order.id));
+                                            order={order}
+                                            onSelect={(id) => {
+                                                if (isSidebarOpen && selectedOrderId === id) {
+                                                    setIsSidebarOpen(false);
+                                                    setSelectedOrderId(null);
+                                                } else {
+                                                    setSelectedOrderId(id);
+                                                    setIsSidebarOpen(true);
+                                                    dispatch(getOrderById(id));
+                                                }
                                             }}
-                                        >
-                                            <div className={styles.taskContent}>
-                                                <div className={styles.taskHeader}>
-                                                    <div>
-                                                        <h3 className={styles.taskTitle}>
-                                                            {order.project_name ||
-                                                                order.order_name ||
-                                                                `Заявка №${order.id}`}
-                                                        </h3>
-
-                                                        <p className={styles.description}>
-                                                            Клиент{" "}
-                                                            {order.client?.custom_user?.full_name ||
-                                                                `ID ${order.client?.id}`}
-                                                        </p>
-                                                    </div>
-                                                    <div className={styles.taskActions}>
-                                                        <button className={styles.taskActionButton}>
-                                                            <img src={chatIcon} alt="чат"/>
-                                                        </button>
-                                                        <button className={styles.taskActionButton}>
-                                                            <img src={chatIcons} alt="чаты"/>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <p className={styles.amount}>
-                                                    {formatCurrency(order.approved_budget, order.estimated_budget)}
-                                                </p>
-
-                                                <div className={styles.taskDetails}>
-                                                    <div className={styles.taskDetailItem}>
-                            <span className={styles.taskDetailLabel}>
-                              Начало статуса:
-                            </span>
-                                                        <span className={styles.taskDetailValue}>
-                              {formatDate(order.created_at)}
-                            </span>
-                                                    </div>
-                                                    <div className={styles.taskDetailItem}>
-                            <span className={styles.taskDetailLabel}>
-                              Посл. контакт:
-                            </span>
-                                                        <span className={styles.taskDetailValue}>
-                              <u>{formatDate(order.updated_at)}</u>
-                            </span>
-                                                    </div>
-                                                    <div className={styles.taskDetailItem}>
-                            <span className={styles.taskDetailLabel}>
-                              Трекер:
-                            </span>
-                                                        <span className={styles.taskDetailValue}>
-                              <span className={styles.avatarCircle}>
-                                <span className={styles.avatarCircle}>
-                                  {order.tracker_data &&
-                                  order.tracker_data.custom_user?.full_name
-                                      ? getInitials(
-                                          order.tracker_data.custom_user.full_name
-                                      )
-                                      : "–"}
-                                </span>
-                              </span>
-                            </span>
-                                                    </div>
-                                                    <div className={styles.taskDetailItem}>
-                            <span className={styles.taskDetailLabel}>
-                              Специалисты:
-                            </span>
-                                                        <span className={styles.taskDetailValue}>
-                              {(order.approved_specialists || [])
-                                  .slice(0, 2)
-                                  .map((spec) => (
-                                      <span
-                                          key={spec.id}
-                                          className={styles.avatarCircle}
-                                      >
-                                    {spec.custom_user?.full_name
-                                        ? getInitials(spec.custom_user.full_name)
-                                        : `ID ${spec.id}`}
-                                  </span>
-                                  ))}
-
-                                                            {order.approved_specialists &&
-                                                                order.approved_specialists.length > 2 && (
-                                                                    <span className={styles.avatarMore}>...</span>
-                                                                )}
-                            </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        />
                                     ))
                                 ) : (
                                     <p className={styles.noOrders}>Нет заявок</p>

@@ -3,9 +3,10 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "shared/store";
 import {getProjects} from "shared/store/slices/projectsSlice";
 import classes from "./UserProjects.module.scss";
-import {useUserRole} from "shared/hooks/useUserRole";
+import { getCookie } from 'shared/utils/cookies';
 import ClientProject from "../components/Client/ClientProject";
 import TrackerProject from "../components/Tracker/TrackerProject";
+import SpecialistProject from "../components/Specialist/SpecialistProject";
 import SearchAndFilter from "./SearchAndFilter";
 
 interface CustomUser {
@@ -41,8 +42,9 @@ export interface LeanProject {
 export default function UserProjects() {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const dispatch = useDispatch<AppDispatch>();
-    const role = useUserRole();
+    const role = getCookie("user_role");
     const isClient = role?.toLowerCase().includes("client");
+    const isSpecialist = role?.toLowerCase().includes("specialist");
     const projects = useSelector((s: any) => s.projects.projects) as LeanProject[] | undefined;
     const filteredProjects = useMemo(() => {
         if (!projects) return [];
@@ -82,6 +84,21 @@ export default function UserProjects() {
         </div>
     );
 
+    // ─────────────────────────────────── specialist view
+    const renderSpecialistView = () => (
+        <div className={classes.context}>
+            {filteredProjects && filteredProjects.length ? (
+                filteredProjects.map((project: any) => (
+                    <SpecialistProject key={project.id} project={project}/>
+                ))
+            ) : (
+                <p>
+                    {projects ? "Нет данных для отображения" : "Загрузка данных..."}
+                </p>
+            )}
+        </div>
+    );
+
     // ─────────────────────────────────── tracker view
     const renderTrackerView = () => <TrackerProject projects={filteredProjects}/>;
 
@@ -93,7 +110,7 @@ export default function UserProjects() {
                 onChange={setSearchTerm}
                 isClient={isClient}
             />
-            {isClient ? renderClientView() : renderTrackerView()}
+            {isClient ? renderClientView() : isSpecialist ? renderSpecialistView() : renderTrackerView()}
         </main>
     );
 }

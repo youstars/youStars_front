@@ -11,7 +11,7 @@ const token = getCookie("access_token") || "";
 export const getOrderById = createAsyncThunk<Order, any>(
   "order/getOrderById",
   async (id, { rejectWithValue }) => {
-    const token = getToken(); 
+    const token = getToken();
     if (!token) return rejectWithValue("Нет токена");
 
     const res = await fetch(`${baseUrl}/order/${id}/`, {
@@ -156,7 +156,7 @@ export const updateOrderTitle = createAsyncThunk<
       const token = getToken();
       if (!token) return rejectWithValue("Нет токена");
 
- 
+
       await axiosInstance.patch(`/order/${orderId}/`, {
         project_name: projectName,
       }, {
@@ -180,6 +180,151 @@ export const updateOrderTitle = createAsyncThunk<
     } catch (error: any) {
       console.error("Ошибка при обновлении названия и статуса:", error);
       return rejectWithValue(error.response?.data || "Ошибка при обновлении");
+    }
+  }
+);
+
+export const updateOrderDeadline = createAsyncThunk<
+  Order,
+  { orderId: string; projectDeadline: string },
+  { rejectValue: string }
+>(
+  "order/updateOrderDeadline",
+  async ({ orderId, projectDeadline }, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      if (!token) return rejectWithValue("Нет токена");
+
+      const response = await axiosInstance.patch<Order>(
+        `/order/${orderId}/`,
+        { project_deadline: projectDeadline },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Ошибка при обновлении дедлайна:", error);
+      return rejectWithValue(error.response?.data || "Ошибка при обновлении дедлайна");
+    }
+  }
+);
+
+export const updateOrderGoal = createAsyncThunk<
+  Order,
+  { orderId: string; orderGoal: string },
+  { rejectValue: string }
+>(
+  "order/updateOrderGoal",
+  async ({ orderId, orderGoal }, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      if (!token) return rejectWithValue("Нет токена");
+
+      const response = await axiosInstance.patch<Order>(
+        `/order/${orderId}/`,
+        { order_goal: orderGoal },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Ошибка при обновлении запроса:", error);
+      return rejectWithValue(error.response?.data || "Ошибка при обновлении запроса");
+    }
+  }
+);
+
+export const updateOrderProductOrService = createAsyncThunk<
+  Order,
+  { orderId: string; productOrService: string },
+  { rejectValue: string }
+>(
+  "order/updateOrderProductOrService",
+  async ({ orderId, productOrService }, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      if (!token) return rejectWithValue("Нет токена");
+
+      const response = await axiosInstance.patch<Order>(
+        `/order/${orderId}/`,
+        { product_or_service: productOrService },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Ошибка при обновлении продукта или услуги:", error);
+      return rejectWithValue(error.response?.data || "Ошибка при обновлении продукта или услуги");
+    }
+  }
+);
+
+export const updateOrderProblems = createAsyncThunk<
+  Order,
+  { orderId: string; solvingProblems: string },
+  { rejectValue: string }
+>(
+  "order/updateOrderProblems",
+  async ({ orderId, solvingProblems }, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      if (!token) return rejectWithValue("Нет токена");
+
+      const response = await axiosInstance.patch<Order>(
+        `/order/${orderId}/`,
+        { solving_problems: solvingProblems },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Ошибка при обновлении проблем:", error);
+      return rejectWithValue(error.response?.data || "Ошибка при обновлении проблем");
+    }
+  }
+);
+
+export const updateOrderExtraWishes = createAsyncThunk<
+  Order,
+  { orderId: string; extraWishes: string },
+  { rejectValue: string }
+>(
+  "order/updateOrderExtraWishes",
+  async ({ orderId, extraWishes }, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      if (!token) return rejectWithValue("Нет токена");
+
+      const response = await axiosInstance.patch<Order>(
+        `/order/${orderId}/`,
+        { extra_wishes: extraWishes },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Ошибка при обновлении дополнительных пожеланий:", error);
+      return rejectWithValue(error.response?.data || "Ошибка при обновлении пожеланий");
     }
   }
 );
@@ -267,7 +412,21 @@ const orderSlice = createSlice({
       .addCase(confirmPrepayment.fulfilled, (state, action: PayloadAction<Order>) => {
       state.current = action.payload;
 })
-
+      .addCase(updateOrderDeadline.fulfilled, (state, action: PayloadAction<Order>) => {
+        state.current = action.payload;
+      })
+      .addCase(updateOrderGoal.fulfilled, (state, action: PayloadAction<Order>) => {
+        state.current = action.payload;
+      })
+      .addCase(updateOrderProductOrService.fulfilled, (state, action: PayloadAction<Order>) => {
+        state.current = action.payload;
+      })
+      .addCase(updateOrderProblems.fulfilled, (state, action: PayloadAction<Order>) => {
+        state.current = action.payload;
+      })
+      .addCase(updateOrderExtraWishes.fulfilled, (state, action: PayloadAction<Order>) => {
+        state.current = action.payload;
+      })
   },
 });
 

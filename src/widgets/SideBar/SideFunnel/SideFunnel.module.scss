@@ -1,9 +1,9 @@
 .sidebarContainer {
   position: fixed;
-  top: 0;
+  top: 58px;
+  bottom: 0;
   right: 0;
   width: 340px;
-  height: 100vh;
   z-index: 1000;
   will-change: transform;
   transition: transform 0.3s ease;
@@ -195,17 +195,29 @@
 
 .title {
   margin-bottom: 15px;
-
   font-weight: 600;
   font-size: 12px;
   color: var(--primary-color);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-rows: auto auto;
+  gap: 8px;
 }
 
 .title span {
   cursor: pointer;
+}
+
+.titleInput {
+  grid-column: 1 / -1;
+}
+.saveButton {
+  grid-row: 2;
+  grid-column: 1;
+}
+.cancelButton {
+  grid-row: 2;
+  grid-column: 2;
 }
 
 .time_block {
@@ -297,27 +309,6 @@
   margin: 0;
 }
 
-.subtasksWrapper {
-  margin: 15px 0;
-  padding: 15px;
-  border-radius: 8px;
-}
-
-.subtasksHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-.subtasksHeader h3 {
-  font-family: sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  margin: 0;
-  color: #FFC107;
-}
-
 .arrow {
   display: block;
   width: 8px;
@@ -331,39 +322,6 @@
 
 .up {
   transform: rotate(135deg);
-}
-
-.subtasksContent {
-  margin-top: 10px;
-}
-
-.check_block,
-.plus_block {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 0;
-}
-
-.check_block p,
-.plus_block p {
-  font-size: 12px;
-  color: #a0a0a0;
-  margin: 0;
-}
-
-.check_block {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 0;
-  color: var(--primery-color);
-}
-
-.check_block p {
-  margin: 0;
-  font-size: 13px;
-  color: #f1f1f1;
 }
 
 .submitButton {
@@ -396,6 +354,8 @@
   border-radius: 8px;
   color: var(--primary-color);
   font-family: sans-serif;
+  outline: none;
+  margin-bottom: 10px;
 }
 
 .plusIcon {
@@ -458,6 +418,7 @@
   overflow: hidden;
   flex: none;
 }
+
 .invitedItem .avatar img {
   width: 100%;
   height: 100%;
@@ -470,7 +431,6 @@
   display: flex;
   gap: 6px;
 }
-
 
 
 .invitedItem .approve,
@@ -497,8 +457,6 @@
 .statusIcon {
   width: 16px;
 }
-
-
 
 .name {
   display: flex;
@@ -597,6 +555,7 @@
 .cardHeader {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
   margin-bottom: 8px;
 }
@@ -674,3 +633,79 @@
   color: var(--primery-color);
   flex: none;
 }
+
+/* Editing action buttons */
+/* Align edit controls */
+.editControls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 8px;
+}
+
+.cardInput {
+  grid-column: 1 / -1;
+  flex: 1;
+  min-height: 32px;
+  height: auto;
+  overflow: hidden;
+  resize: none;
+  padding: 4px 8px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  color: var(--primary-color);
+  font-family: sans-serif;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.cardInput:focus {
+  outline: none;
+}
+
+.saveButton {
+  background: #FFC107;
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  padding: 0 12px;
+  height: 32px;
+  line-height: 32px;
+  font-size: 12px;
+  cursor: pointer;
+  grid-column: 1;
+}
+
+
+.cancelButton {
+  background: #383E41;
+  color: var(--primary-color);
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  grid-column: 2;
+}
+
+/* Edit icon coloring */
+.editIcon {
+  color: #FFC107;
+  cursor: pointer;
+}
+.editIcon svg {
+  stroke: #FFC107;
+}
+
+/* Deadline input styling */
+.deadlineInput {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  color: var(--primary-color);
+  font-size: 12px;
+  padding: 4px 8px;
+}
+

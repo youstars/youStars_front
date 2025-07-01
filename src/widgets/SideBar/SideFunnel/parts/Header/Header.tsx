@@ -1,5 +1,5 @@
 import React from "react";
-import classes from "../SideFunnel.module.scss"
+import classes from "../../SideFunnel.module.scss"
 import ChatIcon from "shared/assets/icons/chatY.svg";
 import ChatsIcon from "shared/assets/icons/ChatsY.svg";
 import {getInitials} from "shared/helpers/userUtils";
@@ -20,7 +20,7 @@ interface SideFunnelHeaderProps {
     onClientChat: () => void;
 }
 
-export const SideFunnelHeader: React.FC<SideFunnelHeaderProps> = ({
+export const Header: React.FC<SideFunnelHeaderProps> = ({
                                                                       client,
                                                                       onClientChat,
                                                                   }) => {
@@ -64,4 +64,4 @@ export const SideFunnelHeader: React.FC<SideFunnelHeaderProps> = ({
     );
 };
 
-export default SideFunnelHeader;
+export default Header;
