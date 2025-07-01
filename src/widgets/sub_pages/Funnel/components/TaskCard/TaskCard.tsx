@@ -2,25 +2,17 @@ import React from 'react';
 import styles from './TaskCard.module.scss';
 import chatIcon from 'shared/images/chat.svg';
 import chatIcons from 'shared/images/chats.svg';
-import { getInitials } from 'shared/helpers/userUtils';
-import { formatCurrency } from 'shared/helpers/formatCurrency';
-
-import type { Order } from 'shared/types/orders';
+import {getInitials} from 'shared/helpers/userUtils';
+import {formatCurrency} from 'shared/helpers/formatCurrency';
+import type {Order} from 'shared/types/orders';
+import {formatDate} from "shared/utils/formatDate";
 
 export interface TaskCardProps {
     order: Order;
     onSelect: (orderId: number) => void;
 }
 
-const formatDate = (dateStr: string | null): string => {
-    if (!dateStr) return "Дата не указана";
-    const date = new Date(dateStr);
-    return isNaN(date.getTime())
-        ? "Неверная дата"
-        : date.toLocaleDateString("ru-RU");
-};
-
-const TaskCard: React.FC<TaskCardProps> = React.memo(({ order, onSelect }) => {
+const TaskCard: React.FC<TaskCardProps> = React.memo(({order, onSelect}) => {
     const {
         id,
         project_name,
@@ -40,7 +32,9 @@ const TaskCard: React.FC<TaskCardProps> = React.memo(({ order, onSelect }) => {
             onClick={() => onSelect(id)}
             role="button"
             tabIndex={0}
-            onKeyDown={(e) => { if (e.key === 'Enter') onSelect(id); }}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') onSelect(id);
+            }}
         >
             <div className={styles.taskContent}>
                 <div className={styles.taskHeader}>
@@ -54,11 +48,11 @@ const TaskCard: React.FC<TaskCardProps> = React.memo(({ order, onSelect }) => {
                         </p>
                     </div>
                     <div className={styles.taskActions}>
-                        <button className={styles.taskActionButton}>
-                            <img src={chatIcon} alt="чат" />
+                        <button type="button" className={styles.taskActionButton} aria-label="Открыть чат">
+                            <img src={chatIcon} alt="чат"/>
                         </button>
-                        <button className={styles.taskActionButton}>
-                            <img src={chatIcons} alt="чаты" />
+                        <button type="button" className={styles.taskActionButton} aria-label="Открыть список чатов">
+                            <img src={chatIcons} alt="чаты"/>
                         </button>
                     </div>
                 </div>
@@ -78,7 +72,7 @@ const TaskCard: React.FC<TaskCardProps> = React.memo(({ order, onSelect }) => {
                     <div className={styles.taskDetailItem}>
                         <span className={styles.taskDetailLabel}>Посл. контакт:</span>
                         <span className={styles.taskDetailValue}>
-              <u>{formatDate(updated_at)}</u>
+              <span>{formatDate(updated_at)}</span>
             </span>
                     </div>
 
