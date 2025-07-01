@@ -76,6 +76,12 @@ const Funnel = () => {
         <div
             className={styles.container}
             style={{marginRight: isSidebarOpen ? "16%" : "0"}}
+            onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                    setIsSidebarOpen(false);
+                    setSelectedOrderId(null);
+                }
+            }}
         >
             <div className={styles.search}>
                 <div className={styles.input_wrapper}>
@@ -116,9 +122,14 @@ const Funnel = () => {
                                             key={order.id}
                                             order={order}
                                             onSelect={(id) => {
-                                                setSelectedOrderId(id);
-                                                setIsSidebarOpen(true);
-                                                dispatch(getOrderById(id));
+                                                if (isSidebarOpen && selectedOrderId === id) {
+                                                    setIsSidebarOpen(false);
+                                                    setSelectedOrderId(null);
+                                                } else {
+                                                    setSelectedOrderId(id);
+                                                    setIsSidebarOpen(true);
+                                                    dispatch(getOrderById(id));
+                                                }
                                             }}
                                         />
                                     ))
