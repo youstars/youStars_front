@@ -15,6 +15,7 @@ import {
 } from "shared/store/slices/invitationSlice";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { getCookie } from "shared/utils/cookies";
+import OrdersDropdown from "widgets/OrderDropdown/OrderDropdown";
 
 interface SpecialistCardProps {
   specialist: Specialist;
@@ -128,23 +129,13 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
               onClick={toggleOrders}
               title="Показать заказы"
             />
-            {isOrdersOpen && (
-              <div className={styles.ordersDropdown}>
-                {orders.length > 0 ? (
-                  orders.map((order) => (
-                    <div
-                      key={order.id}
-                      className={styles.orderItem}
-                      onClick={() => handleOrderSelect(order)}
-                    >
-                      {order.project_name || order.order_name}
-                    </div>
-                  ))
-                ) : (
-                  <div>Нет заказов</div>
-                )}
-              </div>
-            )}
+            <OrdersDropdown
+              items={orders}
+              isOpen={isOrdersOpen}
+              onSelect={handleOrderSelect}
+              renderItem={(order) => order.project_name || order.order_name}
+            />
+
             <button
               className={styles.profileButton}
               onClick={handleProfileClick}

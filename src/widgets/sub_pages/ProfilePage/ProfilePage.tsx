@@ -9,7 +9,7 @@ const ProfilePage = () => {
   const { data: user, loading, initialized } = useAppSelector(selectMe);
 
   if (loading || !initialized) {
-    return <Spinner />; 
+    return <Spinner />;
   }
 
   if (!user) {
@@ -20,18 +20,10 @@ const ProfilePage = () => {
 
   switch (role) {
     case "specialist":
-      const transformed = {
-        ...user,
-        custom_user: {
-          id: user.id,
-          full_name: user.full_name,
-          first_name: user.first_name || "",
-          last_name: user.last_name || "",
-          avatar: user.avatar || null,
-          role: user.role,
-        },
-      };
-      return <SpecialistCard specialist={transformed} isSelf={true} />;
+
+return <SpecialistCard specialistId={user.id} isSelf={true} />
+
+
 
     case "client":
       return <ClientProfile client={user} isSelf={true} />;

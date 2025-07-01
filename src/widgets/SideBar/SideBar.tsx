@@ -45,7 +45,7 @@ export default function SideBar() {
     if (role === "client")
       return !["Клиенты", "Специалисты", "Админы", "Воронка"].includes(item.text);
     if (role === "specialist")
-      return !["Клиенты", "Специалисты", "Админы", "Заявки"].includes(
+      return !["Клиенты", "Специалисты", "Админы", "Заявки", "Воронка"].includes(
         item.text
       );
     if (role === "tracker") return item.text !== "";

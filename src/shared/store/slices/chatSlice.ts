@@ -49,12 +49,12 @@ const isAdmin = userRole === "admin";
       if (!response.ok) throw new Error("Ошибка загрузки чатов");
 
       const data = await response.json();
-      console.log("🔥 Получены чаты с сервера:", data);
+
 
       return data.map((chat: any) => {
         const participants = chat.participants || [];
 
-        // Выбираем имя другого участника, если есть
+    
         const otherParticipant =
           participants.length > 0
             ? participants.find((p: any) => parseInt(p.id) !== userId)
@@ -62,8 +62,8 @@ const isAdmin = userRole === "admin";
 
         const displayName =
           otherParticipant?.username ||
-          participants[0]?.username || // хотя бы первый участник
-          `Чат ${chat.id}`; // fallback
+          participants[0]?.username || 
+          `Чат ${chat.id}`; 
 
         return {
           id: chat.id.toString(),
@@ -86,7 +86,8 @@ const isAdmin = userRole === "admin";
                 invitation: msg.invitation,
               }))
             : [],
-
+          chat_type: chat.chat_type,
+           project: chat.project,  
           type: chat.chat_type,
           participants,
         };

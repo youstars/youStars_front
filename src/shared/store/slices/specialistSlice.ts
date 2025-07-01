@@ -3,23 +3,23 @@ import { RootState } from "../index";
 import axios from "axios";
 import { getCookie } from "shared/utils/cookies";
 import { ProfessionalArea } from "shared/types/professionalArea";
+import { Specialist } from "shared/types/specialist";
+
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+// --- Async thunks ---
 
 export const getSpecialistById = createAsyncThunk(
   "specialist/fetchById",
   async (id: number, thunkAPI) => {
     try {
       const token = getCookie("access_token");
-
-      const response = await axios.get(
-        `${API_BASE_URL}users/specialist/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.get(`${API_BASE_URL}users/specialist/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response?.data || "Ошибка запроса");
@@ -32,18 +32,12 @@ export const getProfessionalAreas = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const token = getCookie("access_token");
-
-      const response = await axios.get(
-        `${API_BASE_URL}api/professional-areas/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(" Профессии получены", response.data.results);
-
+      const response = await axios.get(`${API_BASE_URL}api/professional-areas/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       return response.data.results;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(
@@ -64,7 +58,19 @@ export const updateSpecialist = createAsyncThunk(
 
       let url = `${API_BASE_URL}users/specialists/me/`;
 
-      if (data instanceof FormData) {
+      const isFormData = data instanceof FormData;
+
+      // ⚠️ Защита: если в FormData только файл, отклоняем
+      if (
+        isFormData &&
+        data.has("file") &&
+        Array.from(data.keys()).length === 1
+      ) {
+        return thunkAPI.rejectWithValue("Файлы не должны отправляться через updateSpecialist");
+      }
+
+      // Определение URL по ID
+      if (isFormData) {
         const id = data.get("id");
         if (isAdmin && id && id !== me?.id?.toString()) {
           url = `${API_BASE_URL}users/specialist/${id}`;
@@ -73,8 +79,6 @@ export const updateSpecialist = createAsyncThunk(
         url = `${API_BASE_URL}users/specialist/${data.id}`;
       }
 
-      const isFormData = data instanceof FormData;
-
       const response = await axios.patch(url, data, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -82,7 +86,6 @@ export const updateSpecialist = createAsyncThunk(
         },
       });
 
-      console.log("🔄 Профиль специалиста обновлён:", response.data);
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(
@@ -116,7 +119,6 @@ export const updateProfessionalProfile = createAsyncThunk(
           },
         }
       );
-      console.log("📤 Профиль профессии обновлён:", response.data);
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(
@@ -126,16 +128,13 @@ export const updateProfessionalProfile = createAsyncThunk(
   }
 );
 
-interface Option {
-  id: number;
-  name: string;
-}
+// --- State ---
 
 interface SpecialistState {
-  data: any;
+  data: Specialist | null;
   loading: boolean;
-  loadingGetById: boolean;
   error: string | null;
+  loaded: boolean;
   professionalAreas: ProfessionalArea[];
 }
 
@@ -143,9 +142,11 @@ const initialState: SpecialistState = {
   data: null,
   loading: false,
   error: null,
+  loaded: false,
   professionalAreas: [],
-  loadingGetById: false,
 };
+
+// --- Slice ---
 
 const specialistSlice = createSlice({
   name: "specialist",
@@ -154,15 +155,15 @@ const specialistSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getSpecialistById.pending, (state) => {
-        state.loadingGetById = true;
+        state.loaded = false;
         state.error = null;
       })
       .addCase(getSpecialistById.fulfilled, (state, action) => {
         state.data = action.payload;
-        state.loadingGetById = false;
+        state.loaded = true;
       })
       .addCase(getSpecialistById.rejected, (state, action) => {
-        state.loadingGetById = false;
+        state.loaded = true;
         state.error = (action.payload as string) || "Ошибка загрузки";
       })
       .addCase(updateSpecialist.pending, (state) => {
@@ -187,8 +188,7 @@ const specialistSlice = createSlice({
       })
       .addCase(getProfessionalAreas.rejected, (state, action) => {
         state.loading = false;
-        state.error =
-          (action.payload as string) || "Ошибка загрузки профессий";
+        state.error = (action.payload as string) || "Ошибка загрузки профессий";
       })
       .addCase(updateProfessionalProfile.pending, (state) => {
         state.loading = true;
@@ -200,8 +200,7 @@ const specialistSlice = createSlice({
       .addCase(updateProfessionalProfile.rejected, (state, action) => {
         state.loading = false;
         state.error =
-          (action.payload as string) ||
-          "Ошибка обновления профессионального профиля";
+          (action.payload as string) || "Ошибка обновления профессионального профиля";
       });
   },
 });

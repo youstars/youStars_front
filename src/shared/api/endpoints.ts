@@ -6,8 +6,16 @@ export const API_ENDPOINTS = {
     logout: "auth/token/logout/",
     registerSpecialist: "auth/users/specialist/registration/",
     registerClient: "auth/users/client/registration/",
+    registerAdmin: "/auth/users/admin/registration/",
   },
 };
+
+
+export const API_ORDERS = {
+  list: "orders/",
+  create: "orders/",
+};
+
 export const API_CLIENT = {
   getById: (id: number) => `users/client/${id}`,
   update: (id?: number) =>
@@ -33,9 +41,20 @@ export const API_KNOWLEDGE = {
 };
 
 export const API_ME = {
-  get: "/auth/users/me/",
-  update: "/auth/users/me/",
-};
+
+  base: "/auth/users/me/",
+
+  specialist: "/users/specialists/me/",
+  client:     "/users/clients/me/",
+  admin:      "/users/admins/me/",
+
+  update: {
+    client: "/users/clients/me/",
+    specialist: "/users/specialists/me/",
+    admin: "/users/admins/me/",
+  },
+} as const;
+
 
 export const API_PROJECT = {
   getById: (id: string | number) => `project/${id}`,

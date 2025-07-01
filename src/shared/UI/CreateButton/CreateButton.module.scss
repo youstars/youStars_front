@@ -1,0 +1,14 @@
+.create_order {
+  background-color: var(--yellow);
+  min-width: 155px;
+  height: 32px;
+  padding: 10px 30px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+}
+
+.create_order:hover {
+ background: var(--icon-icon-brand, #f1c15b);
+}
+

@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {
-    getProjectById,
-} from "shared/store/slices/projectSlice";
+import {getProjectById} from "shared/store/slices/projectsSlice";
 import {
     getTasks,
     updateTaskStatus,

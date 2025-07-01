@@ -1,4 +1,4 @@
-import classes from "./AdminsPage.module.scss";
+import classes from "./Admins.module.scss";
 import { Button, Input } from "shared/index";
 import search from "shared/images/sideBarImgs/search.svg";
 import filters from "shared/images/filters.svg";
@@ -15,8 +15,9 @@ import {
 } from "shared/store/slices/trackersSlice";
 import { AppDispatch } from "shared/store";
 import Avatar from "shared/UI/Avatar/Avatar";
+import CreateButton from "shared/UI/CreateButton/CreateButton";
 
-const AdminsPage = () => {
+const Admins = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -90,10 +91,19 @@ const AdminsPage = () => {
 
         <div className={classes.sum_clients}>
           <p> Найдено {filteredAdmins.length} трекеров:</p>
+          <CreateButton
+            label="Добавить трекера"
+            onClick={() => navigate("/manager/auth_admin")}
+          />
         </div>
 
         {filteredAdmins.map((item: any) => (
-          <div key={item.custom_user.id} className={classes.all_blocks}>
+          <div
+            key={item.custom_user.id}
+            className={classes.all_blocks}
+            onClick={() => navigate(`/manager/trackers/${item.id}`)}
+            style={{ cursor: "pointer" }}
+          >
             <div className={classes.img_job_title}>
               <Avatar
                 src={item.custom_user.avatar}
@@ -327,4 +337,4 @@ const AdminsPage = () => {
   );
 };
 
-export default AdminsPage;
+export default Admins;

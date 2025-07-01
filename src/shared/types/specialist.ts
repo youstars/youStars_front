@@ -11,7 +11,7 @@ export interface SpecialistFile {
 
 export interface Specialist {
   id: number;
-  custom_user: {
+  custom_user?: {
     id: number;
     avatar?: string;
     first_name?: string;

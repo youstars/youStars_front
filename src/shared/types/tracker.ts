@@ -9,7 +9,7 @@ export interface Tracker {
   avatar?: string;
   role: "Tracker";
   time_zone?: string;
-is_busy?: "Free" | "Busy"; 
+  is_busy?: "Free" | "Busy";
   custom_user: {
     id: number;
     first_name?: string;

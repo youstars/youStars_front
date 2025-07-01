@@ -5,7 +5,6 @@ import { getUserIdFromToken } from "shared/utils/cookies";
 import { API_ENDPOINTS } from "shared/api/endpoints";
 import { jwtDecode } from "jwt-decode";
 
-
 export const checkAuthFromCookies = createAsyncThunk(
   "auth/checkAuthFromCookies",
   async (_, { rejectWithValue }) => {
@@ -44,6 +43,23 @@ export const register = createAsyncThunk(
 
       const response = await axiosInstance.post(endpoint, formData);
 
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data || { general: "Something went wrong" }
+      );
+    }
+  }
+);
+
+export const registerAdmin = createAsyncThunk(
+  "auth/registerAdmin",
+  async (formData: any, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(
+        API_ENDPOINTS.auth.registerAdmin,
+        formData
+      );
       return response.data;
     } catch (error: any) {
       return rejectWithValue(
@@ -234,9 +250,23 @@ const authSlice = createSlice({
         };
       })
       .addCase(checkAuthFromCookies.fulfilled, (state, action) => {
-  state.user = action.payload;
-})
-
+        state.user = action.payload;
+      })
+      .addCase(registerAdmin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerAdmin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(registerAdmin.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          typeof action.payload === "object" && action.payload !== null
+            ? (action.payload as ErrorType)
+            : { general: String(action.payload || "Unknown error") };
+      });
   },
 });
 
