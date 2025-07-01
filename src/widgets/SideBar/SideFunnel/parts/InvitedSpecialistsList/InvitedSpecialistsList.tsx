@@ -5,7 +5,6 @@ import Approve from "shared/images/sideBarImgs/fi-br-checkbox.svg";
 import Decline from "shared/images/sideBarImgs/Checkbox.svg";
 import {getInitials} from "shared/helpers/userUtils";
 
-
 interface SpecialistUser {
     full_name: string | null;
     avatar: any;
@@ -65,14 +64,14 @@ const InvitedSpecialistsList: React.FC<Props> = ({
                                 disabled={entry.is_approved}
                                 title="Подтвердить"
                             >
-                                <img src={Approve} alt="✔" />
+                                <img src={Approve} alt="✔"/>
                             </button>
                             <button
                                 className={classes.reject}
                                 onClick={() => onReject(entry.id)}
                                 title="Отклонить"
                             >
-                                <img src={Decline} alt="✖" />
+                                <img src={Decline} alt="✖"/>
                             </button>
                         </div>
 
