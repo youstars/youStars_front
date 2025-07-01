@@ -24,6 +24,7 @@ import {
 import {
     approveInvitation,
     rejectInvitation,
+    updateInvitationPayment,
 } from "shared/store/slices/invitationSlice";
 import {updateOrderStatus} from "shared/store/slices/orderSlice";
 import {formatDate} from "shared/helpers/userUtils";
@@ -458,6 +459,10 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                                     onReject={(id) =>
                                         dispatch(rejectInvitation(id)).then(refresh)
                                     }
+                                    onUpdatePayment={async (id, payment) => {
+                                        await dispatch(updateInvitationPayment({ invitationId: id, proposedPayment: Number(payment) }));
+                                        await refresh();
+                                    }}
                                 />
                             </>
                         )}

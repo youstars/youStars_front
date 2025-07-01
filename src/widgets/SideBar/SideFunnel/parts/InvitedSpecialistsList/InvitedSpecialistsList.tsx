@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import classes from "./InvitedSpecialistsList.module.scss"
 import InvitationStatus from "widgets/SideBar/SideFunnel/InvitationStatus/InvitationStatus";
 import Approve from "shared/images/sideBarImgs/fi-br-checkbox.svg";
 import Decline from "shared/images/sideBarImgs/Checkbox.svg";
 import {getInitials} from "shared/helpers/userUtils";
+import {PenBox} from "lucide-react";
 
 interface SpecialistUser {
     full_name: string | null;
@@ -22,13 +23,18 @@ interface Props {
     items: InvitationEntry[];
     onApprove: (id: number) => void;
     onReject: (id: number) => void;
+    onUpdatePayment: (id: number, payment: string) => void;
 }
 
 const InvitedSpecialistsList: React.FC<Props> = ({
                                                      items,
                                                      onApprove,
                                                      onReject,
+                                                     onUpdatePayment,
                                                  }) => {
+    const [editingId, setEditingId] = useState<number | null>(null);
+    const [paymentValue, setPaymentValue] = useState<string>("");
+
     if (!items.length) return <div className={classes.empty}>Нет приглашённых</div>;
 
     return (
@@ -76,7 +82,43 @@ const InvitedSpecialistsList: React.FC<Props> = ({
                         </div>
 
                         <div className={classes.payment}>
-                            {entry.proposed_payment || "—"}
+                            {editingId === entry.id ? (
+                                <>
+                                    <input
+                                        type="text"
+                                        className={classes.paymentInput}
+                                        value={paymentValue}
+                                        onChange={(e) => setPaymentValue(e.target.value)}
+                                    />
+                                    <button
+                                        className={classes.savePayment}
+                                        onClick={() => {
+                                            onUpdatePayment(entry.id, paymentValue);
+                                            setEditingId(null);
+                                        }}
+                                    >
+                                        Сохранить
+                                    </button>
+                                    <button
+                                        className={classes.cancelPayment}
+                                        onClick={() => setEditingId(null)}
+                                    >
+                                        Отмена
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    {entry.proposed_payment || "—"}
+                                    <PenBox
+                                        size={16}
+                                        className={classes.editIcon}
+                                        onClick={() => {
+                                            setEditingId(entry.id);
+                                            setPaymentValue(entry.proposed_payment || "");
+                                        }}
+                                    />
+                                </>
+                            )}
                         </div>
                     </div>
                 );

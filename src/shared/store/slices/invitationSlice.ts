@@ -116,6 +116,37 @@ export const rejectInvitation = createAsyncThunk(
   }
 );
 
+export const updateInvitationPayment = createAsyncThunk<
+  InvitationPayload,
+  { invitationId: number; proposedPayment: number },
+  { rejectValue: string }
+>(
+  "invitations/updatePayment",
+  async ({ invitationId, proposedPayment }, { rejectWithValue }) => {
+    const baseUrl = process.env.REACT_APP_API_BASE || "http://localhost:8000";
+    const token = getCookie("access_token") || "";
+    try {
+      const res = await fetch(
+        `${baseUrl}/users/manage-invitations/${invitationId}/update_payment/`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ proposed_payment: proposedPayment }),
+        }
+      );
+      if (!res.ok) {
+        return rejectWithValue("Не удалось обновить сумму предложения");
+      }
+      return await res.json() as InvitationPayload;
+    } catch (error: any) {
+      console.error("Ошибка при обновлении суммы предложения:", error);
+      return rejectWithValue(error.message || "Ошибка при обновлении суммы");
+    }
+  }
+);
 
 const invitationSlice = createSlice({
   name: "invitation",
@@ -133,13 +164,25 @@ const invitationSlice = createSlice({
       })
       .addCase(sendInvitation.fulfilled, (state, action) => {
   state.status = "success";
-  state.payload = action.payload; 
+  state.payload = action.payload;
 })
 
       .addCase(sendInvitation.rejected, (state, action) => {
         state.status = "error";
         state.error = action.error.message || "Ошибка";
-      });
+      })
+      .addCase(updateInvitationPayment.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(updateInvitationPayment.fulfilled, (state, action: PayloadAction<InvitationPayload>) => {
+        state.status = "success";
+        state.payload = action.payload;
+      })
+      .addCase(updateInvitationPayment.rejected, (state, action) => {
+        state.status = "error";
+        state.error = action.payload || action.error.message || "Ошибка";
+      })
   },
 });
 
