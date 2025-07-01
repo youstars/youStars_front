@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from 'widgets/sub_pages/Funnel/Funnel.module.scss';
+import styles from './TaskCard.module.scss';
 import chatIcon from 'shared/images/chat.svg';
 import chatIcons from 'shared/images/chats.svg';
 import { getInitials } from 'shared/helpers/userUtils';
