@@ -1,33 +1,37 @@
-import React, {useRef, useEffect, useState} from "react";
+import React, { useRef, useEffect, useState } from "react";
 import styles from "./AddTaskModal.module.scss";
 import ChatIcon from "shared/assets/icons/chatY.svg";
 import ChatsIcon from "shared/assets/icons/ChatsY.svg";
-import {Plus} from "lucide-react";
-import {useAppSelector} from "shared/hooks/useAppSelector";
-import {selectProject} from "shared/store/slices/projectSlice";
-import {useDispatch} from "react-redux";
-import {createTask, getTasks} from "shared/store/slices/tasksSlice";
-import {AppDispatch} from "shared/store";
+import { Plus } from "lucide-react";
+import { useAppSelector } from "shared/hooks/useAppSelector";
+import { useDispatch } from "react-redux";
+import { createTask, getTasks } from "shared/store/slices/tasksSlice";
+import { AppDispatch } from "shared/store";
+import { selectCurrentProject } from "shared/store/slices/projectsSlice";
 
 interface AddTaskModalProps {
-    isOpen: boolean;
-    toggleSidebar: () => void;
-    projectId?: number | null;
+  isOpen: boolean;
+  toggleSidebar: () => void;
+  projectId?: number | null;
 }
 
 const AddTaskModal: React.FC<AddTaskModalProps> = ({
-                                                       isOpen,
-                                                       toggleSidebar,
-                                                   }) => {
-    const sidebarRef = useRef<HTMLDivElement>(null);
-    const [showTitleInput, setShowTitleInput] = useState(false);
-    const [showResultInput, setShowResultInput] = useState(false);
-    const [showSpecialists, setShowSpecialists] = useState(false);
-    const {project} = useAppSelector(selectProject);
-    const tracker = project?.project_team?.tracker;
-    const specialists = project?.project_team?.specialists ?? [];
-    const dispatch = useDispatch<AppDispatch>();
-    const [createdAt] = useState(new Date().toISOString());
+  isOpen,
+  toggleSidebar,
+  projectId,
+}) => {
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const [showTitleInput, setShowTitleInput] = useState(false);
+  const [showResultInput, setShowResultInput] = useState(false);
+  const [showSpecialists, setShowSpecialists] = useState(false);
+
+  const project = useAppSelector(selectCurrentProject);
+  const tracker = project?.project_team?.tracker;
+  const specialists = project?.project_team?.specialists ?? [];
+
+  const dispatch = useDispatch<AppDispatch>();
+  const [createdAt] = useState(new Date().toISOString());
+
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");

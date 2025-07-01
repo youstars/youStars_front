@@ -24,6 +24,8 @@ import bibl from "shared/images/sideBarImgs/bibl.svg";
 import chat from "shared/images/sideBarImgs/fi-br-envelope.svg";
 import settings from "shared/images/sideBarImgs/settings.svg";
 import ModalOrders from "widgets/Modals/ModalOrder/ModalOrder";
+import CreateButton from "shared/UI/CreateButton/CreateButton";
+
 
 export default function Header2() {
   const [dateTime, setDateTime] = useState(new Date());
@@ -175,12 +177,8 @@ export default function Header2() {
 
       <div className={classes.right_side}>
         {/*<button className={classes.create_order}>Создать заказ</button>*/}
-          <button
-          className={classes.create_order}
-          onClick={() => setIsModalOpen(true)}
-        >
-          Создать заказ
-        </button>
+          <CreateButton onClick={() => setIsModalOpen(true)} />
+
         <div className={classes.control_panel}>
           <div className={classes.notification_container} ref={notificationRef}>
             <button

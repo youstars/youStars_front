@@ -22,6 +22,9 @@ function Specialists() {
   const userId = Number(Cookies.get("user_role_id"));
   console.log("userId", userId);
 
+const [isStatusOpen, setIsStatusOpen] = useState(false);
+const statusRef = useRef(null);
+
 
   
 
@@ -30,10 +33,10 @@ function Specialists() {
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
   const sortButtonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    if (!list.length) dispatch(getSpecialists());
-    if (!allOrders.length) dispatch(getFunnelData());
-  }, [dispatch, list.length, allOrders.length]);
+useEffect(() => {
+  dispatch(getSpecialists());
+  dispatch(getFunnelData());
+}, [dispatch]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

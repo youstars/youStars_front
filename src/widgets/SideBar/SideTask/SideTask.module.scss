@@ -1,11 +1,13 @@
 .sidebarContainer {
-  top: 0;
-  right: 0;
+  position: fixed;
+  top: 128px;
+  left: 0;
+  width: 100vw;
   height: 100vh;
   pointer-events: none;
   z-index: 1000;
-  width: 0;
-  transition: width 0.1s ease;
+  transition: opacity 0.3s ease;
+  background: transparent;
 }
 
 .containerOpen {
@@ -19,7 +21,7 @@
   right: 0;
   width: 340px;
   height: 100%;
-  background: #2E3235; /* Matches the dark background in the screenshot */
+  background: #2E3235;
   opacity: 0;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-in-out;
   box-shadow: -5px 0 25px rgba(0, 0, 0, 0.25);
@@ -38,7 +40,7 @@
   left: -40px;
   top: 20px;
   background: #2E3235;
-  color: var( --primery-color);
+  color: var(--primery-color);
   padding: 8px;
   border-radius: 8px 0 0 8px;
   cursor: pointer;
@@ -90,7 +92,7 @@
 
 .specialistsRow {
   display: flex;
-  justify-content: flex-end; /* выравнивание вправо */
+  justify-content: flex-end;
   align-items: center;
   gap: 8px;
   margin-top: 8px;
@@ -120,7 +122,7 @@
 
 .content {
   padding: 20px;
-  color: var( --primery-color);
+  color: var(--primery-color);
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
@@ -193,7 +195,7 @@
 
 .user_name p:nth-child(1) {
   font-size: 14px;
-  color:var( --primery-color);
+  color: var(--primery-color);
   font-weight: 600;
 }
 
@@ -231,7 +233,7 @@
 
   font-weight: 600;
   font-size: 12px;
-  color:var( --primery-color);
+  color: var(--primery-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -260,7 +262,7 @@
   font-size: 12px;
   font-family: sans-serif;
   font-weight: 400;
-  color:var( --primery-color);
+  color: var(--primery-color);
   margin: 0;
 }
 
@@ -272,7 +274,7 @@
 
 .fidback p {
   font-size: 12px;
-  color: var( --secondary-font-color);
+  color: var(--secondary-font-color);
   font-weight: 400;
 }
 
@@ -299,7 +301,7 @@
 }
 
 .sum span {
-  color:var( --primery-color);
+  color: var(--primery-color);
   font-size: 12px;
   font-weight: 400;
 }
@@ -326,7 +328,7 @@
   font-family: sans-serif;
   font-size: 12px;
   line-height: 1.5;
-  color:var( --primery-color);
+  color: var(--primery-color);
   margin: 0;
 }
 
@@ -413,7 +415,7 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 8px;
-  color:var( --primery-color);
+  color: var(--primery-color);
   font-family: sans-serif;
 }
 
@@ -500,14 +502,14 @@
 .uploadWrapper {
   margin: 15px 0;
   padding: 15px;
-  background: #383E41; /* Matches the background in the screenshot */
+  background: #383E41;
   border-radius: 8px;
 }
 
 .uploadHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Space between title and icon */
+  justify-content: space-between;
   padding-bottom: 10px;
 }
 
@@ -516,7 +518,7 @@
   font-size: 14px;
   font-weight: 600;
   margin: 0;
-  color: #FFC107; /* Yellow color for the header text */
+  color: #FFC107;
 }
 
 .uploadIcon {

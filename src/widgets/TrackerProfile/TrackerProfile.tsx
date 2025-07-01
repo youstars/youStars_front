@@ -3,7 +3,9 @@ import styles from "./TrackerProfile.module.scss";
 import Avatar from "shared/UI/Avatar/Avatar";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { useAppSelector } from "shared/hooks/useAppSelector";
-import { getTrackerMe } from "shared/store/slices/trackerSlice";
+import { getTrackerMe, getTrackerById } from "shared/store/slices/trackerSlice";
+import { useParams } from "react-router-dom";
+
 import Phone from "shared/images/clientImgs/phone.svg";
 import Mail from "shared/images/clientImgs/mail.svg";
 import Web from "shared/images/clientImgs/network.svg";
@@ -11,14 +13,39 @@ import ProjectFiles, { FileItem } from "shared/UI/ProjectFiles/ProjectFiles";
 import RateItem from "shared/UI/RateItem/RateItem";
 import TagSection from "widgets/sub_pages/SpecialistProfile/sections/Other/TagSelection/TagSection";
 import { TrackerNotes } from "widgets/sub_pages/ClientProfile/components/TrackerNotes/TrackerNotes";
+import { useFileManager } from "shared/hooks/useFileManager";
+import { uploadTrackerFile } from "shared/api/files";
 
 const TrackerProfile = () => {
+  const { id } = useParams<{ id?: string }>();
   const dispatch = useAppDispatch();
   const { data: tracker, loading } = useAppSelector((state) => state.tracker);
 
   useEffect(() => {
-    dispatch(getTrackerMe());
-  }, [dispatch]);
+    if (id) {
+      dispatch(getTrackerById(Number(id)));
+    } else {
+      dispatch(getTrackerMe());
+    }
+  }, [dispatch, id]);
+
+  const trackerId = tracker?.id ?? 0;
+
+const fileItems: FileItem[] = tracker?.files?.map((f) => ({
+  id: f.id,
+  name: f.name,
+  fileUrl: f.file,
+})) ?? [];
+
+
+const { files, handleFileSelect, handleDeleteFile } = useFileManager(
+  fileItems,
+  (file, id) => uploadTrackerFile(file, file.name, id),
+  trackerId,
+  "admin",
+  () => id ? dispatch(getTrackerById(Number(id))) : dispatch(getTrackerMe()) 
+);
+
 
   if (loading || !tracker) return null;
 
@@ -28,14 +55,6 @@ const TrackerProfile = () => {
     `${custom_user.first_name || ""} ${custom_user.last_name || ""}`.trim() ||
     custom_user.full_name ||
     "—";
-
-  const handleFileSelect = async (file: File) => {
-    console.log("📂 Загрузка файла:", file.name);
-  };
-
-  const handleFileDelete = async (file: FileItem) => {
-    console.log("❌ Удаление файла ID:", file.id);
-  };
 
   return (
     <div className={styles.main}>
@@ -87,7 +106,7 @@ const TrackerProfile = () => {
         <div className={styles.header}>
           <span className={styles.title}>Проекты в работе</span>
           <span className={styles.count}>
-            ({tracker.projects?.length || 0})
+            ({tracker.projects?.filter((p) => p.status !== "completed").length || 0})
           </span>
         </div>
         <div className={styles.table}>
@@ -140,29 +159,24 @@ const TrackerProfile = () => {
         </div>
       </div>
 
-     <div className={styles.filesExperienceBlock}>
-  <div className={styles.filesBlock}>
-    <ProjectFiles
-      files={tracker.files?.map((f) => ({
-        id: f.id,
-        name: f.name,
-        fileUrl: f.file,
-      })) || []}
-      onFileSelect={handleFileSelect}
-      onFileDelete={handleFileDelete}
-    />
-  </div>
+      <div className={styles.filesExperienceBlock}>
+        <div className={styles.filesBlock}>
+          <ProjectFiles
+            files={files}
+            onFileSelect={handleFileSelect}
+            onFileDelete={handleDeleteFile}
+          />
+        </div>
 
-  <div className={styles.about}>
-    <div className={styles.columns}>
-      <div>
-        <div className={styles.subtitle}>Опыт в нишах</div>
-        <TagSection title="" tags={tracker.scopes || []} />
+        <div className={styles.about}>
+          <div className={styles.columns}>
+            <div>
+              <div className={styles.subtitle}>Опыт в нишах</div>
+              <TagSection title="" tags={tracker.scopes || []} />
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
-
 
       <div className={styles.rateBlock}>
         <RateItem title="Стоимость" value={tracker.cost || "—"} />
