@@ -40,7 +40,7 @@ const TaskCard: React.FC<TaskCardProps> = React.memo(({ order, onSelect }) => {
             onClick={() => onSelect(id)}
             role="button"
             tabIndex={0}
-            onKeyPress={(e) => { if (e.key === 'Enter') onSelect(id); }}
+            onKeyDown={(e) => { if (e.key === 'Enter') onSelect(id); }}
         >
             <div className={styles.taskContent}>
                 <div className={styles.taskHeader}>
