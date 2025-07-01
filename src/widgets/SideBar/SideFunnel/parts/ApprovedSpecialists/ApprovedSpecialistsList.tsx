@@ -1,5 +1,5 @@
 import React from "react";
-import classes from "../../SideFunnel.module.scss"
+import classes from "./ApprovedSpecialistsList.module.scss"
 
 
 const getInitials = (name: string | null): string => {
@@ -23,29 +23,31 @@ interface Props {
     items: Specialist[];
 }
 
-const ApprovedSpecialistsList: React.FC<Props> = ({ items }) => {
+const ApprovedSpecialistsList: React.FC<Props> = ({items}) => {
     if (!items.length) {
         return <div className={classes.empty}>Нет утверждённых специалистов</div>;
     }
 
     return (
-        <div className={classes.invitedList}>
+        <div className={classes.ApprovedList}>
             {items.map((spec) => (
-                <div key={spec.id} className={classes.invitedItem}>
-                    <div className={classes.avatar}>
-                        {spec.custom_user?.avatar ? (
-                            <img
-                                src={spec.custom_user.avatar}
-                                alt={spec.custom_user?.full_name || "avatar"}
-                            />
-                        ) : (
-                            <span className={classes.initials}>
+                <div key={spec.id} className={classes.ApprovedItem}>
+                    <div className={classes.specialistsInfo}>
+                        <div className={classes.avatar}>
+                            {spec.custom_user?.avatar ? (
+                                <img
+                                    src={spec.custom_user.avatar}
+                                    alt={spec.custom_user?.full_name || "avatar"}
+                                />
+                            ) : (
+                                <span className={classes.initials}>
                                 {getInitials(spec.custom_user?.full_name)}
                             </span>
-                        )}
-                    </div>
-                    <div className={classes.name}>
-                        {spec.custom_user?.full_name || "Без имени"}
+                            )}
+                        </div>
+                        <div className={classes.name}>
+                            {spec.custom_user?.full_name || "Без имени"}
+                        </div>
                     </div>
                     <div className={classes.payment}>—</div>
                 </div>

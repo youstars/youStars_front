@@ -1,11 +1,19 @@
 import React from "react";
-import classes from "../../SideFunnel.module.scss"
+import classes from "./InvitedSpecialistsList.module.scss"
 import InvitationStatus from "widgets/SideBar/SideFunnel/InvitationStatus/InvitationStatus";
 import Approve from "shared/images/sideBarImgs/fi-br-checkbox.svg";
 import Decline from "shared/images/sideBarImgs/Checkbox.svg";
 
+const getInitials = (name: string | null): string => {
+    if (!name) return "";
+    const parts = name.trim().split(/\s+/);
+    const initials = parts.slice(0, 2).map(p => p.charAt(0).toUpperCase()).join(".");
+    return initials ? `${initials}.` : "";
+};
+
 interface SpecialistUser {
     full_name: string | null;
+    avatar: any;
 }
 
 interface InvitationEntry {
@@ -35,7 +43,18 @@ const InvitedSpecialistsList: React.FC<Props> = ({
                 const user = entry.specialist?.custom_user;
                 return (
                     <div key={entry.id} className={classes.invitedItem}>
-                        <div className={classes.avatar} />
+                        <div className={classes.avatar}>
+                            {user?.avatar ? (
+                                <img
+                                    src={user.avatar}
+                                    alt={user?.full_name || "avatar"}
+                                />
+                            ) : (
+                                <span className={classes.initials}>
+                                {getInitials(user?.full_name)}
+                            </span>
+                            )}
+                        </div>
                         <div className={classes.name}>
                             <InvitationStatus
                                 status={entry.status}

@@ -1,11 +1,16 @@
 /* Список приглашённых специалистов */
-.invitedList {
+.ApprovedList {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
+.specialistsInfo{
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
 
-.invitedItem {
+.ApprovedItem {
   display: flex;
   align-items: center;
   gap: 15px;
