@@ -36,6 +36,7 @@ import OrderFiles from "./parts/OrderFiles/OrderFiles";
 import SubTasks from "widgets/SideBar/SideFunnel/parts/SubTasks/SubTasks";
 import EditableField from "./components/EditableField/EditableField";
 import DeadlinesSection from "../SideFunnel/parts/DeadlinesSection/DeadlinesSection";
+import BudgetTrackerSection from "./parts/BudgetTrackerSection/BudgetTrackerSection";
 
 
 export enum OrderStatus {
@@ -45,25 +46,6 @@ export enum OrderStatus {
     Prepayment = "prepayment",
 }
 
-interface DeadlineBlockProps {
-    label: string;
-    icon: React.ReactNode;
-    value: string | null | undefined;
-}
-
-const DeadlineBlock: React.FC<DeadlineBlockProps> = ({
-                                                         label,
-                                                         icon,
-                                                         value,
-                                                     }) => (
-    <div className={classes.project_name}>
-        <p>{label}</p>
-        <div className={classes.fidback}>
-            {icon}
-            <p>{value ?? "—"}</p>
-        </div>
-    </div>
-);
 
 interface SideFunnelProps {
     isOpen: boolean;
@@ -88,7 +70,6 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     const sidebarRef = React.useRef<HTMLDivElement>(null);
     const infoRef = React.useRef<HTMLDivElement>(null);
     const [isInfoOpen, setIsInfoOpen] = useState(true);
-    const [isEditingBudget, setIsEditingBudget] = useState(false);
     const [budgetValue, setBudgetValue] = useState("");
 
     useEffect(() => {
@@ -163,7 +144,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
         }
     }, [dispatch, orderId, userId, refresh, toggleSidebar, notify]);
 
-    type SaveField = { field: 'title' | 'deadline'; value: string };
+    type SaveField = { field: 'title' | 'deadline' | 'budget'; value: string };
 
     const handleSaveAll = useCallback(
         async (changes: SaveField[]) => {
@@ -181,6 +162,14 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                         updateOrderDeadline({
                             orderId,
                             projectDeadline: change.value,
+                        })
+                    );
+                } else if (change.field === 'budget') {
+                    await dispatch(
+                        updateOrderStatus({
+                            orderId,
+                            newStatus: OrderStatus.Prepayment,
+                            approved_budget: parseFloat(change.value),
                         })
                     );
                 }
@@ -241,55 +230,15 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                         />
 
                         {/* BUDGET & TRACKER */}
-                        <div className={classes.funnelInfo}>
-                            <div className={classes.sum}>
-                                <p>Бюджет</p>
-                                {isEditingBudget ? (
-                                    <input
-                                        className={classes.budgetInput}
-                                        value={budgetValue}
-                                        onChange={(e) => setBudgetValue(e.target.value)}
-                                        onBlur={() => setIsEditingBudget(false)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") setIsEditingBudget(false);
-                                        }}
-                                        autoFocus
-                                    />
-                                ) : (
-                                    <span
-                                        onClick={() => {
-                                            if (order.status === OrderStatus.Matching) {
-                                                setIsEditingBudget(true);
-                                            }
-                                        }}
-                                        title="Нажмите для редактирования"
-                                    >
-                    {budgetValue ? `${budgetValue} ₽` : "—"}
-                  </span>
-                                )}
-                            </div>
-
-                            <div className={classes.sum}>
-                                <p>Трекер</p>
-
-                                {order.tracker_data?.custom_user?.full_name ? (
-                                    <div className={classes.trackers}>
-                    <span
-                        className={classes.avatarPlaceholder}
-                        title={order.tracker_data.custom_user.full_name}
-                        aria-label={order.tracker_data.custom_user.full_name}
-                    >
-                      {order.tracker_data.custom_user.full_name
-                          .split(" ")
-                          .map((s) => s[0])
-                          .join("")}
-                    </span>
-                                    </div>
-                                ) : (
-                                    <span>—</span>
-                                )}
-                            </div>
-                        </div>
+                        <BudgetTrackerSection
+                            status={order.status as OrderStatus}
+                            budgetValue={budgetValue}
+                            onBudgetSave={(newBudget) =>
+                                handleSaveAll([{ field: 'budget', value: newBudget }])
+                            }
+                            trackerData={order.tracker_data}
+                            onBecomeTracker={handleBecomeTracker}
+                        />
                         <InfoSection
                             status={order.status as OrderStatus}
                             solving_problems={order.solving_problems || ""}
