@@ -23,6 +23,8 @@ export interface Chat {
   id: string;
   name: string;
   status: string;
+  project?: number; 
+  chat_type: string;
   lastActive: string;
   unread: number;
   messages: Message[];

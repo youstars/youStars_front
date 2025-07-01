@@ -21,6 +21,7 @@ import { ProjectDetail } from "shared/types/project";
 import ProjectFiles, { FileItem } from "shared/UI/ProjectFiles/ProjectFiles";
 import { deleteFileById, uploadClientFile } from "shared/api/files";
 import { useFileManager } from "shared/hooks/useFileManager";
+import EditButton from "shared/UI/EditButton/EditButtton";
 
 const employeeOptions = [
   "Not on the market",
@@ -89,31 +90,42 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
   const { client, loading } = useClientProfileData(externalClient);
   console.log("в компоненте client.position =", client?.position);
 
+  const fileItems: FileItem[] = useMemo(() => {
+    return (
+      client?.file?.map((f: { id: number; name: string; file: string }) => ({
+        id: f.id,
+        name: f.name,
+        fileUrl: f.file,
+      })) ?? []
+    );
+  }, [client?.file]);
 
+  const refreshClient = useCallback(() => {
+    if (id) {
+      dispatch(getClientById(+id));
+    }
+  }, [id, dispatch]);
 
+  const { files, handleFileSelect, handleDeleteFile } = useFileManager(
+    fileItems,
+    (file, id) => uploadClientFile(file, file.name, id),
+    client?.id ?? 0,
+    "client",
+    refreshClient
+  );
+const handleAvatarUpload = (file: File) => {
+  const formData = new FormData();
+  formData.append("custom_user.avatar", file);
 
-const fileItems: FileItem[] = useMemo(() => {
-  return client?.file?.map((f: { id: number; name: string; file: string }) => ({
-    id: f.id,
-    name: f.name,
-    fileUrl: f.file,
-  })) ?? [];
-}, [client?.file]);
-
-const refreshClient = useCallback(() => {
-  if (id) {
-    dispatch(getClientById(+id));
+  if (isAdmin) {
+    formData.append("id", client.custom_user.id.toString());
   }
-}, [id, dispatch]);
 
-
-const { files, handleFileSelect, handleDeleteFile } = useFileManager(
-  fileItems,
-  (file, id) => uploadClientFile(file, file.name, id),
-  client?.id ?? 0,
-  "client",
-  refreshClient 
-);
+  dispatch(updateClient({
+    id: isAdmin ? client.custom_user.id : undefined,
+    data: formData,
+  }));
+};
 
 
   const [edit, setEdit] = useState(false);
@@ -133,7 +145,6 @@ const { files, handleFileSelect, handleDeleteFile } = useFileManager(
     tg_nickname: "",
     full_name: "",
   });
-
 
   useEffect(() => {
     if (client) console.log("[ClientProfile] получен клиент:", client);
@@ -164,9 +175,11 @@ const { files, handleFileSelect, handleDeleteFile } = useFileManager(
       >
     ) =>
       setForm((p) => ({ ...p, [field]: e.target.value }));
+  const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
     if (!client) return;
+    setSaving(true);
 
     const userDiff: Record<string, any> = {};
     ["phone_number", "email", "tg_nickname", "full_name"].forEach((f) => {
@@ -225,38 +238,22 @@ const { files, handleFileSelect, handleDeleteFile } = useFileManager(
       }
     });
 
-    if (!Object.keys(userDiff).length && !Object.keys(clientDiff).length) {
-      console.log("Ничего не изменилось — запрос не отправляется");
-      setEdit(false);
-      return;
-    }
+    const updateId = client?.custom_user?.id;
+    await dispatch(
+      updateClient({
+        id: isAdmin ? updateId : undefined,
+        data: {
+          ...clientDiff,
+          custom_user: userDiff,
+        },
+      })
+    ).unwrap();
 
-    try {
-      if (Object.keys(userDiff).length) {
-        await dispatch(updateMe(userDiff)).unwrap();
-      }
-
-      if (Object.keys(clientDiff).length) {
-        const updateId = client?.custom_user?.id;
-        await dispatch(
-          updateClient({
-            id: isAdmin ? updateId : undefined,
-            data: clientDiff,
-          })
-        ).unwrap();
-      }
-
-      dispatch(getClientById(+id!)); 
-      setEdit(false);
-    } catch (err: any) {
-      const serverMessage =
-        err?.response?.data?.detail || err?.message || "Неизвестная ошибка";
-      console.error("Ошибка обновления профиля клиента:", serverMessage);
-      alert(`Ошибка: ${serverMessage}`);
-    }
+    setEdit(false);
+    setSaving(false);
   };
 
-  if (loading || !client) return <Spinner />;
+  if (!client && loading) return <Spinner />;
 
   const u = client.custom_user || client;
 
@@ -285,7 +282,11 @@ const { files, handleFileSelect, handleDeleteFile } = useFileManager(
         <div className={styles.client}>
           <div className={styles.clientInfo}>
             <div className={styles.clientAvatar}>
-              <Avatar src={u.avatar || ""} />
+              <Avatar
+                src={u.avatar || ""}
+                onUpload={handleAvatarUpload}
+              />
+
               <p className={styles.clientDays}>3 дня</p>
             </div>
 
@@ -331,12 +332,20 @@ const { files, handleFileSelect, handleDeleteFile } = useFileManager(
                 Рейтинг заказчика: {client.overall_rating ?? 0}/5
               </p>
 
-              <button
-                className={styles.editButton}
-                onClick={edit ? handleSave : () => setEdit(true)}
-              >
-                {edit ? "Сохранить" : "Изменить профиль"}
-              </button>
+              <div className={styles.editButtonBlock}>
+                {edit ? (
+                  <>
+                    <EditButton onClick={handleSave}>Сохранить</EditButton>
+                    <EditButton variant="cancel" onClick={() => setEdit(false)}>
+                      ✖ Отменить
+                    </EditButton>
+                  </>
+                ) : (
+                  <EditButton onClick={() => setEdit(true)}>
+                    Изменить профиль
+                  </EditButton>
+                )}
+              </div>
             </div>
           </div>
 

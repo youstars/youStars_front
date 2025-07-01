@@ -13,6 +13,8 @@ import ProjectFiles from "shared/UI/ProjectFiles/ProjectFiles";
 import CustomTable from "shared/UI/CustomTable/CustomTable";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
+import { useChatService } from "shared/hooks/useWebsocket";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
   getProjectById,
@@ -41,7 +43,7 @@ export default function ProjectProfile() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    name: "", // ← добавь это
+    name: "",
     goal: "",
     solving_problems: "",
     product_or_service: "",
@@ -143,6 +145,33 @@ export default function ProjectProfile() {
     },
     [project?.id]
   );
+  const { chats, setActiveChat } = useChatService();
+  const navigate = useNavigate();
+  const handleOpenProjectChat = () => {
+    if (!project?.id) return;
+    chats.forEach((chat) => {
+      console.log(
+        `chat_id: ${chat.id}, chat_type: ${chat.chat_type}, project: ${
+          chat.project
+        } (${typeof chat.project})`
+      );
+    });
+
+    const chat = chats.find(
+      (chat: any) =>
+        chat.chat_type === "admin-project" &&
+        Number(chat.project) === Number(project.id)
+    );
+
+    if (chat) {
+      console.log("Чат найден:", chat.id);
+      setActiveChat(chat.id);
+      navigate("/manager/chats");
+    } else {
+      console.warn("Чат проекта не найден");
+    }
+  };
+
 
   const handleStatusToggle = async () => {
     if (!project?.id || !project.status) return;
@@ -224,15 +253,31 @@ export default function ProjectProfile() {
                   <h2>{project?.name || "Название проекта"}</h2>
                 )}
 
-                <p>
-                  Начало:{" "}
-                  {project?.start_date
-                    ? new Date(project.start_date).toLocaleDateString()
-                    : "-"}
+                <p className={styles.status}>
+                  {project?.status === "completed" ? "Завершён" : "В работе"}
                 </p>
+
+                <div className={styles.editBtnBlock}>
+                  {isEditing ? (
+                    <>
+                      <EditButton onClick={handleSave}>Сохранить</EditButton>
+                      <EditButton
+                        variant="cancel"
+                        onClick={() => setIsEditing(false)}
+                      >
+                        ✖ Отменить
+                      </EditButton>
+                    </>
+                  ) : (
+                    <EditButton onClick={() => setIsEditing(true)}>
+                      Изм. профиль
+                    </EditButton>
+                  )}
+                </div>
               </div>
             </div>
           </div>
+
           <div></div>
         </div>
 
@@ -339,22 +384,10 @@ export default function ProjectProfile() {
             alt="group chat"
             size="lg"
             border="none"
+            onClick={handleOpenProjectChat}
           />
+
           <IconButton icon={Chat} alt="chat" size="lg" border="none" />
-        </div>
-        <div className={styles.editBtnBlock}>
-          {isEditing ? (
-            <>
-              <EditButton onClick={handleSave}>Сохранить</EditButton>
-              <EditButton variant="cancel" onClick={() => setIsEditing(false)}>
-                ✖ Отменить
-              </EditButton>
-            </>
-          ) : (
-            <EditButton onClick={() => setIsEditing(true)}>
-              Изм. профиль
-            </EditButton>
-          )}
         </div>
       </div>
 

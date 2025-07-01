@@ -10,10 +10,10 @@ export const getProjects = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = getCookie("access_token");
-      const role = getCookie("user_role"); // e.g. "tracker" or "client"
+      const role = getCookie("user_role"); 
       let url = `${API_BASE_URL}projects/`;
       if (role && role.toLowerCase().includes("client")) {
-        const clientId = getCookie("user_role_id"); // cookie stores the current client.id
+        const clientId = getCookie("user_role_id"); 
         if (!clientId) {
           throw new Error("Client id not found in cookies");
         }
