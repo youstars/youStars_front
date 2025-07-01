@@ -183,14 +183,12 @@ const Funnel = () => {
                             </span>
                                                         <span className={styles.taskDetailValue}>
                               <span className={styles.avatarCircle}>
-                                <span className={styles.avatarCircle}>
-                                  {order.tracker_data &&
-                                  order.tracker_data.custom_user?.full_name
-                                      ? getInitials(
-                                          order.tracker_data.custom_user.full_name
-                                      )
-                                      : "–"}
-                                </span>
+                                {order.tracker_data &&
+                                order.tracker_data.custom_user?.full_name
+                                    ? getInitials(
+                                        order.tracker_data.custom_user.full_name
+                                    )
+                                    : "–"}
                               </span>
                             </span>
                                                     </div>
