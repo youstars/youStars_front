@@ -425,7 +425,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                         <div className={classes.blok_paragraph}>
                             <h3>Заметка по заявке</h3>
                             <div className={classes.paragraph}>
-                                <p>{order.extra_wishes || "Комментариев нет"}</p>
+                                <p>{"//TODO Комментариев нет"}</p>
                             </div>
                         </div>
 
