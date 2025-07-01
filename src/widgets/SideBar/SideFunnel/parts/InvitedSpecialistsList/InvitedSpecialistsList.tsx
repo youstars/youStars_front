@@ -3,13 +3,8 @@ import classes from "./InvitedSpecialistsList.module.scss"
 import InvitationStatus from "widgets/SideBar/SideFunnel/InvitationStatus/InvitationStatus";
 import Approve from "shared/images/sideBarImgs/fi-br-checkbox.svg";
 import Decline from "shared/images/sideBarImgs/Checkbox.svg";
+import {getInitials} from "shared/helpers/userUtils";
 
-const getInitials = (name: string | null): string => {
-    if (!name) return "";
-    const parts = name.trim().split(/\s+/);
-    const initials = parts.slice(0, 2).map(p => p.charAt(0).toUpperCase()).join(".");
-    return initials ? `${initials}.` : "";
-};
 
 interface SpecialistUser {
     full_name: string | null;

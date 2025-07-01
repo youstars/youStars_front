@@ -1,13 +1,6 @@
 import React from "react";
 import classes from "./ApprovedSpecialistsList.module.scss"
-
-
-const getInitials = (name: string | null): string => {
-    if (!name) return "";
-    const parts = name.trim().split(/\s+/);
-    const initials = parts.slice(0, 2).map(p => p.charAt(0).toUpperCase()).join(".");
-    return initials ? `${initials}.` : "";
-};
+import {getInitials} from "shared/helpers/userUtils";
 
 interface SpecialistUser {
     full_name: string | null;

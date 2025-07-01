@@ -1,6 +1,8 @@
-export const getInitials = (fullName: string): string => {
-  const [first, second] = fullName.trim().split(" ");
-  return (first?.[0] || "") + (second?.[0] || "");
+export const getInitials = (name: string | null): string => {
+  if (!name) return "";
+  const parts = name.trim().split(/\s+/);
+  const initials = parts.slice(0, 2).map(p => p.charAt(0).toUpperCase()).join(".");
+  return initials ? `${initials}.` : "";
 };
 export const formatDate = (dateStr: string | null | undefined): string => {
   if (!dateStr) return "Не указано";
