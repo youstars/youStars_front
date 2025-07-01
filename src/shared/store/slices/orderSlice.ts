@@ -184,6 +184,35 @@ export const updateOrderTitle = createAsyncThunk<
   }
 );
 
+export const updateOrderDeadline = createAsyncThunk<
+  Order,
+  { orderId: string; projectDeadline: string },
+  { rejectValue: string }
+>(
+  "order/updateOrderDeadline",
+  async ({ orderId, projectDeadline }, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      if (!token) return rejectWithValue("Нет токена");
+
+      const response = await axiosInstance.patch<Order>(
+        `/order/${orderId}/`,
+        { project_deadline: projectDeadline },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Ошибка при обновлении дедлайна:", error);
+      return rejectWithValue(error.response?.data || "Ошибка при обновлении дедлайна");
+    }
+  }
+);
+
 export const confirmPrepayment = createAsyncThunk<
   Order,
   { orderId: string },
@@ -267,6 +296,9 @@ const orderSlice = createSlice({
       .addCase(confirmPrepayment.fulfilled, (state, action: PayloadAction<Order>) => {
       state.current = action.payload;
 })
+      .addCase(updateOrderDeadline.fulfilled, (state, action: PayloadAction<Order>) => {
+        state.current = action.payload;
+      })
 
   },
 });

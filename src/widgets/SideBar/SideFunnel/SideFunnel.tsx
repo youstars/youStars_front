@@ -4,6 +4,7 @@ import {
     Clock,
     ChevronLeft,
     ChevronRight,
+    PenBox
 } from "lucide-react";
 import classes from "./SideFunnel.module.scss";
 import {useAppDispatch} from "shared/hooks/useAppDispatch";
@@ -12,6 +13,7 @@ import {useOrder} from "shared/hooks/useOrder";
 import Plus from "shared/assets/icons/plus.svg";
 import {
     updateOrderTitle,
+    updateOrderDeadline,
     assignTrackerToOrder,
     confirmPrepayment,
 } from "shared/store/slices/orderSlice";
@@ -87,6 +89,8 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [isEditingBudget, setIsEditingBudget] = useState(false);
     const [budgetValue, setBudgetValue] = useState("");
+    const [isEditingDeadline, setIsEditingDeadline] = useState(false);
+    const [deadlineValue, setDeadlineValue] = useState<string>("");
 
     useEffect(() => {
         if (order) {
@@ -96,6 +100,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                 order?.estimated_budget?.toString() ||
                 ""
             );
+            setDeadlineValue(order.project_deadline || "");
         }
     }, [order]);
 
@@ -135,6 +140,28 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
         } finally {
             setIsEditingTitle(false);
         }
+    };
+
+    const handleDeadlineSave = async () => {
+      if (deadlineValue === order.project_deadline) return;
+      try {
+        await dispatch(
+          updateOrderDeadline({
+            orderId: order!.id.toString(),
+            projectDeadline: deadlineValue,
+          })
+        );
+      } catch {
+        notify.error("Не удалось сохранить дедлайн.");
+      } finally {
+        setIsEditingDeadline(false);
+      }
+    };
+
+    const handleSaveAll = async () => {
+      await handleTitleSave();
+      await handleDeadlineSave();
+      await refresh();
     };
 
     const handleBecomeTracker = async () => {
@@ -179,59 +206,93 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
 
                         {/* TITLE */}
                         <div className={classes.title}>
-                            {[OrderStatus.InProgress, OrderStatus.Matching].includes(
-                                order.status as OrderStatus
-                            ) && isEditingTitle ? (
-                                <input
-                                    value={editableTitle}
-                                    onChange={(e) => setEditableTitle(e.target.value)}
-                                    onBlur={() => setIsEditingTitle(false)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                            handleTitleSave();
-                                        }
-                                    }}
-                                    autoFocus
-                                    className={classes.titleInput}
-                                />
-                            ) : (
-                                <span
-                                    onClick={() => {
-                                        if (
-                                            [OrderStatus.InProgress, OrderStatus.Matching].includes(
-                                                order.status as OrderStatus
-                                            )
-                                        )
-                                            setIsEditingTitle(true);
-                                    }}
-                                >
-                  {editableTitle || `Заявка № ${order?.id}` || "Без названия"}
-                </span>
-                            )}
+                          {([OrderStatus.InProgress, OrderStatus.Matching].includes(order.status as OrderStatus) && isEditingTitle) ? (
+                            <>
+                              <input
+                                value={editableTitle}
+                                onChange={(e) => setEditableTitle(e.target.value)}
+                                className={classes.titleInput}
+                                autoFocus
+                              />
+                              <button
+                                type="button"
+                                className={classes.saveButton}
+                                onClick={handleSaveAll}
+                              >
+                                Сохранить
+                              </button>
+                              <button
+                                type="button"
+                                className={classes.cancelButton}
+                                onClick={() => {
+                                  setIsEditingTitle(false);
+                                  setEditableTitle(order.project_name || order.order_name || "");
+                                  setIsEditingDeadline(false);
+                                  setDeadlineValue(order.project_deadline || "");
+                                }}
+                              >
+                                Отменить
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <span
+                                onClick={() => {
+                                  if ([OrderStatus.InProgress, OrderStatus.Matching].includes(order.status as OrderStatus)) {
+                                    setIsEditingTitle(true);
+                                  }
+                                }}
+                              >
+                                {editableTitle || `Заявка № ${order?.id}` || "Без названия"}
+                              </span>
+                              <PenBox
+                                size={16}
+                                className={classes.editIcon}
+                                color="#FFC107"
+                                onClick={() => {
+                                  setIsEditingTitle(true);
+                                  setIsEditingDeadline(true);
+                                }}
+                              />
+                            </>
+                          )}
                         </div>
 
                         {/* DEADLINES */}
                         <div className={classes.time_block}>
-                            <DeadlineBlock
-                                label="Дедлайн статуса"
-                                icon={<Calendar size={14} className={classes.icon}/>}
-                                value={formatDate(order.project_deadline)}
-                            />
-                            <DeadlineBlock
-                                label="Начало статуса"
-                                icon={<Calendar size={14} className={classes.icon}/>}
-                                value={formatDate(order.updated_at)}
-                            />
-                            <DeadlineBlock
-                                label="Последний контакт с заказчиком"
-                                icon={<Calendar size={14} className={classes.icon}/>}
-                                value={formatDate(order.updated_at)}
-                            />
-                            <DeadlineBlock
-                                label="Создано"
-                                icon={<Clock size={14} className={classes.icon}/>}
-                                value={formatDate(order.created_at)}
-                            />
+                          <div className={classes.project_name}>
+                            <p>Дедлайн статуса</p>
+                            <div className={classes.fidback}>
+                              <Calendar size={14} className={classes.icon} />
+                              {isEditingDeadline ? (
+                                <input
+                                  type="date"
+                                  value={deadlineValue}
+                                  onChange={(e) => setDeadlineValue(e.target.value)}
+                                  onBlur={() => setIsEditingDeadline(false)}
+                                  className={classes.deadlineInput}
+                                  autoFocus
+                                />
+                              ) : (
+                                <p>{formatDate(order.project_deadline)}</p>
+                              )}
+                            </div>
+                          </div>
+                          <DeadlineBlock
+                            label="Начало статуса"
+                            icon={<Calendar size={14} className={classes.icon}/>}
+                            value={formatDate(order.updated_at)}
+                          />
+                          <DeadlineBlock
+                            label="Последний контакт с заказчиком"
+                            icon={<Calendar size={14} className={classes.icon}/>}
+                            value={formatDate(order.updated_at)}
+                          />
+                          <DeadlineBlock
+                            label="Создано"
+                            icon={<Clock size={14} className={classes.icon}/>}
+                            value={formatDate(order.created_at)}
+                          />
                         </div>
 
                         {/* BUDGET & TRACKER */}
@@ -384,6 +445,8 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                                 if (order.status === OrderStatus.InProgress) {
                                     await handleTitleSave();
                                     await refresh();
+                                    setIsEditingTitle(false);
+                                    setIsEditingDeadline(false);
                                 } else if (order.status === OrderStatus.Matching) {
                                     const parsedBudget = parseFloat(budgetValue);
                                     if (
@@ -405,12 +468,18 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                                         })
                                     );
                                     await refresh();
+                                    setIsEditingTitle(false);
+                                    setIsEditingDeadline(false);
                                 } else if (order.status === OrderStatus.Prepayment) {
                                     await dispatch(confirmPrepayment({orderId}));
                                     await refresh();
+                                    setIsEditingTitle(false);
+                                    setIsEditingDeadline(false);
                                 } else {
                                     await handleBecomeTracker();
                                     await refresh();
+                                    setIsEditingTitle(false);
+                                    setIsEditingDeadline(false);
                                 }
                             }}
                             disabled={
