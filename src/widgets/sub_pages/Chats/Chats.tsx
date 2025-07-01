@@ -28,9 +28,7 @@ const Chats: React.FC = () => {
     "all" | "specialists" | "clients" | "projects"
   >("all");
 
-  useEffect(() => {
-    console.log("chats from store:", chats);
-  }, [chats]);
+
 
   const getFilteredChats = () => {
     switch (activeTab) {

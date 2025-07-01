@@ -11,14 +11,14 @@
     color: var(--text-secondary);
   }
   
-  .textarea {
-    background-color: var(--color-bg-secondary);
-    border-radius: var(--border-radius-main);
-    padding: 12px;
-    color: var(--text-primary);
-    resize: none;
-    border: none;
-    min-height: 100px;
-
-  }
-  
+.textarea {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--border-radius-main);
+  padding: 12px;
+  color: var(--text-primary);
+  border: none;
+  resize: none;
+  min-height: 20px;
+  height: auto;
+  overflow-y: hidden;
+}

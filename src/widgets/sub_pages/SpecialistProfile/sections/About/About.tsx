@@ -50,6 +50,7 @@ const About: React.FC<Props> = ({
                 <input
                     type="text"
                     value={formData.description}
+                    
                     onChange={(e) => onFieldChange("description", e.target.value)}
                     className={styles.inputField}
                     placeholder="Описание о себе"

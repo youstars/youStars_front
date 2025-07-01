@@ -35,7 +35,7 @@ const ProjectFiles: React.FC<ProjectFilesProps> = ({
     const x = e.clientX; 
     const y = e.clientY; 
 
-    console.log("Context menu position:", { x, y, clientX: e.clientX, clientY: e.clientY });
+
 
     setContextMenu({
       visible: true,
@@ -57,7 +57,7 @@ const ProjectFiles: React.FC<ProjectFilesProps> = ({
       setContextMenu({ visible: false, x: 0, y: 0, file: null });
     }
   };
-console.log("🧾 FILES В ProjectFiles:", files);
+
 
   return (
     <div className={styles.container} onClick={handleClickAnywhere}>
