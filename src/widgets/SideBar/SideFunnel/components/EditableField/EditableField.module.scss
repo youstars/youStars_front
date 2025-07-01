@@ -1,0 +1,77 @@
+/* EditableField.module.scss */
+
+.editableField {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Обычный режим отображения */
+.display {
+  font-size: 14px;
+  color: var(--primary-color);
+}
+
+/* Кликабельное значение */
+.clickable {
+  cursor: pointer;
+}
+
+/* Поле ввода (input или textarea) */
+.input {
+  box-sizing: border-box;
+  font-size: 14px;
+  padding: 8px 12px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  color: var(--primary-color);
+  font-family: sans-serif;
+  margin-bottom: 8px;
+  outline: none;
+}
+
+.input:focus {
+  outline: none;
+}
+
+/* Контейнер для кнопок */
+.controls {
+  display: flex;
+  gap: 8px;
+}
+
+/* Кнопка «Сохранить» */
+.saveButton {
+  background: #FFC107;
+  color: #000;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.saveButton:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Кнопка «Отменить» */
+.cancelButton {
+  background: #383E41;
+  color: var(--primary-color);
+  font-size: 14px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cancelButton:hover {
+  background: #32353a;
+}
