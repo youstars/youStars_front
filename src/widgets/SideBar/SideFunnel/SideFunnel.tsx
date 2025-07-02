@@ -68,19 +68,17 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     const notify = useNotify();
 
     const sidebarRef = React.useRef<HTMLDivElement>(null);
-    const infoRef = React.useRef<HTMLDivElement>(null);
-    const [isInfoOpen, setIsInfoOpen] = useState(true);
-    const [budgetValue, setBudgetValue] = useState("");
+    const [budgetValue, setBudgetValue] = useState<string>("");
 
     useEffect(() => {
         if (!order) return;
+        setBudgetValue(
+            order.approved_budget?.toString() ||
+            order.estimated_budget?.toString() ||
+            ""
+        );
+    }, [order]);
 
-        if (infoRef.current) {
-            infoRef.current.style.maxHeight = isInfoOpen
-                ? `${infoRef.current.scrollHeight}px`
-                : "0";
-        }
-    }, [isInfoOpen, order]);
 
     const handleClientChat = useCallback(() => {
         const clientUserId = order?.client?.custom_user?.id;
@@ -234,7 +232,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                             status={order.status as OrderStatus}
                             budgetValue={budgetValue}
                             onBudgetSave={(newBudget) =>
-                                handleSaveAll([{ field: 'budget', value: newBudget }])
+                                handleSaveAll([{field: 'budget', value: newBudget}])
                             }
                             trackerData={order.tracker_data}
                             onBecomeTracker={handleBecomeTracker}

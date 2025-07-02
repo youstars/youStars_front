@@ -199,10 +199,17 @@
   margin: 0;
 }
 
+
 .sum span {
   color: var(--primary-color);
   font-size: 12px;
   font-weight: 400;
+}
+
+/* Ensure editable field in sum aligns right */
+.sum .editableField {
+  flex: none;
+  margin-left: auto;
 }
 
 .blok_paragraph {

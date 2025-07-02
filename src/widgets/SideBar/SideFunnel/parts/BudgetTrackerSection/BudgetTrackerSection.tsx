@@ -23,14 +23,16 @@ const BudgetTrackerSection: React.FC<BudgetTrackerSectionProps> = ({
         {/* Редактирование бюджета */}
         <div className={classes.sum}>
             <p>Бюджет</p>
-            <EditableField
-                value={budgetValue}
-                onSave={onBudgetSave}
-                canEdit={status === OrderStatus.Matching}
-                type="number"
-                placeholder="0"
-                displayFormatter={(v) => (v ? `${v} ₽` : "—")}
-            />
+            <div className={classes.sumValue}>
+              <EditableField
+                  value={budgetValue}
+                  onSave={onBudgetSave}
+                  canEdit={status === OrderStatus.Matching}
+                  type="number"
+                  placeholder="0"
+                  displayFormatter={(v) => (v ? `${v} ₽` : "—")}
+              />
+            </div>
         </div>
 
         {/* Информация и назначение трекера */}
