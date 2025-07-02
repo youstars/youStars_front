@@ -19,6 +19,8 @@ export interface Message {
   };
 }
 
+
+
 export interface Chat {
   id: string;
   name: string;
@@ -66,5 +68,15 @@ export interface WebSocketMessage {
     project_deadline: string | null;
     expires_at: string;
     status: string;
+  };
+
+  reply_to?: {
+    id: string | number;
+    content: string;
+    timestamp: string;
+    sender?: {
+      id: number;
+      username: string;
+    };
   };
 }

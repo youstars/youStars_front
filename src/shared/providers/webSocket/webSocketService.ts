@@ -30,33 +30,56 @@ export const connectToWebSocket = (chatId: string, dispatch: AppDispatch) => {
   };
 
   ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
+    const data = JSON.parse(event.data);
 
-if (data.type === "history" && Array.isArray(data.history)) {
-  data.history.forEach((item: any) => {
-    const messageId = String(data.id)
+    if (data.type === "history" && Array.isArray(data.history)) {
+      data.history.forEach((item: any) => {
+        const messageId =
+          item.message_id ||
+          `${item.timestamp || Date.now()}-${item.sender_id}-${(
+            item.message ||
+            item.content ||
+            ""
+          ).slice(0, 10)}`;
 
-    if (processedMessages.has(messageId)) return;
-    processedMessages.add(messageId);
+        if (processedMessages.has(messageId)) return;
+        processedMessages.add(messageId);
 
-    const newMessage: Message = {
-      id: messageId,
-      userId: item.sender_id,
-      userName: item.sender_name,
-      text: item.content,
-      timestamp: item.timestamp || new Date().toISOString(),
-      isOwn: item.sender_id === userId,
-      message_type: item.message_type,
-      invitation: item.invitation,
-    };
+        const sender =
+          typeof item.sender_id === "object"
+            ? item.sender_id
+            : {
+                id: parseInt(item.sender_id),
+                username: item.sender_name || "User",
+              };
 
+        const newMessage: Message = {
+          id: messageId,
+          userId: sender.id,
+          userName: sender.username,
+          text: item.message || item.content || "",
+          timestamp: item.timestamp || new Date().toISOString(),
+          isOwn: sender.id === userId,
+          message_type: item.message_type,
+          invitation: item.invitation,
+        };
 
-    dispatch(addMessage({ chatId: String(chatId), message: newMessage }));
-  });
+        if (item.reply_to) {
+          newMessage.replyTo = {
+            id: String(item.reply_to.id),
+            userId: item.reply_to.sender?.id,
+            userName: item.reply_to.sender?.username,
+            text: item.reply_to.content,
+            timestamp: item.reply_to.timestamp,
+            isOwn: item.reply_to.sender?.id === userId,
+          };
+        }
 
-  return;
-}
+        dispatch(addMessage({ chatId: String(chatId), message: newMessage }));
+      });
 
+      return;
+    }
 
     if (!data.chat_id || !data.sender_id || (!data.message && !data.content))
       return;
@@ -89,6 +112,17 @@ if (data.type === "history" && Array.isArray(data.history)) {
       message_type: data.message_type,
       invitation: data.invitation,
     };
+
+    if (data.reply_to) {
+      newMessage.replyTo = {
+        id: String(data.reply_to.id),
+        userId: data.reply_to.sender?.id,
+        userName: data.reply_to.sender?.username,
+        text: data.reply_to.content,
+        timestamp: data.reply_to.timestamp,
+        isOwn: data.reply_to.sender?.id === userId,
+      };
+    }
 
     dispatch(addMessage({ chatId: String(data.chat_id), message: newMessage }));
   };

@@ -64,11 +64,6 @@ Promise.all([
 
   }, [dispatch]);
 
-  useEffect(() => {
-    if (activeChat) {
-      connectToWebSocket(activeChat, dispatch);
-    }
-  }, [activeChat, dispatch]);
 
   return {
     chats,

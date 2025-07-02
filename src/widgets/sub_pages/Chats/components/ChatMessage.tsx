@@ -39,6 +39,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onReply }) => {
     styles.message,
     message.isOwn ? styles.own : styles.other,
   ].join(" ");
+useEffect(() => {
+  if (message.message_type === "INVITATION") {
+    console.log("📬 Приглашение от WebSocket:", message.invitation);
+  }
+}, [message]);
 
   return (
     <div className={messageClassNames} onContextMenu={handleContextMenu}>
