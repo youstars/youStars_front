@@ -1,7 +1,7 @@
 import React from "react";
-import Check from "shared/assets/sideBarFunnelIcons/Check Icon.svg";
-import Cross from "shared/assets/sideBarFunnelIcons/Hourglass Icon.svg";
-import HourGlass from "shared/assets/sideBarFunnelIcons/Hourglass Icon.svg"; 
+import Check from "shared/assets/sideBarFunnelIcons/CheckIcon.svg";
+import Cross from "shared/assets/sideBarFunnelIcons/CrossIcon.svg";
+import HourGlass from "shared/assets/sideBarFunnelIcons/HourglassIcon.svg";
 import styles from "./InvitationStatus.module.scss";
 
 interface Props {
