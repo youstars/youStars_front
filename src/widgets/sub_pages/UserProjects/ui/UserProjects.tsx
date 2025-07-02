@@ -6,7 +6,6 @@ import classes from "./UserProjects.module.scss";
 import { useUserRole } from "shared/hooks/useUserRole";
 import ClientProject from "../components/Client/ClientProject";
 import TrackerProject from "../components/Tracker/TrackerProject";
-import SpecialistProject from "../components/Specialist/SpecialistProject";
 import SearchAndFilter from "./SearchAndFilter";
 
 interface CustomUser {

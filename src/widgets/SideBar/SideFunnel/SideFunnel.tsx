@@ -1,10 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useCallback} from "react";
 import {
-    Calendar,
-    Clock,
     ChevronLeft,
-    ChevronRight,
-    PenBox
+    ChevronRight
 } from "lucide-react";
 import classes from "./SideFunnel.module.scss";
 import {useAppDispatch} from "shared/hooks/useAppDispatch";
@@ -27,17 +24,19 @@ import {
     updateInvitationPayment,
 } from "shared/store/slices/invitationSlice";
 import {updateOrderStatus} from "shared/store/slices/orderSlice";
-import {formatDate} from "shared/helpers/userUtils";
 import {useChatService} from "shared/hooks/useWebsocket";
 import {findChatByParticipantId} from "shared/helpers/chatUtils";
 import Cookies from "js-cookie";
 
 import Header from "./parts/Header/Header";
-import OrderInfo from "./parts/OrderInfo/OrderInfo";
+import InfoSection from "./parts/InfoSection/InfoSection";
 import InvitedSpecialistsList from "./parts/InvitedSpecialistsList/InvitedSpecialistsList";
 import ApprovedSpecialistsList from "./parts/ApprovedSpecialists/ApprovedSpecialistsList";
 import OrderFiles from "./parts/OrderFiles/OrderFiles";
 import SubTasks from "widgets/SideBar/SideFunnel/parts/SubTasks/SubTasks";
+import EditableField from "./components/EditableField/EditableField";
+import DeadlinesSection from "../SideFunnel/parts/DeadlinesSection/DeadlinesSection";
+import BudgetTrackerSection from "./parts/BudgetTrackerSection/BudgetTrackerSection";
 
 
 export enum OrderStatus {
@@ -47,25 +46,6 @@ export enum OrderStatus {
     Prepayment = "prepayment",
 }
 
-interface DeadlineBlockProps {
-    label: string;
-    icon: React.ReactNode;
-    value: string | null | undefined;
-}
-
-const DeadlineBlock: React.FC<DeadlineBlockProps> = ({
-                                                         label,
-                                                         icon,
-                                                         value,
-                                                     }) => (
-    <div className={classes.project_name}>
-        <p>{label}</p>
-        <div className={classes.fidback}>
-            {icon}
-            <p>{value ?? "—"}</p>
-        </div>
-    </div>
-);
 
 interface SideFunnelProps {
     isOpen: boolean;
@@ -88,38 +68,19 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     const notify = useNotify();
 
     const sidebarRef = React.useRef<HTMLDivElement>(null);
-    const infoRef = React.useRef<HTMLDivElement>(null);
-    const [isInfoOpen, setIsInfoOpen] = useState(true);
-    const [editableTitle, setEditableTitle] = useState("");
-    const [isEditingTitle, setIsEditingTitle] = useState(false);
-    const [isEditingBudget, setIsEditingBudget] = useState(false);
-    const [budgetValue, setBudgetValue] = useState("");
-    const [isEditingDeadline, setIsEditingDeadline] = useState(false);
-    const [deadlineValue, setDeadlineValue] = useState<string>("");
-
-    useEffect(() => {
-        if (order) {
-            setEditableTitle(order.project_name || order.order_name || "");
-            setBudgetValue(
-                order?.approved_budget?.toString() ||
-                order?.estimated_budget?.toString() ||
-                ""
-            );
-            setDeadlineValue(order.project_deadline || "");
-        }
-    }, [order]);
+    const [budgetValue, setBudgetValue] = useState<string>("");
 
     useEffect(() => {
         if (!order) return;
+        setBudgetValue(
+            order.approved_budget?.toString() ||
+            order.estimated_budget?.toString() ||
+            ""
+        );
+    }, [order]);
 
-        if (infoRef.current) {
-            infoRef.current.style.maxHeight = isInfoOpen
-                ? `${infoRef.current.scrollHeight}px`
-                : "0";
-        }
-    }, [isInfoOpen, order]);
 
-    const handleClientChat = () => {
+    const handleClientChat = useCallback(() => {
         const clientUserId = order?.client?.custom_user?.id;
         const chat = findChatByParticipantId(chats, clientUserId);
         if (chat) {
@@ -128,97 +89,93 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
         } else {
             notify.error("Чат с этим клиентом не найден.");
         }
-    };
+    }, [chats, navigate, notify, setActiveChat]);
 
-    const handleTitleSave = async () => {
-        if (!editableTitle.trim() || editableTitle === order?.project_name) return;
+    const handleGoalEdit = useCallback(async (newText: string) => {
         try {
-            await dispatch(
-                updateOrderTitle({
-                    orderId: order!.id.toString(),
-                    projectName: editableTitle,
-                    currentStatus: order!.status as OrderStatus,
-                })
-            );
-        } catch (error) {
-            notify.error("Не удалось сохранить название заявки.");
-        } finally {
-            setIsEditingTitle(false);
+            await dispatch(updateOrderGoal({orderId, orderGoal: newText}));
+            await refresh();
+            notify.success("Запрос сохранён");
+        } catch {
+            notify.error("Не удалось сохранить запрос");
         }
-    };
+    }, [dispatch, refresh, notify]);
 
-    const handleDeadlineSave = async () => {
-      if (deadlineValue === order.project_deadline) return;
-      try {
-        await dispatch(
-          updateOrderDeadline({
-            orderId: order!.id.toString(),
-            projectDeadline: deadlineValue,
-          })
-        );
-      } catch {
-        notify.error("Не удалось сохранить дедлайн.");
-      } finally {
-        setIsEditingDeadline(false);
-      }
-    };
-
-    const handleSaveAll = async () => {
-      await handleTitleSave();
-      await handleDeadlineSave();
-      await refresh();
-    };
-
-    const handleGoalEdit = async (newText: string) => {
-      try {
-        await dispatch(updateOrderGoal({ orderId, orderGoal: newText }));
-        await refresh();
-        notify.success("Запрос сохранён");
-      } catch {
-        notify.error("Не удалось сохранить запрос");
-      }
-    };
-
-    const handleProductEdit = async (newText: string) => {
-      try {
-        await dispatch(updateOrderProductOrService({ orderId, productOrService: newText }));
-        await refresh();
-        notify.success("Продукт сохранён");
-      } catch {
-        notify.error("Не удалось сохранить продукт или услугу");
-      }
-    };
-
-    const handleProblemsEdit = async (newText: string) => {
-      try {
-        await dispatch(updateOrderProblems({ orderId, solvingProblems: newText }));
-        await refresh();
-        notify.success("Проблемы сохранены");
-      } catch {
-        notify.error("Не удалось сохранить проблемы");
-      }
-    };
-
-    const handleExtraEdit = async (newText: string) => {
-      try {
-        await dispatch(updateOrderExtraWishes({ orderId, extraWishes: newText }));
-        await refresh();
-        notify.success("Пожелания сохранены");
-      } catch {
-        notify.error("Не удалось сохранить пожелания");
-      }
-    };
-
-    const handleBecomeTracker = async () => {
+    const handleProductEdit = useCallback(async (newText: string) => {
         try {
-            if (!orderId || !userId) return;
+            await dispatch(updateOrderProductOrService({orderId, productOrService: newText}));
+            await refresh();
+            notify.success("Продукт сохранён");
+        } catch {
+            notify.error("Не удалось сохранить продукт или услугу");
+        }
+    }, [dispatch, refresh, notify]);
+
+    const handleProblemsEdit = useCallback(async (newText: string) => {
+        try {
+            await dispatch(updateOrderProblems({orderId, solvingProblems: newText}));
+            await refresh();
+            notify.success("Проблемы сохранены");
+        } catch {
+            notify.error("Не удалось сохранить проблемы");
+        }
+    }, [dispatch, refresh, notify]);
+
+    const handleExtraEdit = useCallback(async (newText: string) => {
+        try {
+            await dispatch(updateOrderExtraWishes({orderId, extraWishes: newText}));
+            await refresh();
+            notify.success("Пожелания сохранены");
+        } catch {
+            notify.error("Не удалось сохранить пожелания");
+        }
+    }, [dispatch, refresh, notify]);
+
+    const handleBecomeTracker = useCallback(async () => {
+        if (!orderId || !userId) return;
+        try {
             await dispatch(assignTrackerToOrder({orderId, trackerId: userId}));
             await refresh();
             toggleSidebar();
         } catch {
             notify.error("Не удалось назначить вас трекером.");
         }
-    };
+    }, [dispatch, orderId, userId, refresh, toggleSidebar, notify]);
+
+    type SaveField = { field: 'title' | 'deadline' | 'budget'; value: string };
+
+    const handleSaveAll = useCallback(
+        async (changes: SaveField[]) => {
+            for (const change of changes) {
+                if (change.field === 'title') {
+                    await dispatch(
+                        updateOrderTitle({
+                            orderId,
+                            projectName: change.value,
+                            currentStatus: order.status as OrderStatus,
+                        })
+                    );
+                } else if (change.field === 'deadline') {
+                    await dispatch(
+                        updateOrderDeadline({
+                            orderId,
+                            projectDeadline: change.value,
+                        })
+                    );
+                } else if (change.field === 'budget') {
+                    await dispatch(
+                        updateOrderStatus({
+                            orderId,
+                            newStatus: OrderStatus.Prepayment,
+                            approved_budget: parseFloat(change.value),
+                        })
+                    );
+                }
+            }
+            await refresh();
+        },
+        [dispatch, order.status, orderId, refresh]
+    );
 
     if (!order) {
         return <div>Loading order...</div>;
@@ -251,176 +208,46 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
 
                         {/* TITLE */}
                         <div className={classes.title}>
-                          {([OrderStatus.InProgress, OrderStatus.Matching].includes(order.status as OrderStatus) && isEditingTitle) ? (
-                            <>
-                              <input
-                                value={editableTitle}
-                                onChange={(e) => setEditableTitle(e.target.value)}
-                                className={classes.titleInput}
-                                autoFocus
-                              />
-                              <button
-                                type="button"
-                                className={classes.saveButton}
-                                onClick={handleSaveAll}
-                              >
-                                Сохранить
-                              </button>
-                              <button
-                                type="button"
-                                className={classes.cancelButton}
-                                onClick={() => {
-                                  setIsEditingTitle(false);
-                                  setEditableTitle(order.project_name || order.order_name || "");
-                                  setIsEditingDeadline(false);
-                                  setDeadlineValue(order.project_deadline || "");
-                                }}
-                              >
-                                Отменить
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <span
-                                onClick={() => {
-                                  if ([OrderStatus.InProgress, OrderStatus.Matching].includes(order.status as OrderStatus)) {
-                                    setIsEditingTitle(true);
-                                  }
-                                }}
-                              >
-                                {editableTitle || `Заявка № ${order?.id}` || "Без названия"}
-                              </span>
-                              <PenBox
-                                size={16}
-                                className={classes.editIcon}
-                                color="#FFC107"
-                                onClick={() => {
-                                  setIsEditingTitle(true);
-                                  setIsEditingDeadline(true);
-                                }}
-                              />
-                            </>
-                          )}
+                            <EditableField
+                                value={order.project_name || order.order_name || ""}
+                                onSave={(newTitle) => handleSaveAll([{field: 'title', value: newTitle}])}
+                                canEdit={[OrderStatus.InProgress, OrderStatus.Matching].includes(order.status as OrderStatus)}
+                                type="text"
+                                placeholder="Название заявки"
+                                displayFormatter={(v) => v || `Заявка № ${order.id}`}
+                            />
                         </div>
 
                         {/* DEADLINES */}
-                        <div className={classes.time_block}>
-                          <div className={classes.project_name}>
-                            <p>Дедлайн статуса</p>
-                            <div className={classes.fidback}>
-                              <Calendar size={14} className={classes.icon} />
-                              {isEditingDeadline ? (
-                                <input
-                                  type="date"
-                                  value={deadlineValue}
-                                  onChange={(e) => setDeadlineValue(e.target.value)}
-                                  onBlur={() => setIsEditingDeadline(false)}
-                                  className={classes.deadlineInput}
-                                  autoFocus
-                                />
-                              ) : (
-                                <p>{formatDate(order.project_deadline)}</p>
-                              )}
-                            </div>
-                          </div>
-                          <DeadlineBlock
-                            label="Начало статуса"
-                            icon={<Calendar size={14} className={classes.icon}/>}
-                            value={formatDate(order.updated_at)}
-                          />
-                          <DeadlineBlock
-                            label="Последний контакт с заказчиком"
-                            icon={<Calendar size={14} className={classes.icon}/>}
-                            value={formatDate(order.updated_at)}
-                          />
-                          <DeadlineBlock
-                            label="Создано"
-                            icon={<Clock size={14} className={classes.icon}/>}
-                            value={formatDate(order.created_at)}
-                          />
-                        </div>
+                        <DeadlinesSection
+                            status={order.status as OrderStatus}
+                            project_deadline={order.project_deadline || null}
+                            updated_at={order.updated_at}
+                            created_at={order.created_at}
+                            onDeadlineSave={(newDate) => handleSaveAll([{field: 'deadline', value: newDate}])}
+                        />
 
                         {/* BUDGET & TRACKER */}
-                        <div className={classes.funnelInfo}>
-                            <div className={classes.sum}>
-                                <p>Бюджет</p>
-                                {isEditingBudget ? (
-                                    <input
-                                        className={classes.budgetInput}
-                                        value={budgetValue}
-                                        onChange={(e) => setBudgetValue(e.target.value)}
-                                        onBlur={() => setIsEditingBudget(false)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") setIsEditingBudget(false);
-                                        }}
-                                        autoFocus
-                                    />
-                                ) : (
-                                    <span
-                                        onClick={() => {
-                                            if (order.status === OrderStatus.Matching) {
-                                                setIsEditingBudget(true);
-                                            }
-                                        }}
-                                        title="Нажмите для редактирования"
-                                    >
-                    {budgetValue ? `${budgetValue} ₽` : "—"}
-                  </span>
-                                )}
-                            </div>
-
-                            <div className={classes.sum}>
-                                <p>Трекер</p>
-
-                                {order.tracker_data?.custom_user?.full_name ? (
-                                    <div className={classes.trackers}>
-                    <span
-                        className={classes.avatarPlaceholder}
-                        title={order.tracker_data.custom_user.full_name}
-                        aria-label={order.tracker_data.custom_user.full_name}
-                    >
-                      {order.tracker_data.custom_user.full_name
-                          .split(" ")
-                          .map((s) => s[0])
-                          .join("")}
-                    </span>
-                                    </div>
-                                ) : (
-                                    <span>—</span>
-                                )}
-                            </div>
-                        </div>
-                        {/* INFO */}
-                        <div className={classes.title}>
-                            Информация по заявке
-                            <span
-                                className={`${classes.arrow} ${isInfoOpen ? classes.up : ""}`}
-                                onClick={() => setIsInfoOpen((prev) => !prev)}
-                            />
-                        </div>
-
-                        {/* контейнер с анимацией */}
-                        <div
-                            ref={infoRef}
-                            className={classes.infoWrapper}
-                            style={{
-                                maxHeight: isInfoOpen
-                                    ? `${infoRef.current?.scrollHeight}px`
-                                    : "0px",
-                            }}
-                        >
-                            <OrderInfo
-                              status={order.status as OrderStatus}
-                              solving_problems={order.solving_problems || ""}
-                              product_or_service={order.product_or_service || ""}
-                              order_goal={order.order_goal || ""}
-                              extra_wishes={order.extra_wishes || ""}
-                              onEditGoal={handleGoalEdit}
-                              onEditProductOrService={handleProductEdit}
-                              onEditSolvingProblems={handleProblemsEdit}
-                              onEditExtraWishes={handleExtraEdit}
-                            />
-                        </div>
+                        <BudgetTrackerSection
+                            status={order.status as OrderStatus}
+                            budgetValue={budgetValue}
+                            onBudgetSave={(newBudget) =>
+                                handleSaveAll([{field: 'budget', value: newBudget}])
+                            }
+                            trackerData={order.tracker_data}
+                            onBecomeTracker={handleBecomeTracker}
+                        />
+                        <InfoSection
+                            status={order.status as OrderStatus}
+                            solving_problems={order.solving_problems || ""}
+                            product_or_service={order.product_or_service || ""}
+                            order_goal={order.order_goal || ""}
+                            extra_wishes={order.extra_wishes || ""}
+                            onEditGoal={handleGoalEdit}
+                            onEditProductOrService={handleProductEdit}
+                            onEditSolvingProblems={handleProblemsEdit}
+                            onEditExtraWishes={handleExtraEdit}
+                        />
 
                         {/* NOTE */}
                         <div className={classes.blok_paragraph}>
@@ -460,7 +287,10 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                                         dispatch(rejectInvitation(id)).then(refresh)
                                     }
                                     onUpdatePayment={async (id, payment) => {
-                                        await dispatch(updateInvitationPayment({ invitationId: id, proposedPayment: Number(payment) }));
+                                        await dispatch(updateInvitationPayment({
+                                            invitationId: id,
+                                            proposedPayment: Number(payment)
+                                        }));
                                         await refresh();
                                     }}
                                 />
@@ -495,12 +325,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                         <button
                             className={classes.submitButton}
                             onClick={async () => {
-                                if (order.status === OrderStatus.InProgress) {
-                                    await handleTitleSave();
-                                    await refresh();
-                                    setIsEditingTitle(false);
-                                    setIsEditingDeadline(false);
-                                } else if (order.status === OrderStatus.Matching) {
+                                if (order.status === OrderStatus.Matching) {
                                     const parsedBudget = parseFloat(budgetValue);
                                     if (
                                         !budgetValue.trim() ||
@@ -521,18 +346,14 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                                         })
                                     );
                                     await refresh();
-                                    setIsEditingTitle(false);
-                                    setIsEditingDeadline(false);
                                 } else if (order.status === OrderStatus.Prepayment) {
                                     await dispatch(confirmPrepayment({orderId}));
                                     await refresh();
-                                    setIsEditingTitle(false);
-                                    setIsEditingDeadline(false);
+                                } else if (order.status === OrderStatus.InProgress) {
+                                    await refresh();
                                 } else {
                                     await handleBecomeTracker();
                                     await refresh();
-                                    setIsEditingTitle(false);
-                                    setIsEditingDeadline(false);
                                 }
                             }}
                             disabled={

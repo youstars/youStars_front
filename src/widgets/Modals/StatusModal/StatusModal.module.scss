@@ -17,7 +17,7 @@
   width: 280px;
   padding: 1rem;
   position: relative;
-  color: #fff;
+  color: var(--primery-color);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -35,8 +35,8 @@
   width: 50%;
   border: none;
   height: 30px;
-  background: --dark-grey;
-  color: #fff;
+  background: var(--dark-grey);
+  color: var(--primery-color);
   font-family: "Myriad Pro";
   font-size: 0.8rem;
   border-radius: 15px;
@@ -59,7 +59,7 @@
 }
 
 .checkboxGroup::-webkit-scrollbar-track {
-  background: --dark-grey;
+  background: var(--dark-grey);
   border-radius: 5px;
 }
 
@@ -124,7 +124,7 @@
 
 .divider {
   height: 1px;
-  background-color: var( --primery-color);
+  background-color: var(--primery-color);
   margin: 1rem 0;
   position: sticky;
 }
@@ -138,8 +138,8 @@
 
 .bottomButtons button {
   border: none;
-  background: --dark-grey;
-  color: var( --primery-color);
+  background: var(--dark-grey);
+  color: var(--primery-color);
   width: 50%;
   height: 30px;
   border-radius: 15px;

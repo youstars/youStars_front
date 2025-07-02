@@ -115,84 +115,6 @@
   background-color: rgba(255, 255, 255, 0.3);
 }
 
-.header {
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.bloks {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.user_img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #383E41;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.user_img:after {
-  content: '';
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 6px;
-  height: 6px;
-  background: #4ade80;
-  border-radius: 50%;
-  box-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
-}
-
-.user_name {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.user_name p:nth-child(1) {
-  font-size: 14px;
-  color: var(--primary-color);
-  font-weight: 600;
-}
-
-.user_name p {
-  font-family: sans-serif;
-  font-weight: 400;
-  font-size: 12px;
-  color: #a0a0a0;
-  margin: 0;
-}
-
-.chats {
-  display: flex;
-  gap: 10px;
-  margin-left: auto;
-}
-
-.chatButton {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  opacity: 0.85;
-}
-
-.chatIcon {
-  width: 20px;
-  height: 20px;
-}
-
 .title {
   margin-bottom: 15px;
   font-weight: 600;
@@ -277,10 +199,17 @@
   margin: 0;
 }
 
+
 .sum span {
   color: var(--primary-color);
   font-size: 12px;
   font-weight: 400;
+}
+
+/* Ensure editable field in sum aligns right */
+.sum .editableField {
+  flex: none;
+  margin-left: auto;
 }
 
 .blok_paragraph {
@@ -385,105 +314,6 @@
   gap: 14px;
 }
 
-.invitedList {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.invitedItem {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  background: #383E41;
-  padding: 8px 12px;
-  border-radius: 10px;
-  font-size: 13px;
-  color: #e0e0e0;
-  justify-content: space-between;
-}
-
-/* ——— invited specialists row details ——— */
-
-/* кружок-аватар */
-.invitedItem .avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #4a4a4a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  overflow: hidden;
-  flex: none;
-}
-
-.invitedItem .avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-/* колонка кнопок */
-.invitedItem .actions {
-  display: flex;
-  gap: 6px;
-}
-
-
-.invitedItem .approve,
-.invitedItem .reject {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 2px;
-}
-
-.invitedItem .approve:disabled {
-  cursor: default;
-  opacity: 0.5;
-}
-
-/* сумма оплаты / «—» */
-.invitedItem .payment {
-  min-width: 60px;
-  text-align: right;
-  font-size: 12px;
-  color: #a0a0a0;
-}
-
-.statusIcon {
-  width: 16px;
-}
-
-.name {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
-}
-
-.actionIcons {
-  display: flex;
-  gap: 6px;
-}
-
-.approve,
-.reject {
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  color: #ccc;
-}
-
-.approve:disabled {
-  color: #4ade80;
-  cursor: default;
-}
-
 .plusWrapper {
   margin: 8px 0 12px;
   display: flex;
@@ -546,60 +376,6 @@
 }
 
 
-/* ---- OrderInfo cards ---- */
-.card {
-  border-radius: 8px;
-  margin-bottom: 14px;
-}
-
-.cardHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.cardHeader h4 {
-  font-family: sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--primary-color);
-  margin: 0;
-}
-
-.date {
-
-  font-size: 11px;
-  color: #a0a0a0;
-  margin-left: auto;
-}
-
-.editButton {
-  background: none;
-  border: none;
-  color: #FFC107;
-  font-size: 16px;
-  cursor: pointer;
-  padding: 0 4px;
-  transition: opacity 0.2s ease;
-}
-
-.editButton:hover {
-  opacity: 0.8;
-}
-
-.cardBody {
-  background: #383E41;
-  border-radius: 8px;
-  padding: 12px 14px;
-  font-family: sans-serif;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--primary-color);
-  margin: 0;
-}
-
 /* --- collapsible info --- */
 .infoWrapper {
   overflow: hidden;
@@ -632,62 +408,6 @@
   font-size: 10px;
   color: var(--primery-color);
   flex: none;
-}
-
-/* Editing action buttons */
-/* Align edit controls */
-.editControls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto;
-  gap: 8px;
-}
-
-.cardInput {
-  grid-column: 1 / -1;
-  flex: 1;
-  min-height: 32px;
-  height: auto;
-  overflow: hidden;
-  resize: none;
-  padding: 4px 8px;
-  font-size: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 4px;
-  color: var(--primary-color);
-  font-family: sans-serif;
-  box-sizing: border-box;
-  outline: none;
-}
-
-.cardInput:focus {
-  outline: none;
-}
-
-.saveButton {
-  background: #FFC107;
-  color: #000;
-  border: none;
-  border-radius: 4px;
-  padding: 0 12px;
-  height: 32px;
-  line-height: 32px;
-  font-size: 12px;
-  cursor: pointer;
-  grid-column: 1;
-}
-
-
-.cancelButton {
-  background: #383E41;
-  color: var(--primary-color);
-  border: none;
-  border-radius: 4px;
-  padding: 6px 12px;
-  font-size: 12px;
-  cursor: pointer;
-  grid-column: 2;
 }
 
 /* Edit icon coloring */
