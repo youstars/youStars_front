@@ -22,7 +22,7 @@ interface ModalSpecialistProps {
 
 const ModalSpecialist: React.FC<ModalSpecialistProps> = ({ onClose, Input, Button, projects, onFilter }) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const [selectedItems, setSelectedItems] = useState<boolean[]>([]);
+    const [selectedSet, setSelectedSet] = useState<Set<string>>(new Set());
     const modalRef = useRef<HTMLDivElement>(null);
 
     const captains = useMemo(() => {
@@ -40,8 +40,8 @@ const ModalSpecialist: React.FC<ModalSpecialistProps> = ({ onClose, Input, Butto
     );
 
     const selectedCaptains = useMemo(
-      () => filteredCaptains.filter((_, idx) => selectedItems[idx]),
-      [filteredCaptains, selectedItems]
+      () => Array.from(selectedSet),
+      [selectedSet]
     );
     const filteredProjects = useMemo(
       () =>
@@ -53,21 +53,22 @@ const ModalSpecialist: React.FC<ModalSpecialistProps> = ({ onClose, Input, Butto
 
 
     useEffect(() => {
-      setSelectedItems(new Array(captains.length).fill(false));
+      setSelectedSet(new Set());
     }, [captains]);
 
     const handleSelectAll = useCallback(() => {
-      setSelectedItems(new Array(filteredCaptains.length).fill(true));
-    }, [filteredCaptains.length]);
+      setSelectedSet(new Set(filteredCaptains));
+    }, [filteredCaptains]);
 
     const handleReset = useCallback(() => {
-      setSelectedItems(new Array(filteredCaptains.length).fill(false));
-    }, [filteredCaptains.length]);
+      setSelectedSet(new Set());
+    }, []);
 
-    const handleCheckboxChange = useCallback((index: number) => {
-      setSelectedItems(prev => {
-        const next = [...prev];
-        next[index] = !next[index];
+    const handleCheckboxChange = useCallback((name: string) => {
+      setSelectedSet(prev => {
+        const next = new Set(prev);
+        if (next.has(name)) next.delete(name);
+        else next.add(name);
         return next;
       });
     }, []);
@@ -112,15 +113,15 @@ const ModalSpecialist: React.FC<ModalSpecialistProps> = ({ onClose, Input, Butto
                 </div>
 
                 <div className={classes.checkboxGroup}>
-                    {filteredCaptains.map((captain, index) => (
+                    {filteredCaptains.map((captain) => (
                         <label
-                          key={`${captain}-${index}`}
-                          className={`${classes.checkbox} ${selectedItems[index] ? classes.checkboxSelected : ""}`}
+                          key={captain}
+                          className={`${classes.checkbox} ${selectedSet.has(captain) ? classes.checkboxSelected : ""}`}
                         >
                             <input
                                 type="checkbox"
-                                checked={selectedItems[index]}
-                                onChange={() => handleCheckboxChange(index)}
+                                checked={selectedSet.has(captain)}
+                                onChange={() => handleCheckboxChange(captain)}
                             />
                             <span>{captain}</span>
                         </label>
