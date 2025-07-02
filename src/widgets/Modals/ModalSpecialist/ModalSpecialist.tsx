@@ -1,68 +1,102 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import classes from "./ModalSpecialist.module.scss";
 import search from "shared/images/sideBarImgs/search.svg";
-import { useSelector } from "react-redux";
 
 interface ModalSpecialistProps {
     onClose: () => void;
     Input: React.ComponentType<any>;
     Button: React.ComponentType<any>;
+    projects: {
+      id: string | number;
+      name?: string;
+      project_name?: string;
+      specialists: { id: string | number; full_name: string }[];
+    }[];
+    onFilter: (filtered: {
+      id: string | number;
+      name?: string;
+      project_name?: string;
+      specialists: { id: string | number; full_name: string }[];
+    }[]) => void;
 }
 
-const ModalSpecialist: React.FC<ModalSpecialistProps> = ({ onClose, Input, Button }) => {
-    const getData = useSelector((state: any) => state.tasks.tasks);
+const ModalSpecialist: React.FC<ModalSpecialistProps> = ({ onClose, Input, Button, projects, onFilter }) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [selectedItems, setSelectedItems] = useState<boolean[]>([]);
-    const [filteredCaptains, setFilteredCaptains] = useState<string[]>([]);
     const modalRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (getData?.results) {
-            const captains = getData.results.map((item: any) => item.captain || "Не назначен");
-            setFilteredCaptains(captains);
-            setSelectedItems(new Array(captains.length).fill(false));
-        }
-    }, [getData]);
+    const captains = useMemo(() => {
+      const allNames = projects.flatMap(proj =>
+        proj.specialists.map(s => s.full_name)
+      );
+      return Array.from(new Set(allNames));
+    }, [projects]);
+    const filteredCaptains = useMemo(
+      () =>
+        captains.filter(name =>
+          name.toLowerCase().includes(searchTerm.toLowerCase())
+        ),
+      [captains, searchTerm]
+    );
+
+    const selectedCaptains = useMemo(
+      () => filteredCaptains.filter((_, idx) => selectedItems[idx]),
+      [filteredCaptains, selectedItems]
+    );
+    const filteredProjects = useMemo(
+      () =>
+        projects.filter(proj =>
+          proj.specialists.some(s => selectedCaptains.includes(s.full_name))
+        ),
+      [projects, selectedCaptains]
+    );
+
 
     useEffect(() => {
-        if (getData?.results) {
-            const filtered = getData.results
-                .map((item: any) => item.captain || "Не назначен")
-                .filter((captain: string) => captain.toLowerCase().includes(searchTerm.toLowerCase()));
-            setFilteredCaptains(filtered);
-        }
-    }, [searchTerm, getData]);
+      setSelectedItems(new Array(captains.length).fill(false));
+    }, [captains]);
 
-    const handleClickOutside = (event: MouseEvent) => {
-        if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-            onClose();
-        }
-    };
+    const handleSelectAll = useCallback(() => {
+      setSelectedItems(new Array(filteredCaptains.length).fill(true));
+    }, [filteredCaptains.length]);
 
-    useEffect(() => {
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
+    const handleReset = useCallback(() => {
+      setSelectedItems(new Array(filteredCaptains.length).fill(false));
+    }, [filteredCaptains.length]);
+
+    const handleCheckboxChange = useCallback((index: number) => {
+      setSelectedItems(prev => {
+        const next = [...prev];
+        next[index] = !next[index];
+        return next;
+      });
     }, []);
 
-    const handleSelectAll = () => {
-        setSelectedItems(new Array(filteredCaptains.length).fill(true));
-    };
+    const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchTerm(e.target.value);
+    }, []);
 
-    const handleReset = () => {
-        setSelectedItems(new Array(filteredCaptains.length).fill(false));
-    };
+    const handleClickOutside = useCallback((event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    }, [onClose]);
 
-    const handleCheckboxChange = (index: number) => {
-        const newSelectedItems = [...selectedItems];
-        newSelectedItems[index] = !newSelectedItems[index];
-        setSelectedItems(newSelectedItems);
-    };
+    useEffect(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [handleClickOutside]);
 
     return (
         <div className={classes.modalOverlay}>
-            <div className={classes.modalContent} ref={modalRef}>
+            <div
+              className={classes.modalContent}
+              ref={modalRef}
+              role="dialog"
+              aria-modal="true"
+            >
                 <div className={classes.topButtons}>
                     <Button onClick={handleSelectAll}>Выбрать всех</Button>
                     <Button onClick={handleReset}>Сбросить</Button>
@@ -71,9 +105,7 @@ const ModalSpecialist: React.FC<ModalSpecialistProps> = ({ onClose, Input, Butto
                     <Input
                         className={classes.inputSearch}
                         value={searchTerm}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            setSearchTerm(e.target.value)
-                        }
+                        onChange={handleSearchChange}
                         placeholder="Поиск по специалистам"
                     />
                     <img src={search} alt="search"/>
@@ -81,7 +113,10 @@ const ModalSpecialist: React.FC<ModalSpecialistProps> = ({ onClose, Input, Butto
 
                 <div className={classes.checkboxGroup}>
                     {filteredCaptains.map((captain, index) => (
-                        <label key={index} className={classes.checkbox}>
+                        <label
+                          key={`${captain}-${index}`}
+                          className={`${classes.checkbox} ${selectedItems[index] ? classes.checkboxSelected : ""}`}
+                        >
                             <input
                                 type="checkbox"
                                 checked={selectedItems[index]}
@@ -95,7 +130,14 @@ const ModalSpecialist: React.FC<ModalSpecialistProps> = ({ onClose, Input, Butto
                 <div className={classes.divider} />
                 <div className={classes.bottomButtons}>
                     <Button onClick={onClose}>Отмена</Button>
-                    <Button onClick={onClose}>ОК</Button>
+                    <Button
+                      onClick={() => {
+                        onFilter(filteredProjects);
+                        onClose();
+                      }}
+                    >
+                      ОК
+                    </Button>
                 </div>
             </div>
         </div>

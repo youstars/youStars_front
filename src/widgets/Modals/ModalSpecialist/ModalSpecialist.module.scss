@@ -83,7 +83,7 @@
     appearance: none;
     width: 20px;
     height: 20px;
-    background: var(var(--grey));
+    background: var(--grey);
     border: 1px solid #888888;
     cursor: pointer;
     border-radius: 5px;
@@ -157,4 +157,11 @@
   font-family: "Myriad Pro";
   cursor: pointer;
   font-size: 0.8rem;
+}
+
+/* Highlight selected specialist */
+.checkboxSelected {
+  background-color: var(--dark-grey);
+  border-radius: 5px;
+  padding: 6px;
 }
