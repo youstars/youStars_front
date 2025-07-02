@@ -25,15 +25,16 @@
   position: relative;
   margin-left: 120px;
   margin-top: -10%;
+  color: var(--primery-color);
 }
 
 .cleanButton {
-  background: --dark-grey;
+  background: var(--dark-grey);
   border: none;
   border-radius: 15px;
   cursor: pointer;
   padding: 0.5rem;
-  color:var( --primery-color);
+  color: var(--primery-color);
   font-size: 14px;
   text-align: center;
   width: 150px;
@@ -54,7 +55,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    background: --dark-grey;
+    background: var(--dark-grey);
     padding: 0 20px;
     border-radius: 15px;
     width: 100%;
@@ -74,9 +75,9 @@
 
     button {
       border: none;
-      background: --dark-grey;
+      background: var(--dark-grey);
       cursor: pointer;
-      color:var( --primery-color);
+      color: var(--primery-color);
     }
   }
 
@@ -136,9 +137,9 @@
     font-weight: 500;
 
     &.cancel {
-      background: --dark-grey;
+      background: var(--dark-grey);
       border: none;
-      color: var( --primery-color);
+      color: var(--primery-color);
 
       &:hover {
         background: #272a2d;
@@ -146,9 +147,9 @@
     }
 
     &.apply {
-      background: --dark-grey;
+      background: var(--dark-grey);
       border: none;
-      color: var( --primery-color);
+      color: var(--primery-color);
 
       &:hover {
         background: #272a2d;

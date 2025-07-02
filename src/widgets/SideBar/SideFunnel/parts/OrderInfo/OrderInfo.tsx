@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from "react";
-import classes from "../../SideFunnel.module.scss";
+import classes from "./OrderInfo.module.scss";
 import {OrderStatus} from "../../SideFunnel";
 import {PenBox} from "lucide-react";
 

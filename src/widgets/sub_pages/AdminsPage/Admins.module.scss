@@ -233,7 +233,7 @@
 
 .sidebar {
   width: 280px;
-  background: --dark-grey;
+  background: var(--dark-grey);
   color: var( --primery-color);
   height: 100%;
   transition: all 0.5s ease;

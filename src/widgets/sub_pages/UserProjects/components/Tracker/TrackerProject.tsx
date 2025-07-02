@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import classes from "./TrackerProject.module.scss";
@@ -77,6 +77,12 @@ export default function TrackerProject({ projects }: TrackerProjectProps) {
         null,
     );
 
+    const [displayedProjects, setDisplayedProjects] = useState<LeanProject[] | undefined>(projects);
+
+    useEffect(() => {
+        setDisplayedProjects(projects);
+    }, [projects]);
+
     // ─────────────────────────────────── handlers
     const handleOpenModal = (column: string, id: string | number) => {
         setSelectedTaskId(id);
@@ -99,6 +105,18 @@ export default function TrackerProject({ projects }: TrackerProjectProps) {
     };
 
     // ─────────────────────────────────── render
+    const specialistProjects = useMemo(() => {
+        return (projects || []).map(proj => ({
+            id: proj.id,
+            name: proj.name,
+            project_name: proj.name,
+            specialists: (proj.specialists ?? proj.students ?? []).map(s => ({
+                id: s.id!,
+                full_name: s.custom_user?.full_name ?? s.full_name ?? "Без имени",
+            })),
+        }));
+    }, [projects]);
+
     return (
         <>
             <table className={classes.table}>
@@ -154,8 +172,8 @@ export default function TrackerProject({ projects }: TrackerProjectProps) {
                 </thead>
 
                 <tbody>
-                {projects && projects.length ? (
-                    projects.map((project) => (
+                {displayedProjects && displayedProjects.length ? (
+                    displayedProjects.map((project) => (
                         <tr
                             key={project.id}
                             className={classes.project_row}
@@ -183,7 +201,7 @@ export default function TrackerProject({ projects }: TrackerProjectProps) {
                 ) : (
                     <tr>
                         <td colSpan={6}>
-                            {projects
+                            {displayedProjects
                                 ? "Нет данных для отображения"
                                 : "Загрузка данных..."}
                         </td>
@@ -205,6 +223,12 @@ export default function TrackerProject({ projects }: TrackerProjectProps) {
                     onClose={() => setIsModalSpecialistOpen(false)}
                     Input={Input}
                     Button={Button}
+                    projects={specialistProjects}
+                    onFilter={(filtered) => {
+                        const ids = filtered.map(p => p.id);
+                        setDisplayedProjects(projects?.filter(proj => ids.includes(proj.id)));
+                        setIsModalSpecialistOpen(false);
+                    }}
                 />
             )}
             {isStatusModalOpen && (
