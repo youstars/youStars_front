@@ -81,10 +81,15 @@ export default function ClientProject({project}: { project: Project }) {
                     <div className={classes.orderName}>{`Заявка №${project.order} / ${project.name}`}</div>
                     <div className={classes.gene}>
                         <div className={classes.budget}>
-                            {`${Math.round(Number(project.budget)).toLocaleString("ru-RU")} ₽` ?? "—"}
+                            {project.budget
+                              ? `${Math.round(Number(project.budget)).toLocaleString("ru-RU")} ₽`
+                              : "—"
+                            }
                         </div>
                         <div className={classes.timeline}>
-                            {project.timeline.replace(/(\d{2})-(\d{2})-\d{4}/g, '$1.$2') ?? deadlineRu}
+                            {project.timeline
+                              ? project.timeline.replace(/(\d{2})-(\d{2})-\d{4}/g, '$1.$2')
+                              : deadlineRu}
                         </div>
                     </div>
                 </div>
