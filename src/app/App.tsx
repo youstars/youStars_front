@@ -47,7 +47,6 @@ function App() {
   const isAuthed = !!me.data;
   const isAdmin = me.data?.role?.toLowerCase() === "admin";
   const isLoginPage = location.pathname === "/";
-
   const publicPaths = ["/", "/create-account", "/steps"];
   const isPublic = publicPaths.some((path) =>
     location.pathname.startsWith(path)

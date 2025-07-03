@@ -93,3 +93,9 @@
     }
   }
 }
+.filterOverlayWrapper {
+  position: absolute;
+  top: 80px; // отступ от верха, можно скорректировать
+  right: 20px;
+  z-index: 10;
+}

@@ -4,83 +4,90 @@ import { getSpecialists } from "shared/store/slices/specialistsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "shared/store";
 import SpecialistCard from "widgets/SpecialistCard/SpecialistCard";
-import SideBarFilter from "shared/UI/SideBarFilter/SideBarFilter";
+import SideBarFilter from "widgets/SideBar/SideBarFilter/SideBarFilter";
 import SearchInput from "shared/UI/SearchInput/SearchInput";
 import FilterBtn from "shared/UI/FilterBtn/FilterBtn";
 import { getFunnelData } from "shared/store/slices/funnelSlice";
 import { Order } from "shared/types/orders";
 import { selectMe } from "shared/store/slices/meSlice";
 import Cookies from "js-cookie";
+import { useClickOutside } from "shared/hooks/useClickOutside";
 
 function Specialists() {
   const dispatch = useDispatch<AppDispatch>();
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(sidebarRef, () => setIsSidebarOpen(false));
+
   const { list, loading, error } = useSelector(
     (state: RootState) => state.specialists
   );
   const allOrders = useSelector((state: RootState) => state.funnel.funnel);
   const me = useSelector(selectMe);
   const userId = Number(Cookies.get("user_role_id"));
-  console.log("userId", userId);
-
-const [isStatusOpen, setIsStatusOpen] = useState(false);
-const statusRef = useRef(null);
-
-
-  
 
   const [searchTerm, setSearchTerm] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
-  const sortButtonRef = useRef<HTMLButtonElement>(null);
 
-useEffect(() => {
-  dispatch(getSpecialists());
-  dispatch(getFunnelData());
-}, [dispatch]);
+  const [projectRange, setProjectRange] = useState({ min: 0, max: Infinity });
+  const [taskRange, setTaskRange] = useState({ min: 0, max: Infinity });
+  const [costRange, setCostRange] = useState({ min: 0, max: Infinity });
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        sortButtonRef.current &&
-        !sortButtonRef.current.contains(event.target as Node)
-      ) {
-        setIsSortMenuOpen(false);
+    dispatch(getSpecialists());
+    dispatch(getFunnelData());
+  }, [dispatch]);
+
+  const ordersBySpecialist = useMemo(() => {
+    const result: { [key: number]: Order[] } = {};
+    allOrders.forEach((order) => {
+      const specialistId = order.tracker_data?.id;
+      if (specialistId) {
+        if (!result[specialistId]) result[specialistId] = [];
+        result[specialistId].push(order);
       }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    });
+    return result;
+  }, [allOrders]);
 
-const ordersBySpecialist = useMemo(() => {
-  const result: { [key: number]: Order[] } = {};
+  const countActiveOrders = (orders: Order[]) =>
+    orders.filter((order) =>
+      ["in_progress", "Нужно выполнить"].includes(String(order.status))
+    ).length;
 
-  if (!userId) return result;
-
-  
-  const filteredOrders = allOrders.filter(
-    (order) => order.tracker_data?.id
-    
-  );
-
-  console.log("filteredOrders", filteredOrders);
-  
-
-  list.forEach((specialist) => {
-    result[specialist.id] = filteredOrders;
-  });
-
-  return result;
-}, [list, allOrders, userId]);
-
-  console.log(ordersBySpecialist);
-  
+  const filteredSpecialists = useMemo(() => {
+    return list
+      .filter((specialist) =>
+        specialist.custom_user?.full_name
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      )
+      .filter((specialist) => {
+        const projectCount = specialist.projects_in_progress_count ?? 0;
+        return (
+          projectCount >= projectRange.min && projectCount <= projectRange.max
+        );
+      })
+      .filter((specialist) => {
+        const taskCount = specialist.tasks_in_progress_count ?? 0;
+        return taskCount >= taskRange.min && taskCount <= taskRange.max;
+      })
+      .filter((specialist) => {
+        const cost = specialist.specialist_cost_total ?? 0;
+        return cost >= costRange.min && cost <= costRange.max;
+      });
+  }, [list, searchTerm, projectRange, taskRange, costRange]);
 
   if (loading) return <p>Загрузка...</p>;
   if (error) return <p>Ошибка: {error}</p>;
 
   return (
     <div className={styles.container}>
-      <div className={`${styles.mainContent} ${isSidebarOpen ? styles.shifted : ""}`}>
+      <div
+        className={`${styles.mainContent} ${
+          isSidebarOpen ? styles.shifted : ""
+        }`}
+      >
         <div className={styles.form}>
           <div className={styles.search}>
             <SearchInput
@@ -89,31 +96,36 @@ const ordersBySpecialist = useMemo(() => {
               placeholder="Поиск специалиста"
             />
           </div>
-          <FilterBtn onClick={() => setIsSidebarOpen(prev => !prev)} />
+          <FilterBtn onClick={() => setIsSidebarOpen((prev) => !prev)} />
+        </div>
+         <div className={styles.filterOverlayWrapper} ref={sidebarRef}>
+          <SideBarFilter
+            isOpen={isSidebarOpen}
+            selectedFilters={[]}
+            onChangeFilters={() => {}}
+            projectRange={projectRange}
+            onChangeProjectRange={setProjectRange}
+            taskRange={taskRange}
+            onChangeTaskRange={setTaskRange}
+            costRange={costRange}
+            onChangeCostRange={setCostRange}
+          />
         </div>
 
         <h2 className={styles.resultsTitle}>
-          Найдено {list.length} специалистов:
+          Найдено {filteredSpecialists.length} специалистов:
         </h2>
 
         <div className={styles.specialistList}>
-          {list
-            .filter(specialist =>
-              specialist.custom_user?.full_name
-                ?.toLowerCase()
-                .includes(searchTerm.toLowerCase())
-            )
-            .map(specialist => (
-              <SpecialistCard
-                key={specialist.id}
-                specialist={specialist}
-                orders={ordersBySpecialist[specialist.id] || []}
-              />
-            ))}
+          {filteredSpecialists.map((specialist) => (
+            <SpecialistCard
+              key={specialist.id}
+              specialist={specialist}
+              orders={ordersBySpecialist[specialist.id] || []}
+            />
+          ))}
         </div>
       </div>
-
-      <SideBarFilter isOpen={isSidebarOpen} />
     </div>
   );
 }
