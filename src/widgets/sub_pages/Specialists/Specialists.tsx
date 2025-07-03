@@ -38,17 +38,27 @@ function Specialists() {
     dispatch(getFunnelData());
   }, [dispatch]);
 
-  const ordersBySpecialist = useMemo(() => {
+const ordersBySpecialist = useMemo(() => {
     const result: { [key: number]: Order[] } = {};
-    allOrders.forEach((order) => {
-      const specialistId = order.tracker_data?.id;
-      if (specialistId) {
-        if (!result[specialistId]) result[specialistId] = [];
-        result[specialistId].push(order);
-      }
+
+    if (!userId) return result;
+
+
+    const filteredOrders = allOrders.filter(
+        (order) => order.tracker_data?.id
+    );
+
+    console.log("filteredOrders", filteredOrders);
+
+
+    list.forEach((specialist) => {
+        result[specialist.id] = filteredOrders;
     });
+
     return result;
-  }, [allOrders]);
+}, [list, allOrders, userId]);
+
+
 
   const countActiveOrders = (orders: Order[]) =>
     orders.filter((order) =>

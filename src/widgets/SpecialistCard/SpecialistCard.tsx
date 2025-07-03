@@ -30,6 +30,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
   const { chats, setActiveChat } = useChatService();
   const navigate = useNavigate();
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
+console.log("orders for specialist", specialist.id, orders);
 
   const toggleOrders = (e: React.MouseEvent) => {
     e.stopPropagation();
