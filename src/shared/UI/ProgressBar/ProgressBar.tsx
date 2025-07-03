@@ -1,4 +1,4 @@
-import React, {useMemo, useRef, useLayoutEffect, useState} from "react";
+import React, {useRef, useLayoutEffect, useState} from "react";
 import styles from "./ProgressBar.module.scss";
 
 interface ProgressBarProps {
