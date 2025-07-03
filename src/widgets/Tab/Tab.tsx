@@ -1,6 +1,5 @@
 
 import classes from './Tab.module.scss';
-import round from 'shared/images/round.svg';
 
 interface TabProps {
   label?: React.ReactNode;

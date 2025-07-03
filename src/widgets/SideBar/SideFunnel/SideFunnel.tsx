@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
     ChevronLeft,
     ChevronRight
@@ -70,6 +70,35 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
     const sidebarRef = React.useRef<HTMLDivElement>(null);
     const [budgetValue, setBudgetValue] = useState<string>("");
 
+    // const clientInitials = getInitials(clientName);
+    const submitLabel = useMemo(() => {
+      if (!order) return "Загрузка...";
+      switch (order.status as OrderStatus) {
+        case OrderStatus.InProgress:
+          return "Мэтчинг";
+        case OrderStatus.Matching:
+          return "Утвердить специалистов";
+        case OrderStatus.Prepayment:
+          return "Предоплата получена";
+        default:
+          return "Стать трекером";
+      }
+    }, [order]);
+
+    const isSubmitDisabled = useMemo(() => {
+      if (!order) return true;
+      if (order.status === OrderStatus.Matching) {
+        return (
+          !order.approved_specialists ||
+          order.approved_specialists.length === 0
+        );
+      }
+      if (order.status === OrderStatus.InProgress) {
+        return order.order_name === `Заявка № ${order.id}`;
+      }
+      return false;
+    }, [order]);
+
     useEffect(() => {
         if (!order) return;
         setBudgetValue(
@@ -89,7 +118,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
         } else {
             notify.error("Чат с этим клиентом не найден.");
         }
-    }, [chats, navigate, notify, setActiveChat]);
+    }, [chats, navigate, notify, setActiveChat, order?.client?.custom_user?.id]);
 
     const handleGoalEdit = useCallback(async (newText: string) => {
         try {
@@ -99,7 +128,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
         } catch {
             notify.error("Не удалось сохранить запрос");
         }
-    }, [dispatch, refresh, notify]);
+    }, [dispatch, refresh, notify, orderId]);
 
     const handleProductEdit = useCallback(async (newText: string) => {
         try {
@@ -109,7 +138,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
         } catch {
             notify.error("Не удалось сохранить продукт или услугу");
         }
-    }, [dispatch, refresh, notify]);
+    }, [dispatch, refresh, notify, orderId]);
 
     const handleProblemsEdit = useCallback(async (newText: string) => {
         try {
@@ -119,7 +148,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
         } catch {
             notify.error("Не удалось сохранить проблемы");
         }
-    }, [dispatch, refresh, notify]);
+    }, [dispatch, refresh, notify, orderId]);
 
     const handleExtraEdit = useCallback(async (newText: string) => {
         try {
@@ -129,7 +158,7 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
         } catch {
             notify.error("Не удалось сохранить пожелания");
         }
-    }, [dispatch, refresh, notify]);
+    }, [dispatch, refresh, notify, orderId]);
 
     const handleBecomeTracker = useCallback(async () => {
         if (!orderId || !userId) return;
@@ -177,13 +206,16 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
         [dispatch, order.status, orderId, refresh]
     );
 
-    if (!order) {
-        return <div>Loading order...</div>;
-    }
+    const invitedSpecialists = order?.invited_specialists || [];
+    const approvedSpecialists = order?.approved_specialists || [];
 
-    // const clientInitials = getInitials(clientName);
-    const invitedSpecialists = order.invited_specialists || [];
-    const approvedSpecialists = order.approved_specialists || [];
+    if (!order) {
+      return (
+        <div className={classes.sidebarContainer}>
+          <div className={classes.loading}>Loading order...</div>
+        </div>
+      );
+    }
     return (
         <div
             className={`${classes.sidebarContainer} ${
@@ -356,21 +388,9 @@ const SideFunnel: React.FC<SideFunnelProps> = ({
                                     await refresh();
                                 }
                             }}
-                            disabled={
-                                (order.status === OrderStatus.Matching &&
-                                    (!order.approved_specialists ||
-                                        order.approved_specialists.length === 0)) ||
-                                (order.status === OrderStatus.InProgress &&
-                                    order.order_name === `Заявка № ${order.id}`)
-                            }
+                            disabled={isSubmitDisabled}
                         >
-                            {order.status === OrderStatus.InProgress
-                                ? "Мэтчинг"
-                                : order.status === OrderStatus.Matching
-                                    ? "Утвердить специалистов"
-                                    : order.status === OrderStatus.Prepayment
-                                        ? "Предоплата получена"
-                                        : "Стать трекером"}
+                            {submitLabel}
                         </button>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from "react";
+import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import {
     ChevronLeft,
     ChevronRight,
@@ -17,11 +17,6 @@ import ChatsIcon from "shared/assets/icons/ChatsY.svg";
 import ChatIcon from "shared/assets/icons/chatY.svg";
 import PaperclipIcon from "shared/assets/icons/paperclip.svg";
 import type {Task} from "shared/types/tasks";
-
-interface CustomUser {
-    id: number;
-    full_name: string;
-}
 
 interface Props {
     id: number;
@@ -45,6 +40,14 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
     const [created_at, setCreated_at] = useState<string | null>(null);
 
     const sidebarRef = useRef<HTMLDivElement>(null);
+
+    const specialists = useMemo(() => {
+      if (!task) return [];
+      const raw = (task as any).assigned_specialist_data ?? [];
+      return Array.isArray(raw)
+        ? raw.map((item: any) => item?.custom_user ?? item)
+        : [];
+    }, [task]);
 
     useEffect(() => {
         dispatch(getTaskById(String(id)));
@@ -74,12 +77,12 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isOpen, toggleSidebar]);
-    const handleApplyDates = (start: Date | null, end: Date | null) => {
+    const handleApplyDates = useCallback((start: Date | null, end: Date | null) => {
         if (end) setDeadline(end.toISOString());
         setIsCalendarOpen(false);
-    };
+    }, [setDeadline, setIsCalendarOpen]);
 
-    const handleSave = () => {
+    const handleSave = useCallback(() => {
         dispatch(
             updateTask({
                 id,
@@ -93,15 +96,9 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
                 },
             })
         );
-    };
+    }, [dispatch, id, title, description, notice, deadline, created_at, material]);
 
     if (!task) return null;
-
-    const rawList = (task as any).assigned_specialist_data ?? [];
-
-    const specialists: any[] = Array.isArray(rawList)
-        ? rawList.map((item: any) => item?.custom_user ?? item)
-        : [];
 
     return (
         <div

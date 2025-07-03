@@ -101,3 +101,63 @@ $yellow: #fbbf24;
     }
   }
 }
+.pickerWrapper {
+  position: absolute;
+  bottom: 65px;
+  right: 10px;
+  z-index: 100;
+  background-color: $bg-darker;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+
+  :global {
+   
+  .epr-emoji-category-label {
+    color: $text-muted !important;
+    font-size: 12px;
+    padding: 4px 12px;
+    background-color: transparent !important;
+  
+}
+
+    .EmojiPickerReact {
+      background-color: $bg-darker !important;
+      border: none !important;
+      color: $text-light;
+    }
+
+    .epr-search-container,
+    .epr-preview {
+      display: none !important;
+    }
+
+    .epr-body {
+      background-color: $bg-darker !important;
+    }
+
+    .epr-category-nav {
+      background-color: $bg-darker !important;
+
+      button {
+        filter: brightness(1.2);
+      }
+    }
+
+    .epr-emoji {
+      filter: brightness(1.2);
+    }
+  .epr-emoji:hover {
+    background-color: lighten($bg-highlight, 5%) !important;
+  }
+    .epr-emoji.epr-selected-emoji {
+    background-color: $bg-highlight !important;
+    border-radius: 6px !important;
+    box-shadow: 0 0 0 2px $yellow !important;
+  }
+    .epr-header,
+    .epr-footer {
+      background-color: $bg-darker !important;
+    }
+  }
+}
