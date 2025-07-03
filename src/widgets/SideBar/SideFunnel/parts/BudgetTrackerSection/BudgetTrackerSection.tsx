@@ -1,7 +1,7 @@
 import React from "react";
 import classes from "../../SideFunnel.module.scss";
 import EditableField from "../../components/EditableField/EditableField";
-import { getInitials } from "shared/helpers/userUtils";
+import Avatar from "shared/UI/AvatarMini/Avatar";
 import { OrderStatus } from "../../SideFunnel";
 
 export interface BudgetTrackerSectionProps {
@@ -38,15 +38,14 @@ const BudgetTrackerSection: React.FC<BudgetTrackerSectionProps> = ({
         {/* Информация и назначение трекера */}
         <div className={classes.sum}>
             <p>Трекер</p>
-            {trackerData?.custom_user?.full_name ? (
+            {trackerData?.custom_user ? (
                 <div className={classes.trackers}>
-          <span
-              className={classes.avatarPlaceholder}
-              title={trackerData.custom_user.full_name}
-              aria-label={trackerData.custom_user.full_name}
-          >
-            {getInitials(trackerData.custom_user.full_name)}
-          </span>
+                  <Avatar
+                    avatar={(trackerData.custom_user as any).avatar}
+                    fullName={trackerData.custom_user.full_name}
+                    size="sm"
+                    className={classes.avatarPlaceholder}
+                  />
                 </div>
             ) : (
                 <button
