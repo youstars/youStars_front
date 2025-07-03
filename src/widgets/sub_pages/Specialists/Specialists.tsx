@@ -1,15 +1,15 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import {useState, useRef, useEffect, useMemo} from "react";
 import styles from "./Specialists.module.scss";
-import { getSpecialists } from "shared/store/slices/specialistsSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState, AppDispatch } from "shared/store";
+import {getSpecialists} from "shared/store/slices/specialistsSlice";
+import {useDispatch, useSelector} from "react-redux";
+import {RootState, AppDispatch} from "shared/store";
 import SpecialistCard from "widgets/SpecialistCard/SpecialistCard";
 import SideBarFilter from "widgets/SideBar/SideBarFilter/SideBarFilter";
 import SearchInput from "shared/UI/SearchInput/SearchInput";
 import FilterBtn from "shared/UI/FilterBtn/FilterBtn";
-import { getFunnelData } from "shared/store/slices/funnelSlice";
-import { Order } from "shared/types/orders";
-import { selectMe } from "shared/store/slices/meSlice";
+import {getFunnelData} from "shared/store/slices/funnelSlice";
+import {Order} from "shared/types/orders";
+import {selectMe} from "shared/store/slices/meSlice";
 import Cookies from "js-cookie";
 import { useClickOutside } from "shared/hooks/useClickOutside";
 
@@ -88,8 +88,7 @@ const ordersBySpecialist = useMemo(() => {
       });
   }, [list, searchTerm, projectRange, taskRange, costRange]);
 
-  if (loading) return <p>Загрузка...</p>;
-  if (error) return <p>Ошибка: {error}</p>;
+    console.log(ordersBySpecialist);
 
   return (
     <div className={styles.container}>
