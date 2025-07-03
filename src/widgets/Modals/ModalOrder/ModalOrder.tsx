@@ -27,11 +27,11 @@ export const orderSchema = yup.object().shape({
     .required("Укажите бюджет"),
   start_project_at: yup.date().required("Укажите дату начала"),
   project_deadline: yup.date().required("Укажите срок выполнения"),
-  client: yup
+  client_id: yup
     .string()
     .nullable()
     .when("userRole", {
-      is: (role: string) => role !== "Client",
+      is: (role: string) => role?.toLowerCase() !== "client",
       then: (schema) => schema.required("Выберите клиента"),
       otherwise: (schema) => schema.notRequired(),
     }),
@@ -53,7 +53,7 @@ const ModalOrders: React.FC<ModalOrdersProps> = ({ closeModal }) => {
 
   const clients = useAppSelector((state) => state.clients.list);
 
-  const userRole = getCookie("user_role");
+  const userRole = (getCookie("user_role") || "").toLowerCase();
 
   useEffect(() => {
     dispatch(getClients());
@@ -75,7 +75,7 @@ const ModalOrders: React.FC<ModalOrdersProps> = ({ closeModal }) => {
       estimated_budget,
       start_project_at,
       project_deadline,
-      client: selectedClientId,
+      client_id: selectedClientId,
     };
 
     const validationData = { ...orderData, userRole };
