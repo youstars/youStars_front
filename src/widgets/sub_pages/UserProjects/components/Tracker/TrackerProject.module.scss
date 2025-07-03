@@ -29,12 +29,6 @@
   background: #3b3e42;
 }
 
-/* убираем стандартные margin */
-.table th,
-.table td {
-  margin: 0;
-}
-
 @media (max-width: 900px) {
   .options,
   .project_card {
