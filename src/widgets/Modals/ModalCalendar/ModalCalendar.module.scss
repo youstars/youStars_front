@@ -8,6 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: all;
   z-index: 1000;
 }
 
@@ -19,12 +20,11 @@
 .modalContent {
   background: var(--grey);
   padding: 0.8rem;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   width: 280px;
   position: relative;
-  margin-left: 120px;
-  margin-top: -10%;
+  margin: 5% auto;
   color: var(--primery-color);
 }
 
@@ -125,7 +125,6 @@
   display: flex;
   justify-content: space-evenly;
   margin-top: 1.5rem;
-  display: flex;
   gap: 0.5rem;
 
   button {

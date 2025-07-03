@@ -34,9 +34,6 @@ export default function Header2() {
   const notificationRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const { data: user } = useSelector(selectMe);
-  const clients = useSelector((state: any) => state.clients?.list || []);
-  const specialists = useSelector((state: any) => state.specialists?.list || []);
-  const projects = useSelector((state: any) => state.projects?.projects || []);
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
@@ -103,7 +100,6 @@ export default function Header2() {
   const isSpecialistProfile = pathnames[1] === "specialists" && /^\d+$/.test(pathnames[2]);
   const isProjectProfile = pathnames[1] === "project" && /^\d+$/.test(pathnames[2]);
 
-  let isFirst = true;
 
   return (
     <div className={classes.upper_block}>
@@ -111,43 +107,37 @@ export default function Header2() {
         {isClientProfile ? (
           <>
             <div className={classes.breadcrumb_item}>
-              {!isFirst || (isFirst = false)}
               <Link to="/manager/clients" className={classes.tab_link}>
                 <Tab label="Клиенты" icon={iconsMap["clients"]} />
               </Link>
             </div>
             <div className={classes.breadcrumb_item}>
-              {!isFirst && <img src={arrow} alt="→" className={classes.arrow_icon} />}
+              <img src={arrow} alt="→" className={classes.arrow_icon} />
               <Tab label="Профиль клиента" />
-              {isFirst = false}
             </div>
           </>
         ) : isSpecialistProfile ? (
           <>
             <div className={classes.breadcrumb_item}>
-              {!isFirst || (isFirst = false)}
               <Link to="/manager/specialists" className={classes.tab_link}>
                 <Tab label="Специалисты" icon={iconsMap["specialists"]} />
               </Link>
             </div>
             <div className={classes.breadcrumb_item}>
-              {!isFirst && <img src={arrow} alt="→" className={classes.arrow_icon} />}
+              <img src={arrow} alt="→" className={classes.arrow_icon} />
               <Tab label="Профиль специалиста" />
-              {isFirst = false}
             </div>
           </>
         ) : isProjectProfile ? (
           <>
             <div className={classes.breadcrumb_item}>
-              {!isFirst || (isFirst = false)}
               <Link to="/manager/user_projects" className={classes.tab_link}>
                 <Tab label="Проекты" icon={iconsMap["user_projects"]} />
               </Link>
             </div>
             <div className={classes.breadcrumb_item}>
-              {!isFirst && <img src={arrow} alt="→" className={classes.arrow_icon} />}
+              <img src={arrow} alt="→" className={classes.arrow_icon} />
               <Tab label="Профиль проекта" />
-              {isFirst = false}
             </div>
           </>
         ) : (
@@ -164,11 +154,10 @@ export default function Header2() {
 
             return (
               <div key={routeTo} className={classes.breadcrumb_item}>
-                {!isFirst && <img src={arrow} alt="→" className={classes.arrow_icon} />}
+                {index > 0 && <img src={arrow} alt="→" className={classes.arrow_icon} />}
                 <Link to={routeTo} className={classes.tab_link}>
                   <Tab label={label} icon={icon} />
                 </Link>
-                {isFirst = false}
               </div>
             );
           })

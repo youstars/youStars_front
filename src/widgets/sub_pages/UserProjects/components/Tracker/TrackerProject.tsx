@@ -1,9 +1,9 @@
-import { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import {useState, useMemo, useEffect} from "react";
+import {useNavigate} from "react-router-dom";
 
 import classes from "./TrackerProject.module.scss";
 import filterIcon from "shared/images/status.svg";
-import messageIcon from "shared/images/Vector.svg";
+import messageIcon from "shared/images/chats.svg";
 
 import ModalsProjects from "widgets/Modals/ModalsProjects/ModalsProjects";
 import ModalCalendar from "widgets/Modals/ModalCalendar/ModalCalendar";
@@ -11,7 +11,7 @@ import StatusModal from "widgets/Modals/StatusModal/StatusModal";
 import ModalSpecialist from "widgets/Modals/ModalSpecialist/ModalSpecialist";
 import CustomerModal from "widgets/Modals/CustomerModal/CustomerModal";
 
-import { Input, Button } from "shared/index";
+import {Input, Button} from "shared/index";
 
 /**
  * ──────────────────────────────────── local types
@@ -20,17 +20,21 @@ import { Input, Button } from "shared/index";
 interface CustomUser {
     full_name?: string;
 }
+
 interface Specialist {
     id?: number | string;
     custom_user?: CustomUser;
     full_name?: string;
 }
+
 interface Client {
     full_name?: string;
 }
+
 interface Tracker {
     full_name?: string;
 }
+
 export interface LeanProject {
     id: number | string;
     name?: string;
@@ -64,7 +68,7 @@ interface TrackerProjectProps {
 /**
  * Таблица проектов для роли tracker + все связанные модалки.
  */
-export default function TrackerProject({ projects }: TrackerProjectProps) {
+export default function TrackerProject({projects}: TrackerProjectProps) {
     const navigate = useNavigate();
 
     // ─────────────────────────────────── state (модалки)
@@ -194,7 +198,7 @@ export default function TrackerProject({ projects }: TrackerProjectProps) {
                             <td>{getSpecialistsLabel(project)}</td>
                             <td>{project.client?.full_name || "Не указана"}</td>
                             <td>
-                                <img src={messageIcon} alt="Chat icon" />
+                                <img src={messageIcon} alt="Chat icon"/>
                             </td>
                         </tr>
                     ))
@@ -232,7 +236,7 @@ export default function TrackerProject({ projects }: TrackerProjectProps) {
                 />
             )}
             {isStatusModalOpen && (
-                <StatusModal onClose={() => setIsStatusModalOpen(false)} />
+                <StatusModal onClose={() => setIsStatusModalOpen(false)}/>
             )}
             {isCalendarOpen && selectedTaskId !== null && (
                 <ModalCalendar

@@ -114,6 +114,54 @@ export const updateTask = createAsyncThunk(
   }
 );
 
+/** PATCH: изменить оценку времени (estimated_time) */
+export const updateTaskEstimateTime = createAsyncThunk(
+  "tasks/updateEstimateTime",
+  async (
+    { id, estimated_time }: { id: number; estimated_time: number },
+    { rejectWithValue }
+  ) => {
+    try {
+      const token = getCookie("access_token");
+      const response = await axiosInstance.patch<Task>(
+        `/task_specialist/${id}/`,
+        { estimated_time },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Error updating estimated time:", error);
+      return rejectWithValue(error.response?.data || "Ошибка при обновлении оценки времени");
+    }
+  }
+);
+
+/** PATCH: изменить список назначенных специалистов */
+export const updateTaskSpecialists = createAsyncThunk(
+  "tasks/updateSpecialists",
+  async (
+    { id, assigned_specialists }: { id: number; assigned_specialists: number[] },
+    { rejectWithValue }
+  ) => {
+    try {
+      const token = getCookie("access_token");
+      const response = await axiosInstance.patch<Task>(
+        `/task_specialist/${id}/`,
+        { assigned_specialists },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Error updating specialists list:", error);
+      return rejectWithValue(error.response?.data || "Ошибка при обновлении специалистов");
+    }
+  }
+);
+
 export const getTaskById = createAsyncThunk(
   "tasks/getTaskById",
   async (taskId: string, { rejectWithValue }) => {
@@ -181,6 +229,20 @@ const tasksSlice = createSlice({
         state.tasks.results.push(action.payload);
       })
       .addCase(updateTaskDeadline.fulfilled, (state, action) => {
+        const updatedTask = action.payload;
+        const index = state.tasks.results.findIndex((task) => task.id === updatedTask.id);
+        if (index !== -1) {
+          state.tasks.results[index] = { ...state.tasks.results[index], ...updatedTask };
+        }
+      })
+      .addCase(updateTaskEstimateTime.fulfilled, (state, action) => {
+        const updatedTask = action.payload;
+        const index = state.tasks.results.findIndex((task) => task.id === updatedTask.id);
+        if (index !== -1) {
+          state.tasks.results[index] = { ...state.tasks.results[index], ...updatedTask };
+        }
+      })
+      .addCase(updateTaskSpecialists.fulfilled, (state, action) => {
         const updatedTask = action.payload;
         const index = state.tasks.results.findIndex((task) => task.id === updatedTask.id);
         if (index !== -1) {

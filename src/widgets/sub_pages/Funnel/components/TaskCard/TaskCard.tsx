@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './TaskCard.module.scss';
 import chatIcon from 'shared/images/chat.svg';
 import chatIcons from 'shared/images/chats.svg';
-import {getInitials} from 'shared/helpers/userUtils';
+import Avatar from 'shared/UI/AvatarMini/Avatar';
 import {formatCurrency} from 'shared/helpers/formatCurrency';
 import type {Order} from 'shared/types/orders';
 import {formatDate} from "shared/utils/formatDate";
@@ -79,11 +79,16 @@ const TaskCard: React.FC<TaskCardProps> = React.memo(({order, onSelect}) => {
                     <div className={styles.taskDetailItem}>
                         <span className={styles.taskDetailLabel}>Трекер:</span>
                         <span className={styles.taskDetailValue}>
-              <span className={styles.avatarCircle}>
-                {tracker_data?.custom_user?.full_name
-                    ? getInitials(tracker_data.custom_user.full_name)
-                    : '–'}
-              </span>
+              {tracker_data?.custom_user ? (
+                <Avatar
+                  avatar={(tracker_data.custom_user as any).avatar}
+                  fullName={tracker_data.custom_user.full_name}
+                  size="xs"
+                  className={styles.avatarCircle}
+                />
+              ) : (
+                <span className={styles.avatarCircle}>–</span>
+              )}
             </span>
                     </div>
 
@@ -93,14 +98,13 @@ const TaskCard: React.FC<TaskCardProps> = React.memo(({order, onSelect}) => {
               {(approved_specialists || [])
                   .slice(0, 2)
                   .map((spec) => (
-                      <span
-                          key={spec.id}
-                          className={styles.avatarCircle}
-                      >
-                    {spec.custom_user?.full_name
-                        ? getInitials(spec.custom_user.full_name)
-                        : `ID ${spec.id}`}
-                  </span>
+                      <Avatar
+                        key={spec.id}
+                        avatar={(spec.custom_user as any)?.avatar}
+                        fullName={spec.custom_user?.full_name ?? `ID ${spec.id}`}
+                        size="xs"
+                        className={styles.avatarCircle}
+                      />
                   ))}
                             {approved_specialists && approved_specialists.length > 2 && (
                                 <span className={styles.avatarMore}>...</span>

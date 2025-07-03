@@ -3,7 +3,7 @@ import classes from "./InvitedSpecialistsList.module.scss"
 import InvitationStatus from "widgets/SideBar/SideFunnel/InvitationStatus/InvitationStatus";
 import Approve from "shared/images/sideBarImgs/fi-br-checkbox.svg";
 import Decline from "shared/images/sideBarImgs/Checkbox.svg";
-import {getInitials} from "shared/helpers/userUtils";
+import Avatar from "shared/UI/AvatarMini/Avatar";
 import {PenBox} from "lucide-react";
 
 interface SpecialistUser {
@@ -43,18 +43,12 @@ const InvitedSpecialistsList: React.FC<Props> = ({
                 const user = entry.specialist?.custom_user;
                 return (
                     <div key={entry.id} className={classes.invitedItem}>
-                        <div className={classes.avatar}>
-                            {user?.avatar ? (
-                                <img
-                                    src={user.avatar}
-                                    alt={user?.full_name || "avatar"}
-                                />
-                            ) : (
-                                <span className={classes.initials}>
-                                {getInitials(user?.full_name)}
-                            </span>
-                            )}
-                        </div>
+                        <Avatar
+                            avatar={user?.avatar}
+                            fullName={user?.full_name}
+                            size="sm"
+                            className={classes.avatar}
+                        />
                         <div className={classes.name}>
                             <InvitationStatus
                                 status={entry.status}
