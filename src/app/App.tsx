@@ -1,5 +1,5 @@
 import "./styles/index.scss";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { CreateAccountAsync } from "../pages/CreatedAccount";
 import { LoginFormAsync } from "../pages/LoginForm";
