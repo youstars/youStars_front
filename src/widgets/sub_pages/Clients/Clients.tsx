@@ -4,17 +4,19 @@ import search from "shared/images/sideBarImgs/search.svg";
 import filters from "shared/images/filters.svg";
 import star from "shared/images/star.svg";
 import {useNavigate} from "react-router-dom";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useDeferredValue } from "react";
 import filter from "shared/images/filter.svg";
 import {getClients} from "shared/store/slices/clientsSlice";
 import {useAppDispatch} from "shared/hooks/useAppDispatch";
 import {useAppSelector} from "shared/hooks/useAppSelector";
 import Avatar from "shared/UI/Avatar/Avatar";
+import { formatCurrency } from "shared/helpers/formatCurrency";
 
 const Clients = () => {
     const dispatch = useAppDispatch();
 
     const [searchTerm, setSearchTerm] = useState("");
+    const deferredSearch = useDeferredValue(searchTerm);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isMoreOpen, setIsMoreOpen] = useState(false);
     const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
@@ -42,9 +44,9 @@ const Clients = () => {
         clients.filter((client: any) =>
           client.custom_user.full_name
             .toLowerCase()
-            .includes(searchTerm.toLowerCase())
+            .includes(deferredSearch.toLowerCase())
         ),
-      [clients, searchTerm]
+      [clients, deferredSearch]
     );
 
     return (
@@ -121,10 +123,10 @@ const Clients = () => {
                             <div className={classes.payment_text}>
                                 <p>
                                     Заказов на сумму:{" "}
-                                    <span>{client.orders_total || "—"}</span>
+                                    <span>{formatCurrency(client.orders_total)}</span>
                                 </p>
                                 <p>
-                                    Средний чек: <span>{client.order_cost_avg || "—"}</span>
+                                    Средний чек: <span>{formatCurrency(client.order_cost_avg)}</span>
                                 </p>
                                 <p>
                                     Настроение:{" "}

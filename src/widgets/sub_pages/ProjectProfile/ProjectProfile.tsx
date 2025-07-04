@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useCallback } from "react";
+import { formatCurrency } from "shared/helpers/formatCurrency";
 import styles from "./ProjectProfile.module.scss";
 import Avatar from "shared/UI/Avatar/Avatar";
 import Checklist from "shared/assets/icons/stripesY.svg";
@@ -228,9 +229,7 @@ export default function ProjectProfile() {
               />
             ) : (
               <p className={styles.value}>
-                {project?.budget != null
-                  ? `${Math.trunc(+project.budget).toLocaleString("ru-RU")} ₽`
-                  : "—"}
+                {formatCurrency(project?.budget)}
               </p>
             )}
           </div>
