@@ -1,7 +1,14 @@
-import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  PayloadAction,
+  createEntityAdapter,
+} from "@reduxjs/toolkit";
 import {Task, TaskStatus} from "shared/types/tasks";
 import axiosInstance from "shared/api/api";
 
+// ─────────────────────────────────── adapter
+const tasksAdapter = createEntityAdapter<Task>();
 
 export const getTasks = createAsyncThunk<
     { results: Task[] },
@@ -75,20 +82,20 @@ export const getTaskById = createAsyncThunk(
     }
 );
 
-interface TasksState {
-    tasks: { results: Task[] };
-    selectedTask: Task | null;
-    status: "idle" | "pending" | "fulfilled" | "rejected";
-    error: string | null;
-    updatingTaskIds: number[];
+interface TasksState
+  extends ReturnType<typeof tasksAdapter.getInitialState> {
+  selectedTask: Task | null;
+  status: "idle" | "pending" | "fulfilled" | "rejected";
+  error: string | null;
+  updatingTaskIds: number[];
 }
 
 const initialState: TasksState = {
-    tasks: {results: []},
-    selectedTask: null,
-    status: "idle",
-    error: null,
-    updatingTaskIds: [],
+  ...tasksAdapter.getInitialState(),
+  selectedTask: null,
+  status: "idle",
+  error: null,
+  updatingTaskIds: [],
 };
 
 const tasksSlice = createSlice({
@@ -99,10 +106,10 @@ const tasksSlice = createSlice({
             state,
             action: PayloadAction<{ id: number; status: TaskStatus }>
         ) => {
-            const {id, status} = action.payload;
-            const taskIndex = state.tasks.results.findIndex((task) => task.id === id);
-            if (taskIndex !== -1) {
-                state.tasks.results[taskIndex].status = status;
+            const { id, status } = action.payload;
+            const task = state.entities[id];
+            if (task) {
+              task.status = status;
             }
         },
     },
@@ -114,14 +121,14 @@ const tasksSlice = createSlice({
             })
             .addCase(getTasks.fulfilled, (state, action) => {
                 state.status = "fulfilled";
-                state.tasks = action.payload;
+                tasksAdapter.setAll(state, action.payload.results);
             })
             .addCase(getTasks.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload as string;
             })
             .addCase(createTask.fulfilled, (state, action) => {
-                state.tasks.results.push(action.payload);
+                tasksAdapter.addOne(state, action.payload);
             })
             .addCase(updateTaskFields.pending, (state, action) => {
                 const { id, changes } = action.meta.arg as {
@@ -134,19 +141,12 @@ const tasksSlice = createSlice({
                 }
             })
             .addCase(updateTaskFields.fulfilled, (state, action) => {
-                const updatedTask = action.payload;
-                const index = state.tasks.results.findIndex(
-                    (task) => task.id === updatedTask.id
-                );
-                if (index !== -1) {
-                    state.tasks.results[index] = {
-                        ...state.tasks.results[index],
-                        ...updatedTask,
-                    };
-                }
-                // убрать id из updating
+                tasksAdapter.updateOne(state, {
+                  id: action.payload.id,
+                  changes: action.payload,
+                });
                 state.updatingTaskIds = state.updatingTaskIds.filter(
-                    (taskId) => taskId !== updatedTask.id
+                  (taskId) => taskId !== action.payload.id
                 );
             })
             .addCase(updateTaskFields.rejected, (state, action) => {
@@ -160,29 +160,26 @@ const tasksSlice = createSlice({
                 );
                 // если падение было при смене статуса — откатить
                 if ("status" in changes) {
-                    const taskIndex = state.tasks.results.findIndex((task) => task.id === id);
-                    if (taskIndex !== -1) {
-                        state.tasks.results[taskIndex].status = changes.status as TaskStatus;
-                    }
+                  const task = state.entities[id];
+                  if (task) {
+                    task.status = changes.status as TaskStatus;
+                  }
                 }
             })
             .addCase(getTaskById.fulfilled, (state, action) => {
-                const fetchedTask = action.payload;
-                const index = state.tasks.results.findIndex((task) => task.id === fetchedTask.id);
-                if (index !== -1) {
-                    state.tasks.results[index] = fetchedTask;
-                } else {
-                    state.tasks.results.push(fetchedTask);
-                }
+                tasksAdapter.upsertOne(state, action.payload);
             });
     },
 });
 
+const tasksSelectors = tasksAdapter.getSelectors(
+  (state: { tasks: TasksState }) => state.tasks
+);
+
 export const {optimisticUpdateTaskStatus} = tasksSlice.actions;
-export const selectTasks = (state: { tasks: TasksState }) => state.tasks.tasks;
+export const selectTasks = tasksSelectors.selectAll;
 export const selectTasksStatus = (state: { tasks: TasksState }) => state.tasks.status;
 export const selectTasksError = (state: { tasks: TasksState }) => state.tasks.error;
-export const selectTaskById = (state: { tasks: TasksState }, id: number) =>
-    state.tasks.tasks.results.find((task) => task.id === id);
+export const selectTaskById = tasksSelectors.selectById;
 
 export default tasksSlice.reducer;

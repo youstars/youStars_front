@@ -24,7 +24,7 @@ const getStatusLabel = (status: string) => {
 
 const TaskTable = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const tasks = useAppSelector(selectTasks).results;
+  const tasks = useAppSelector(selectTasks);
   const loading = useAppSelector(selectTasksStatus) === "pending";
   const error = useAppSelector(selectTasksError);
 

@@ -5,8 +5,9 @@ import {
   getTasks,
   updateTaskFields,
   optimisticUpdateTaskStatus,
+  selectTasks,
 } from "shared/store/slices/tasksSlice";
-import { AppDispatch, RootState } from "shared/store";
+import { AppDispatch } from "shared/store";
 import AddTaskModal from "./AddTaskModal/AddTaskModal";
 import classes from "./Kanban.module.scss";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -127,9 +128,7 @@ const Kanban: React.FC = () => {
     currentProjectId: number | null;
   }>();
   const dispatch = useDispatch<AppDispatch>();
-  const { results: tasks } = useSelector(
-    (state: RootState) => state.tasks.tasks
-  );
+  const tasks = useSelector(selectTasks);
   const [startIndex, setStartIndex] = useState(0);
   // Сколько колонок помещается по ширине окна (динамический расчёт)
   const [columnsCount, setColumnsCount] = useState(() => {
