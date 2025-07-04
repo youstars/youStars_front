@@ -46,20 +46,42 @@ const Gantt: React.FC = () => {
       if (currentProjectId && prevProjectId.current !== currentProjectId) {
         dispatch(getProjectTasks(currentProjectId));
         prevProjectId.current = currentProjectId;
+
+        // Reset auto‑scroll so that timeline jumps to earliest task of the new project
+        hasAutoScrolled.current = false;
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollLeft = 0;
+        }
       }
     }, [dispatch, currentProjectId]);
 
 
     const tasks: GanttTask[] = useMemo(
         () =>
-            tasksData.map((task) => ({
+            tasksData.map((task) => {
+              // Collect specialists the same way Kanban does:
+              // 1) Prefer `assigned_specialist_data`, fallback to `assigned_specialist`
+              // 2) If the array item has `.custom_user`, use that object
+              const rawList =
+                (task as any).assigned_specialist_data ??
+                (task as any).assigned_specialist ??
+                [];
+
+              const specialistsArr: any[] = Array.isArray(rawList)
+                ? rawList.map((item: any) => item?.custom_user ?? item)
+                : rawList
+                ? [rawList?.custom_user ?? rawList]
+                : [];
+
+              return {
                 id: task.id,
                 name: task.title,
                 start: new Date(task.start_date),
                 end: new Date(task.deadline || task.start_date),
                 status: task.status,
-                specialist: task.assigned_specialist || [],
-            })),
+                specialist: specialistsArr,
+              };
+            }),
         [tasksData]
     );
 
@@ -105,6 +127,16 @@ const Gantt: React.FC = () => {
         return ["to_do", "in_progress", "review"].includes(status) ? "Статус открыт" : "Статус закрыт";
     };
 
+    // Converts various specialist object shapes to a readable full name
+    const formatSpecialistName = (s: any): string => {
+      if (!s) return "";
+      if ("full_name" in s && s.full_name) return s.full_name as string;
+      if ("last_name" in s || "first_name" in s) {
+        return `${s?.last_name ?? ""} ${s?.first_name ?? ""}`.trim();
+      }
+      return (s?.name ?? s?.username ?? s?.email ?? String(s?.id ?? "")).toString();
+    };
+
     const days = useMemo(() => getDaysArray(), [currentDate]);
 
     const hasAutoScrolled = useRef(false);
@@ -113,15 +145,28 @@ const Gantt: React.FC = () => {
         if (hasAutoScrolled.current) return;
 
         if (scrollContainerRef.current && tasks.length > 0) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            // Scroll to the earliest task start date
+            const earliestTaskDate = tasks.reduce<Date>(
+              (min, t) => (t.start < min ? t.start : min),
+              tasks[0].start
+            );
+            earliestTaskDate.setHours(0, 0, 0, 0);
 
-            const todayIndex = days.findIndex(
-                (day) => day.toDateString() === today.toDateString()
+            const targetIndex = days.findIndex(
+              (day) => day.toDateString() === earliestTaskDate.toDateString()
             );
 
-            if (todayIndex !== -1) {
-                scrollContainerRef.current.scrollLeft = todayIndex * dayWidthRef.current;
+            if (targetIndex !== -1) {
+              scrollContainerRef.current.scrollLeft =
+                targetIndex * dayWidthRef.current;
+
+              // Sync visible month with scrolled position
+              const monthIdx = new Date(
+                currentDate.getFullYear(),
+                0,
+                targetIndex + 1
+              ).getMonth();
+              setVisibleMonth(monthIdx);
             }
 
             hasAutoScrolled.current = true;
@@ -148,7 +193,11 @@ const Gantt: React.FC = () => {
                     <p className="graph">График времени</p>
                     {tasks.map((task, i) => (
                         <div key={task.id || `task-${i}`} className="gantt-status-row">
-                            <span>{task.specialist?.[0]?.full_name || "Без специалиста"}</span>
+                            <span>
+                              {task.specialist.length
+                                ? task.specialist.map(formatSpecialistName).join(", ")
+                                : "Без специалиста"}
+                            </span>
                             <span>{getStatusLabel(String(task.status))}</span>
                         </div>
                     ))}
@@ -157,7 +206,7 @@ const Gantt: React.FC = () => {
                 <div ref={scrollContainerRef} className="gantt-calendar-container" onScroll={handleScroll}>
                     <div className="gantt-timeline">
                         <div className="gantt-calendar">
-                            {days.map((day, i) => (
+                            {days.map((day) => (
                                 <div
                                     key={day.toISOString()}
                                     className={`gantt-day ${isWeekend(day) ? "weekend" : ""} ${isToday(day) ? "today" : ""}`}
