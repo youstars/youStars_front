@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { useAppDispatch } from "shared/hooks/useAppDispatch";
 import { useAppSelector } from "shared/hooks/useAppSelector";
 import { getClientById, updateClient } from "shared/store/slices/clientSlice";
-import { updateMe } from "shared/store/slices/meSlice";
 import { TrackerNotes } from "./components/TrackerNotes/TrackerNotes";
 import { ProjectBlock } from "./components/ProjectBlock/ProjectBlock";
 import Avatar from "shared/UI/Avatar/Avatar";
@@ -114,17 +113,21 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
     refreshClient
   );
 const handleAvatarUpload = (file: File) => {
+  if (!client) return;
+
   const formData = new FormData();
   formData.append("custom_user.avatar", file);
 
-  if (isAdmin) {
-    formData.append("id", client.custom_user.id.toString());
+  if (isAdmin && client.custom_user) {
+    formData.append("id", String(client.custom_user.id));
   }
 
-  dispatch(updateClient({
-    id: isAdmin ? client.custom_user.id : undefined,
-    data: formData,
-  }));
+  dispatch(
+    updateClient({
+      id: isAdmin && client.custom_user ? client.custom_user.id : undefined,
+      data: formData,
+    })
+  );
 };
 
 
@@ -253,15 +256,20 @@ const handleAvatarUpload = (file: File) => {
     setSaving(false);
   };
 
-  if (!client && loading) return <Spinner />;
+  if (!client) {
+    return loading ? <Spinner /> : <div className={styles.notFound}>Клиент не найден</div>;
+  }
 
-  const u = client.custom_user || client;
+  const u = client?.custom_user ?? client ?? {};
 
   const handleChatClick = () => {
-    const clientUserId = String(client.custom_user.id);
+    const clientUserId = client?.custom_user?.id;
+    if (!clientUserId) return;
+
     const chat = chats.find((chat) =>
-      chat.participants?.some((p: any) => String(p.id) === clientUserId)
+      chat.participants?.some((p: any) => String(p.id) === String(clientUserId))
     );
+
     if (chat) {
       setActiveChat(chat.id);
       navigate("/manager/chats");
