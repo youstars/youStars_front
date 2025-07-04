@@ -4,19 +4,17 @@ import SideBarNav from "widgets/SideBarNav/SideBarNav";
 import round from "shared/images/sideBarImgs/round.svg";
 import bibl from "shared/images/sideBarImgs/bibl.svg";
 import settings from "shared/images/sideBarImgs/settings.svg";
-import projs from "shared/images/sideBarImgs/projs.svg";
+import projectsIcon from "shared/images/sideBarImgs/projs.svg";
 import chat from "shared/images/sideBarImgs/fi-br-envelope.svg";
 import contacts from "shared/images/sideBarImgs/contacts.svg";
 import funnel from "shared/images/sideBarImgs/funnel.svg";
 import specialists from "shared/images/sideBarImgs/spcialists.svg";
-import task from "shared/images/sideBarImgs/task.svg";
 import arrow from "shared/images/sideBarImgs/arrow.svg";
 import arrow_back from "shared/images/sideBarImgs/arrow_back.svg";
 import { useAppSelector } from "shared/hooks/useAppSelector";
 import { selectMe } from "shared/store/slices/meSlice";
 import applicationIcon from "shared/images/sideBarImgs/application.svg";
 import SearchInput from "shared/UI/SearchInput/SearchInput";
-import clienst from "shared/images/sideBarImgs/clients.svg";
 import admins from "shared/images/admins.svg";
 
 export default function SideBar() {
@@ -30,7 +28,7 @@ export default function SideBar() {
 
   const navItems = [
     { text: "Задачи", image: round, to: "overview" },
-    { text: "Проекты", image: projs, to: "user_projects" },
+    { text: "Проекты", image: projectsIcon, to: "user_projects" },
     // { text: "Задачи", image: task, to: "tasks" },
     { text: "Специалисты", image: specialists, to: "specialists" },
     { text: "Клиенты", image: contacts, to: "clients" },
