@@ -1,6 +1,7 @@
 import {useEffect, useMemo, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "shared/store";
+import {RootState} from "shared/store";
 import {getProjects} from "shared/store/slices/projectsSlice";
 import classes from "./UserProjects.module.scss";
 import {useUserRole} from "shared/hooks/useUserRole";
@@ -8,6 +9,22 @@ import ClientProject from "../components/Client/ClientProject";
 import TrackerProject from "../components/Tracker/TrackerProject";
 import SpecialistProject from "../components/Specialist/SpecialistProject";
 import SearchAndFilter from "./SearchAndFilter";
+
+// ─────────────────────────────────── utils
+/**
+ * Возвращает значение только после того, как оно не менялось `delay` миллисекунд.
+ * Используется для дебаунса поисковой строки.
+ */
+function useDebounce<T>(value: T, delay = 400): T {
+    const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+    useEffect(() => {
+        const id = window.setTimeout(() => setDebouncedValue(value), delay);
+        return () => window.clearTimeout(id);
+    }, [value, delay]);
+
+    return debouncedValue;
+}
 
 interface CustomUser {
     full_name?: string;
@@ -27,9 +44,14 @@ interface Tracker {
     full_name?: string;
 }
 
+// ─────────────────────────────────── models
 export interface LeanProject {
     id: number | string;
     name?: string;
+    project?: {
+        id?: number | string;
+        name?: string;
+    };
     deadline?: string;
     tracker?: Tracker;
     specialists?: Specialist[];
@@ -40,18 +62,19 @@ export interface LeanProject {
 
 export default function UserProjects() {
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const debouncedSearch = useDebounce(searchTerm, 400);
     const dispatch = useDispatch<AppDispatch>();
     const role = useUserRole();
     const isClient = role?.toLowerCase().includes("client");
     const isSpecialist = role?.toLowerCase().includes("specialist");
-    const projects = useSelector((s: any) => s.projects.list) as
+    const projects = useSelector((state: RootState) => state.projects.list) as
         | LeanProject[]
         | undefined;
 
     const filteredProjects = useMemo(() => {
         if (!projects) return [];
-        const q = searchTerm.toLowerCase();
-        return projects.filter((p: any) => {
+        const q = debouncedSearch.trim().toLowerCase();
+        return projects.filter((p: LeanProject) => {
             const projectName: string = p.project?.name ?? p.name ?? "";
 
             let orderStr = "";
@@ -65,7 +88,7 @@ export default function UserProjects() {
                 orderStr.toLowerCase().includes(q)
             );
         });
-    }, [projects, searchTerm]);
+    }, [projects, debouncedSearch]);
 
     useEffect(() => {
         dispatch(getProjects()).catch(console.error);
@@ -74,8 +97,8 @@ export default function UserProjects() {
     const renderClientView = () => (
         <div className={classes.context}>
             {filteredProjects && filteredProjects.length ? (
-                filteredProjects.map((project: any) => (
-                    <ClientProject key={project.id} project={project}/>
+                filteredProjects.map((project: LeanProject) => (
+                    <ClientProject key={project.id} project={project as any}/>
                 ))
             ) : (
                 <p>{projects ? "Нет данных для отображения" : "Загрузка данных..."}</p>
@@ -90,8 +113,8 @@ export default function UserProjects() {
     const renderSpecialistView = () => (
         <div className={classes.context}>
             {filteredProjects && filteredProjects.length ? (
-                filteredProjects.map((project: any) => (
-                    <SpecialistProject key={project.id} project={project}/>
+                filteredProjects.map((project: LeanProject) => (
+                    <SpecialistProject key={project.id} project={project as any}/>
                 ))
             ) : (
                 <p>{projects ? "Нет данных для отображения" : "Загрузка данных..."}</p>
