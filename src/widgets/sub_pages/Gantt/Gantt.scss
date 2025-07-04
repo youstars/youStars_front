@@ -1,334 +1,351 @@
-  @mixin flex-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  @mixin absolute-center {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+:root {
+  --gantt-day-width: 30px; // default width for a single day column
+}
+
+/* ===== Global SCSS variables ===== */
+$bg-dark: #2A2B2E;
+$yellow: #ffd700;
+$weekend-bg: rgba(255, 0, 0, 0.2);
+$task-hover: rgba(110, 138, 230, 0.5);
+$task-bg: rgba(136, 136, 136, 0.3);
+$purple: #68577f;
+$scrollbar-thumb: #888;
+$scrollbar-thumb-hover: #555;
+$border-radius-small: 6px;
+$row-height: 50px;
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin absolute-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.gantt {
+  &-container {
+    display: grid;
+    gap: 8px;
+    padding: 9px 34px 14px 34px;
+    margin: 40px 20px;
+    background-color: $bg-dark;
+    color: var(--primery-color);
+    border-radius: 20px;
   }
 
-  .gantt {
-    &-container {
-      display: grid;
-      gap: 8px;
-      padding: 9px 34px 14px 34px;
-      margin: 40px 20px;
-      background-color: #2A2B2E;
-      color: var( --primery-color);
-      border-radius: 20px;
+  &-header {
+    @include flex-center;
+    padding: 8px;
+    background-color: var(--bg-toggle-color);
+    color: var(--primery-color);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  &-month-navigation {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &-arrow {
+    background: none;
+    border: none;
+    color: $yellow;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
     }
-  
-    &-header {
-      @include flex-center;
-      padding: 8px;
-      background-color: var(--bg-toggle-color);
-      color: var( --primery-color);
-      border-radius: 6px;
-      position: relative;
-    }
-  
-    &-month-navigation {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-  
-    &-arrow {
-      background: none;
-      border: none;
-      color: #ffd700;
-      cursor: pointer;
-      font-size: 20px;
-      font-weight: bold;
-      transition: transform 0.2s ease;
-  
-      &:hover {
-        transform: scale(1.1);
-      }
-    }
-  
-    &-month {
-     
-      color: var( --primery-color);
+  }
+
+  &-month {
+
+    color: var(--primery-color);
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  &-content {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 16px;
+    position: relative;
+  }
+
+  &-status-table {
+    display: grid;
+    grid-auto-rows: 50px;
+    gap: 12px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: var(--primery-color);
+    margin-top: 85px;
+
+    p {
       font-size: 16px;
-       font-weight: 600;
+      text-align: center;
+      color: var(--primery-color);
+      margin: 0;
+      padding: 0;
+      height: 50px;
+      line-height: 50px;
+      padding-bottom: 10px;
+      position: absolute;
+      top: 10px;
+      left: 40px;
     }
-  
-    &-content {
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      gap: 16px;
-      position: relative;
+
+    .specialists {
+      @include absolute-center;
+      top: 50px;
+      font-size: 9px;
+      text-align: center;
+      color: #888888;
+      @include flex-center;
+      background-color: var(--bg-toggle-color);
+      width: calc(100% - 40px);
+      border-radius: 4px;
+      height: 50px;
     }
-  
-    &-status-table {
-      display: grid;
-      grid-auto-rows: 50px;
-      gap: 12px;
-      padding: 15px 20px;
-      border-radius: 8px;
-      color: var( --primery-color);
-      margin-top: 85px;
-  
-      p {
-        font-size: 16px;
-        text-align: center;
-        color: var( --primery-color);
-        margin: 0;
-        padding: 0;
-        height: 50px;
-        line-height: 50px;
-        padding-bottom: 10px;
-        position: absolute;
-        top: 10px;
-        left: 40px;
+  }
+
+  &-status-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 8px;
+    background-color: var(--bg-toggle-color);
+    height: 50px;
+    margin: 0;
+
+    span {
+      flex: 1;
+      text-align: center;
+      font-size: 8px;
+
+      &:first-child {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 15px;
+        height: 12px;
+        background-color: #6E8AE6;
+        color: black;
+        font-weight: bold;
+        border-radius: 5px;
+        font-size: 8px;
       }
-  
-      .specialists {
-        @include absolute-center;
-        top: 50px;
-        font-size: 9px;
-        text-align: center;
-        color: #888888;
-        @include flex-center;
-        background-color: var(--bg-toggle-color);
-        width: calc(100% - 40px);
-        border-radius: 4px;
-        height: 50px;
-      }
     }
-  
-    &-status-row {
+  }
+
+  &-calendar {
+    &-container {
+      overflow-x: auto;
+      overflow-y: hidden;
+      margin-top: 10px;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: var(--gantt-day-width);
+    background: var(--bg-toggle-color);
+    padding: 8px;
+    border-radius: 6px;
+    height: 50px;
+    position: relative;
+  }
+
+  &-timeline {
+    min-width: max-content;
+
+  }
+
+  &-day {
+    text-align: center;
+    padding: 4px;
+    border-left: 2px solid var(--primery-color);
+    border-top: 2px solid var(--primery-color);
+    font-size: 8px;
+    height: 32px;
+    position: relative;
+    width: var(--gantt-day-width);
+    min-width: var(--gantt-day-width);
+
+    &-header {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 6px;
-      border-radius: 8px;
-      background-color: var(--bg-toggle-color);
-      height: 50px;
-      margin: 0;
-  
-      span {
-        flex: 1;
-        text-align: center;
-        font-size: 8px;
-  
-        &:first-child {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 15px;
-          height: 12px;
-          background-color: #6E8AE6;
-          color: black;
-          font-weight: bold;
-          border-radius: 5px;
-          font-size: 8px;
-        }
-      }
+      height: 100%;
     }
-  
-    &-calendar {
-      &-container {
-        overflow-x: auto;
-        overflow-y: hidden;
-        margin-top: 10px;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-      }
-  
-      display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: 30px;
-      background: var(--bg-toggle-color);
-      padding: 8px;
-      border-radius: 6px;
-      height: 50px;
-      position: relative;
+
+    &.weekend {
+      background: $weekend-bg;
+      color: #fff;
     }
-  
-    &-timeline {
-      min-width: max-content;
-      
+
+    &.today {
+      background-color: $purple !important;
+      color: var(--primery-color);
+      font-weight: bold;
     }
-  
-    &-day {
-      text-align: center;
-      padding: 4px;
-      border-left: 2px solid var( --primery-color);
-      border-top: 2px solid var( --primery-color);
-      font-size: 8px;
-      height: 32px;
-      position: relative;
-  
-      &-header {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        height: 100%;
-      }
-  
-      &.weekend {
-        background: rgba(255, 0, 0, 0.2);
-        color: #fff;
-      }
-  
-      &.today {
-        background-color: #68577f !important;
-        color: var( --primery-color);
-        font-weight: bold;
-      }
-    }
-  
-    &-month-label {
+  }
+
+  &-month-label {
+    position: absolute;
+    top: 44px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: var(--yellow);
+    font-size: 12px;
+  }
+
+  &-tasks {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: var(--gantt-day-width);
+    position: relative;
+    border-radius: 6px;
+    background-color: var(--bg-toggle-color);
+    margin-top: 30px;
+    padding: 8px;
+
+    &::before {
+      content: "";
       position: absolute;
-      top: 44px;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      font-weight: semi-bold;
-      color: var(--yellow);
-      font-size: 12px;
-    }
-  
-    &-tasks {
-      display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: 30px;
-      position: relative;
-      border-radius: 6px;
-      background-color: var(--bg-toggle-color);
-      margin-top: 30px;
-      padding: 8px;
-  
-      &::before {
-        content: "";
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        right: 8px;
-        bottom: 8px;
-        background: repeating-linear-gradient(
-          to bottom,
-          transparent,
-          transparent 59px,
-          var( --primery-color) 59px,
-          transparent 60px
-        );
-        z-index: 0;
-        pointer-events: none;
-      }
-  
-      &::after {
-        content: "";
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        right: 8px;
-        bottom: 8px;
-        background: repeating-linear-gradient(
-          to right,
-          transparent,
-          transparent 29px,
-          #2A2B2E 29px,
-          transparent 30px
-        );
-        z-index: 0;
-        pointer-events: none;
-      }
-    }
-  
-    &-task {
-      background-color: rgba(136, 136, 136, 0.3);
-      height: 40px;
-      color: var( --primery-color);
-      position: relative;
-      z-index: 1;
-      @include flex-center;
-      font-weight: 600;
-      padding: 0 8px;
-      font-size: 12px;
-      transition: all 0.3s ease;
-      border-radius: 6px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin: 10px 0px;
-  
-      &:hover {
-        background: rgba(110, 138, 230, 0.5);
-        cursor: pointer;
-      }
-  
-      &-background {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-  
-        &.weekend {
-          background-color: rgba(255, 0, 0, 0.2);
-        }
-      }
-    }
-  
-    &-empty-row {
-      height: 50px;
-      background: none !important;
-      border: none !important;
-      outline: none !important;
-      box-shadow: none !important;
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      bottom: 8px;
+      background: repeating-linear-gradient(
+                      to bottom,
+                      transparent,
+                      transparent 59px,
+                      var(--primery-color) 59px,
+                      transparent 60px
+      );
+      z-index: 0;
       pointer-events: none;
     }
-  
-    &-today {
-      &-line {
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        width: 2px;
-        height: calc(100vh - 50px);
-        background-color: #68577f;
-        transform: translateX(-50%);
-        opacity: 0.3;
-        z-index: 10;
-      }
-  
-      &-label {
-        position: absolute;
-        top: 122%;
-        left: 50%;
-        transform: translate(-50%, 5px);
-        background: #68577f;
-        color: var( --primery-color);
-        padding: 2px 8px;
-        font-size: 12px;
-        font-weight: 600;
-        z-index: 12;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      bottom: 8px;
+      background: repeating-linear-gradient(
+                      to right,
+                      transparent,
+                      transparent calc(var(--gantt-day-width) - 1px),
+                      $bg-dark calc(var(--gantt-day-width) - 1px),
+                      transparent var(--gantt-day-width)
+      );
+      z-index: 0;
+      pointer-events: none;
+    }
+  }
+
+  &-task {
+    background-color: $task-bg;
+    height: 40px;
+    color: var(--primery-color);
+    position: relative;
+    z-index: 1;
+    @include flex-center;
+    font-weight: 600;
+    padding: 0 8px;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 10px 0;
+
+    &:hover {
+      background: $task-hover;
+      cursor: pointer;
+    }
+
+    &-background {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+
+      &.weekend {
+        background-color: $weekend-bg;
       }
     }
   }
-  
-  // Scrollbar styles
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 5px;
-  
-    &-thumb {
-      background: #888;
-      border-radius: 4px;
-  
-      &:hover {
-        background: #555;
-      }
+
+  &-empty-row {
+    height: 50px;
+    background: none !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    pointer-events: none;
+  }
+
+  &-today {
+    &-line {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      width: 2px;
+      height: calc(100vh - 50px);
+      background-color: $purple;
+      transform: translateX(-50%);
+      opacity: 0.3;
+      z-index: 10;
     }
-  
-    &-track {
-      background: #2A2B2E;
-      width: 10px;
+
+    &-label {
+      position: absolute;
+      top: 122%;
+      left: 50%;
+      transform: translate(-50%, 5px);
+      background: $purple;
+      color: var(--primery-color);
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 12;
     }
   }
+}
+
+// Scrollbar styles
+::-webkit-scrollbar {
+  width: 8px;
+  height: 5px;
+
+  &-thumb {
+    background: $scrollbar-thumb;
+    border-radius: 4px;
+
+    &:hover {
+      background: $scrollbar-thumb-hover;
+    }
+  }
+
+  &-track {
+    background: $bg-dark;
+    width: 10px;
+  }
+}
