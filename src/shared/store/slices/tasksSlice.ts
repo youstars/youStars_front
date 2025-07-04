@@ -1,14 +1,29 @@
 import {
-  createSlice,
-  createAsyncThunk,
-  PayloadAction,
-  createEntityAdapter,
+    createSlice,
+    createAsyncThunk,
+    PayloadAction,
+    createEntityAdapter,
 } from "@reduxjs/toolkit";
 import {Task, TaskStatus} from "shared/types/tasks";
 import axiosInstance from "shared/api/api";
 
 // ─────────────────────────────────── adapter
 const tasksAdapter = createEntityAdapter<Task>();
+
+/** Единый enum статусов fetch‑запросов */
+export enum FetchStatus {
+    Idle = "idle",
+    Pending = "pending",
+    Fulfilled = "fulfilled",
+    Rejected = "rejected",
+}
+
+/** Универсальный формат серверной ошибки */
+export interface ApiError {
+    detail?: string;
+    code?: string;
+    message?: string;
+}
 
 export const getTasks = createAsyncThunk<
     { results: Task[] },
@@ -24,13 +39,16 @@ export const getTasks = createAsyncThunk<
             return response.data;
         } catch (error: any) {
             console.error("Error fetching tasks:", error);
-            return rejectWithValue(error.response?.data || "Произошла ошибка");
+            const apiErr: ApiError = error.response?.data ?? {message: "Произошла ошибка"};
+            return rejectWithValue(apiErr);
         }
     },
     {
         condition: (_, {getState}) => {
             const {tasks} = getState();
-            return tasks.status === "idle" || tasks.status === "rejected";
+            return (
+                tasks.status === FetchStatus.Idle || tasks.status === FetchStatus.Rejected
+            );
         },
     }
 );
@@ -43,31 +61,31 @@ export const createTask = createAsyncThunk(
             return response.data;
         } catch (error: any) {
             console.error("Error creating task:", error);
-            return rejectWithValue(error.response?.data || "Ошибка при создании задачи");
+            const apiErr: ApiError = error.response?.data ?? {message: "Ошибка при создании задачи"};
+            return rejectWithValue(apiErr);
         }
     }
 );
 
 export const updateTaskFields = createAsyncThunk(
-  "tasks/updateFields",
-  async (
-    { id, changes }: { id: number; changes: Partial<Task> },
-    { rejectWithValue, signal }
-  ) => {
-    try {
-      const response = await axiosInstance.patch<Task>(
-        `/task_specialist/${id}/`,
-        changes,
-        { signal }
-      );
-      return response.data;
-    } catch (error: any) {
-      console.error("Error updating task fields:", error);
-      return rejectWithValue(
-        error.response?.data || "Ошибка при обновлении задачи"
-      );
+    "tasks/updateFields",
+    async (
+        {id, changes}: { id: number; changes: Partial<Task> },
+        {rejectWithValue, signal}
+    ) => {
+        try {
+            const response = await axiosInstance.patch<Task>(
+                `/task_specialist/${id}/`,
+                changes,
+                {signal}
+            );
+            return response.data;
+        } catch (error: any) {
+            console.error("Error updating task fields:", error);
+            const apiErr: ApiError = error.response?.data ?? {message: "Ошибка при обновлении задачи"};
+            return rejectWithValue(apiErr);
+        }
     }
-  }
 );
 
 export const getTaskById = createAsyncThunk(
@@ -77,25 +95,25 @@ export const getTaskById = createAsyncThunk(
             const response = await axiosInstance.get<{ results: Task[] }>(`/task_specialist/${taskId}/`);
             return response.data.results[0];
         } catch (error) {
-            return rejectWithValue("Ошибка при получении задачи");
+            const apiErr: ApiError = {message: "Ошибка при получении задачи"};
+            return rejectWithValue(apiErr);
         }
     }
 );
-
 interface TasksState
-  extends ReturnType<typeof tasksAdapter.getInitialState> {
-  selectedTask: Task | null;
-  status: "idle" | "pending" | "fulfilled" | "rejected";
-  error: string | null;
-  updatingTaskIds: number[];
+    extends ReturnType<typeof tasksAdapter.getInitialState> {
+    selectedTask: Task | null;
+    status: FetchStatus;
+    error: ApiError | null;
+    updatingTaskIds: number[];
 }
 
 const initialState: TasksState = {
-  ...tasksAdapter.getInitialState(),
-  selectedTask: null,
-  status: "idle",
-  error: null,
-  updatingTaskIds: [],
+    ...tasksAdapter.getInitialState(),
+    selectedTask: null,
+    status: FetchStatus.Idle,
+    error: null,
+    updatingTaskIds: [],
 };
 
 const tasksSlice = createSlice({
@@ -106,32 +124,32 @@ const tasksSlice = createSlice({
             state,
             action: PayloadAction<{ id: number; status: TaskStatus }>
         ) => {
-            const { id, status } = action.payload;
+            const {id, status} = action.payload;
             const task = state.entities[id];
             if (task) {
-              task.status = status;
+                task.status = status;
             }
         },
     },
     extraReducers: (builder) => {
         builder
             .addCase(getTasks.pending, (state) => {
-                state.status = "pending";
+                state.status = FetchStatus.Pending;
                 state.error = null;
             })
             .addCase(getTasks.fulfilled, (state, action) => {
-                state.status = "fulfilled";
+                state.status = FetchStatus.Fulfilled;
                 tasksAdapter.setAll(state, action.payload.results);
             })
             .addCase(getTasks.rejected, (state, action) => {
-                state.status = "rejected";
-                state.error = action.payload as string;
+                state.status = FetchStatus.Rejected;
+                state.error = action.payload as ApiError;
             })
             .addCase(createTask.fulfilled, (state, action) => {
                 tasksAdapter.addOne(state, action.payload);
             })
             .addCase(updateTaskFields.pending, (state, action) => {
-                const { id, changes } = action.meta.arg as {
+                const {id, changes} = action.meta.arg as {
                     id: number;
                     changes: Partial<Task>;
                 };
@@ -142,28 +160,28 @@ const tasksSlice = createSlice({
             })
             .addCase(updateTaskFields.fulfilled, (state, action) => {
                 tasksAdapter.updateOne(state, {
-                  id: action.payload.id,
-                  changes: action.payload,
+                    id: action.payload.id,
+                    changes: action.payload,
                 });
                 state.updatingTaskIds = state.updatingTaskIds.filter(
-                  (taskId) => taskId !== action.payload.id
+                    (taskId) => taskId !== action.payload.id
                 );
             })
             .addCase(updateTaskFields.rejected, (state, action) => {
-                const { id, changes } = action.meta.arg as {
+                const {id, changes} = action.meta.arg as {
                     id: number;
                     changes: Partial<Task>;
                 };
-                state.error = action.payload as string;
+                state.error = action.payload as ApiError;
                 state.updatingTaskIds = state.updatingTaskIds.filter(
                     (taskId) => taskId !== id
                 );
                 // если падение было при смене статуса — откатить
                 if ("status" in changes) {
-                  const task = state.entities[id];
-                  if (task) {
-                    task.status = changes.status as TaskStatus;
-                  }
+                    const task = state.entities[id];
+                    if (task) {
+                        task.status = changes.status as TaskStatus;
+                    }
                 }
             })
             .addCase(getTaskById.fulfilled, (state, action) => {
@@ -173,7 +191,7 @@ const tasksSlice = createSlice({
 });
 
 const tasksSelectors = tasksAdapter.getSelectors(
-  (state: { tasks: TasksState }) => state.tasks
+    (state: { tasks: TasksState }) => state.tasks
 );
 
 export const {optimisticUpdateTaskStatus} = tasksSlice.actions;
