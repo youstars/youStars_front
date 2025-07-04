@@ -22,6 +22,7 @@ import {ProjectDetail} from "shared/types/project";
 import ProjectFiles, {FileItem} from "shared/UI/ProjectFiles/ProjectFiles";
 import {deleteFileById, uploadClientFile} from "shared/api/files";
 import {useFileManager} from "shared/hooks/useFileManager";
+import ClientMetrics from "widgets/sub_pages/ClientProfile/components/ClientMetrics/ClientMetrics";
 
 const employeeOptions = [
     "Not on the market",
@@ -330,20 +331,12 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
                     <ClientContacts edit={edit} form={form} onChange={onChange} user={u}/>
 
                     {/* --- метрики --- */}
-                    <div className={styles.clientMetrics}>
-                        <p className={styles.clientMetric}>
-                            Активных заказов: {client.orders_in_progress ?? 0}
-                        </p>
-                        <p className={styles.clientMetric}>
-                            Всего заказов: {client.orders_total ?? 0}
-                        </p>
-                        <p className={styles.clientMetric}>
-                            Средняя стоимость: {Math.round(client.order_cost_avg) ?? 0} ₽
-                        </p>
-                        <p className={styles.clientMetric}>
-                            Настроение: {client.mood ?? "—"}
-                        </p>
-                    </div>
+                    <ClientMetrics
+                        ordersInProgress={client.orders_in_progress ?? 0}
+                        ordersTotal={client.orders_total ?? 0}
+                        orderCostAvg={client.order_cost_avg ?? 0}
+                        mood={client.mood}
+                    />
 
                     <div className={styles.clientIcons}>
                         <button className={styles.clientIcon} onClick={handleChatClick}>
