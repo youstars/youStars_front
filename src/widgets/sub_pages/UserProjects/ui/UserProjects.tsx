@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "shared/store";
-import {RootState} from "shared/store";
+import {selectProjects} from "shared/store/slices/projectsSlice";
 import {getProjects} from "shared/store/slices/projectsSlice";
 import classes from "./UserProjects.module.scss";
 import {useUserRole} from "shared/hooks/useUserRole";
@@ -67,7 +67,7 @@ export default function UserProjects() {
     const role = useUserRole();
     const isClient = role?.toLowerCase().includes("client");
     const isSpecialist = role?.toLowerCase().includes("specialist");
-    const projects = useSelector((state: RootState) => state.projects.list) as
+    const projects = useSelector(selectProjects) as
         | LeanProject[]
         | undefined;
 

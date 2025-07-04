@@ -1,9 +1,44 @@
-import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {
+    createAsyncThunk,
+    createSlice,
+    PayloadAction,
+    createEntityAdapter,
+} from "@reduxjs/toolkit";
 import {ProjectDetail, ProjectSummary} from "shared/types/project";
 import {getCookie} from "shared/utils/cookies";
 import axiosInstance from "shared/api/api";
 
+
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+// ─────────────────────────────────── enums
+export enum FetchStatus {
+    Idle = "idle",
+    Pending = "pending",
+    Fulfilled = "fulfilled",
+    Rejected = "rejected",
+}
+
+// ─────────────────────────────────── adapter
+const projectsAdapter = createEntityAdapter<ProjectSummary>({
+    sortComparer: (a, b) => (a.id > b.id ? 1 : -1),
+});
+
+type ProjectsEntityState = ReturnType<typeof projectsAdapter.getInitialState>;
+
+interface ProjectsState extends ProjectsEntityState {
+    current: ProjectDetail | null;
+    status: FetchStatus;
+    error: string | null;
+}
+
+const initialState: ProjectsState = {
+    ...projectsAdapter.getInitialState(),
+    current: null,
+    status: FetchStatus.Idle,
+    error: null,
+};
+
 
 export const getProjects = createAsyncThunk<
     ProjectSummary[],
@@ -13,33 +48,26 @@ export const getProjects = createAsyncThunk<
     "projects/getProjects",
     async (_, {rejectWithValue}) => {
         try {
-            const token = getCookie("access_token");
+            // const token = getCookie("access_token");
             const role = getCookie("user_role");
             let url = `${API_BASE_URL}projects/`;
             if (role && role.toLowerCase().includes("client")) {
                 const clientId = getCookie("user_role_id");
                 if (!clientId) {
-                    throw new Error("Client id not found in cookies");
+                    return rejectWithValue("Client id not found in cookies");
                 }
                 url = `${API_BASE_URL}client/${clientId}/projects`;
             } else if (role && role.toLowerCase().includes("specialist")) {
                 const specialistId = getCookie("user_role_id"); // cookie stores the current specialist.id
                 if (!specialistId) {
-                    throw new Error("Specialist id not found in cookies");
+                    return rejectWithValue("Specialist id not found in cookies");
                 }
                 url = `${API_BASE_URL}specialist/${specialistId}/projects`;
             }
 
-            const response = await axiosInstance.get(
-                url,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-            return response.data.results;
+            const response = await axiosInstance.get(url);
+            const data = response.data;
+            return Array.isArray(data) ? data : data.results;
         } catch (error: any) {
             console.error("Error fetching projects:", error);
             return rejectWithValue(error.response?.data || "Произошла ошибка");
@@ -49,37 +77,21 @@ export const getProjects = createAsyncThunk<
     {
         condition: (_, {getState}) => {
             const {projects} = getState();
-            return projects.status === "idle" || projects.status === "rejected";
+            return (
+                projects.status === FetchStatus.Idle ||
+                projects.status === FetchStatus.Rejected
+            );
         },
     }
 );
-
-
-interface ProjectsState {
-    list: ProjectSummary[];
-    current: ProjectDetail | null;
-    status: "idle" | "pending" | "fulfilled" | "rejected";
-    error: string | null;
-}
-
-const initialState: ProjectsState = {
-    list: [],
-    current: null,
-    status: "idle",
-    error: null,
-};
 
 
 export const getProjectById = createAsyncThunk(
     "projects/getById",
     async (id: string | number, {rejectWithValue}) => {
         try {
-            const token = getCookie("access_token");
-            const response = await axiosInstance.get(`${API_BASE_URL}project/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            // const token = getCookie("access_token");
+            const response = await axiosInstance.get(`${API_BASE_URL}project/${id}`);
             return response.data as ProjectDetail;
         } catch (err: any) {
             return rejectWithValue("Ошибка загрузки проекта");
@@ -91,15 +103,10 @@ export const updateProjectStatus = createAsyncThunk(
     "project/updateStatus",
     async ({id, status}: { id: number; status: string }, thunkAPI) => {
         try {
-            const token = getCookie("access_token");
+            // const token = getCookie("access_token");
             const response = await axiosInstance.patch(
                 `${API_BASE_URL}project/${id}/`,
-                {status},
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+                { status }
             );
             return response.data;
         } catch (err: any) {
@@ -115,15 +122,10 @@ export const updateProject = createAsyncThunk(
         thunkAPI
     ) => {
         try {
-            const token = getCookie("access_token");
+            // const token = getCookie("access_token");
             const response = await axiosInstance.patch(
                 `${API_BASE_URL}project/${id}/`,
-                updates,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+                updates
             );
             return response.data as ProjectDetail;
         } catch (err: any) {
@@ -135,26 +137,22 @@ export const updateProject = createAsyncThunk(
 const projectsSlice = createSlice({
     name: "projects",
     initialState,
-    reducers: {
-        clearCurrentProject(state) {
-            state.current = null;
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(getProjects.pending, (state) => {
-                state.status = "pending";
+                state.status = FetchStatus.Pending;
                 state.error = null;
             })
             .addCase(
                 getProjects.fulfilled,
                 (state, action: PayloadAction<ProjectSummary[]>) => {
-                    state.status = "fulfilled";
-                    state.list = action.payload;
+                    state.status = FetchStatus.Fulfilled;
+                    projectsAdapter.setAll(state, action.payload);
                 }
             )
             .addCase(getProjects.rejected, (state, action) => {
-                state.status = "rejected";
+                state.status = FetchStatus.Rejected;
                 state.error = action.payload as string;
             })
             .addCase(
@@ -168,27 +166,31 @@ const projectsSlice = createSlice({
             })
 
             .addCase(getProjectById.pending, (state) => {
-                state.status = "pending";
+                state.status = FetchStatus.Pending;
                 state.error = null;
             })
             .addCase(
                 getProjectById.fulfilled,
                 (state, action: PayloadAction<ProjectDetail>) => {
-                    state.status = "fulfilled";
+                    state.status = FetchStatus.Fulfilled;
                     state.current = action.payload;
                 }
             )
             .addCase(getProjectById.rejected, (state, action) => {
-                state.status = "rejected";
+                state.status = FetchStatus.Rejected;
                 state.error = action.payload as string;
             });
     },
 });
 
-export const {clearCurrentProject} = projectsSlice.actions;
+// ─────────────────────────────────── selectors
+const projectsSelectors = projectsAdapter.getSelectors(
+    (state: { projects: ProjectsState }) => state.projects
+);
+
 
 export const selectProjects = (state: { projects: ProjectsState }) =>
-    state.projects.list;
+    projectsSelectors.selectAll(state);
 export const selectCurrentProject = (state: { projects: ProjectsState }) =>
     state.projects.current;
 export const selectProjectsStatus = (state: { projects: ProjectsState }) =>
