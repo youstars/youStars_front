@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useCallback, useState } from "react";
+import React, { useEffect, useMemo, useCallback } from "react";
 import styles from "./ProjectProfile.module.scss";
 import Avatar from "shared/UI/Avatar/Avatar";
 import Checklist from "shared/assets/icons/stripesY.svg";
@@ -12,124 +12,54 @@ import AvatarWithName from "shared/UI/AvatarWithName/AvatarWithName";
 import ProjectFiles from "shared/UI/ProjectFiles/ProjectFiles";
 import CustomTable from "shared/UI/CustomTable/CustomTable";
 import { useParams } from "react-router-dom";
-import { useAppDispatch } from "shared/hooks/useAppDispatch";
-import { useChatService } from "shared/hooks/useWebsocket";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import {
-  getProjectById,
-  updateProject,
-  updateProjectStatus,
-  selectCurrentProject,
-  selectProjectsError,
-  selectProjectsStatus,
-} from "shared/store/slices/projectsSlice";
 import user_icon from "shared/images/user_icon.svg";
 import { TrackerNotes } from "../ClientProfile/components/TrackerNotes/TrackerNotes";
 import { uploadProjectFile } from "shared/api/files";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Button } from "shared/index";
 import EditButton from "shared/UI/EditButton/EditButtton";
+
+import { useProject, ProjectUpdatePayload } from "./hooks/useProject";
+import { useProjectForm } from "./hooks/useProjectForm";
+import { useProjectChat } from "./hooks/useProjectChat";
 
 export default function ProjectProfile() {
   const { id } = useParams();
-  const dispatch = useAppDispatch();
+  const { project, loading, error, update } = useProject(id);
 
-  const project = useSelector(selectCurrentProject);
-  const status = useSelector(selectProjectsStatus);
-  const error = useSelector(selectProjectsError);
-  const loading = status === "pending";
+  const {
+    isEditing,
+    setIsEditing,
+    form,
+    handleChange,
+    dirtyKeys,
+  } = useProjectForm(project);
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    goal: "",
-    solving_problems: "",
-    product_or_service: "",
-    extra_wishes: "",
-    start_date: "",
-    status: "",
-    status_start_date: "",
-    budget: "",
-    deadline: "",
-  });
-  useEffect(() => {
-    if (id) {
-      dispatch(getProjectById(id));
-    }
-  }, [id, dispatch]);
+  const { openProjectChat } = useProjectChat(project?.id);
 
+  /* ---------- error toast ---------- */
   useEffect(() => {
     if (error) {
       toast.error(error);
     }
   }, [error]);
 
-  useEffect(() => {
-    if (project) {
-      setFormData({
-        name: project.name || "",
-        goal: project.goal || "",
-        solving_problems: project.solving_problems || "",
-        product_or_service: project.product_or_service || "",
-        extra_wishes: project.extra_wishes || "",
-        start_date: project.start_date || "",
-        status: project.status || "",
-        status_start_date: project.updated_at || "",
-        budget: project.budget || "",
-        deadline: project.deadline || "",
-      });
-    }
-  }, [project]);
-
+  /* ---------- save ---------- */
   const handleSave = async () => {
-    if (!project?.id) return;
-
-    const allowedKeys: (keyof typeof formData)[] = [
-      "name",
-      "goal",
-      "solving_problems",
-      "product_or_service",
-      "extra_wishes",
-      "start_date",
-      "status",
-      "budget",
-      "deadline",
-    ];
-
-    const updates: Partial<typeof formData> = {};
-
-    allowedKeys.forEach((key) => {
-      const formValue = formData[key];
-      const originalValue = project?.[key as keyof typeof project];
-
-      const isDifferent =
-        typeof formValue === "string"
-          ? formValue.trim() !== (originalValue?.toString().trim() ?? "")
-          : formValue !== originalValue;
-
-      if (isDifferent) {
-        updates[key] = formValue;
-      }
+    const updates: Partial<ProjectUpdatePayload> = {};
+    dirtyKeys.forEach((key) => {
+      // приведение из‑за union у status
+      (updates as any)[key] = form[key];
     });
 
-    if (
-      formData.status_start_date.trim() !==
-      (project.updated_at?.toString().trim() ?? "")
-    ) {
-      updates.status_start_date = formData.status_start_date;
+    if (Object.keys(updates).length) {
+      await update(updates);
+      toast.success("Проект обновлён");
     }
-
-    if (updates.budget) {
-      updates.budget = updates.budget.toString();
-    }
-
-    await dispatch(updateProject({ id: project.id, updates }));
-    toast.success("Проект обновлён");
     setIsEditing(false);
   };
 
+  /* ---------- file upload ---------- */
   const handleFileSelect = useCallback(
     async (file: File) => {
       if (!project?.id) {
@@ -145,41 +75,8 @@ export default function ProjectProfile() {
     },
     [project?.id]
   );
-  const { chats, setActiveChat } = useChatService();
-  const navigate = useNavigate();
-  const handleOpenProjectChat = () => {
-    if (!project?.id) return;
-    chats.forEach((chat) => {
-      console.log(
-        `chat_id: ${chat.id}, chat_type: ${chat.chat_type}, project: ${
-          chat.project
-        } (${typeof chat.project})`
-      );
-    });
 
-    const chat = chats.find(
-      (chat: any) =>
-        chat.chat_type === "admin-project" &&
-        Number(chat.project) === Number(project.id)
-    );
-
-    if (chat) {
-      console.log("Чат найден:", chat.id);
-      setActiveChat(chat.id);
-      navigate("/manager/chats");
-    } else {
-      console.warn("Чат проекта не найден");
-    }
-  };
-
-
-  const handleStatusToggle = async () => {
-    if (!project?.id || !project.status) return;
-    const newStatus =
-      project.status === "in_progress" ? "completed" : "in_progress";
-    await dispatch(updateProjectStatus({ id: project.id, status: newStatus }));
-  };
-
+  /* ---------- table columns ---------- */
   const specialistColumns: TableColumn<any>[] = useMemo(
     () => [
       {
@@ -221,6 +118,7 @@ export default function ProjectProfile() {
     []
   );
 
+  /* ---------- loading ---------- */
   if (loading || !project) {
     return (
       <div className={styles.loader}>
@@ -230,8 +128,10 @@ export default function ProjectProfile() {
     );
   }
 
+  /* ---------- render ---------- */
   return (
     <div className={styles.main}>
+      {/* ===== HEADER ===== */}
       <div className={styles.header}>
         <div className={styles.upperHeader}>
           <div className={styles.leftBlock}>
@@ -243,11 +143,9 @@ export default function ProjectProfile() {
                 {isEditing ? (
                   <TextAreaField
                     label=""
-                    value={formData.name}
+                    value={form.name}
                     readOnly={false}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, name: e.target.value }))
-                    }
+                    onChange={(e) => handleChange("name", e.target.value)}
                   />
                 ) : (
                   <h2>{project?.name || "Название проекта"}</h2>
@@ -277,20 +175,17 @@ export default function ProjectProfile() {
               </div>
             </div>
           </div>
-
-          <div></div>
         </div>
 
+        {/* ===== META ===== */}
         <div className={styles.middleBlock}>
           <div className={styles.infoGroup}>
             <p className={styles.label}>Статус:</p>
             {isEditing ? (
               <select
                 className={styles.input}
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, status: e.target.value }))
-                }
+                value={form.status}
+                onChange={(e) => handleChange("status", e.target.value)}
               >
                 <option value="in_progress">В работе</option>
                 <option value="completed">Завершён</option>
@@ -308,12 +203,9 @@ export default function ProjectProfile() {
               <input
                 type="date"
                 className={styles.input}
-                value={formData.status_start_date.slice(0, 10)}
+                value={form.status_start_date.slice(0, 10)}
                 onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    status_start_date: e.target.value,
-                  }))
+                  handleChange("status_start_date", e.target.value)
                 }
               />
             ) : (
@@ -331,13 +223,8 @@ export default function ProjectProfile() {
               <input
                 type="number"
                 className={styles.input}
-                value={formData.budget}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    budget: e.target.value,
-                  }))
-                }
+                value={form.budget}
+                onChange={(e) => handleChange("budget", e.target.value)}
               />
             ) : (
               <p className={styles.value}>
@@ -354,13 +241,8 @@ export default function ProjectProfile() {
               <input
                 type="date"
                 className={styles.input}
-                value={formData.deadline.slice(0, 10)}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    deadline: e.target.value,
-                  }))
-                }
+                value={form.deadline.slice(0, 10)}
+                onChange={(e) => handleChange("deadline", e.target.value)}
               />
             ) : (
               <p className={styles.value}>
@@ -372,25 +254,21 @@ export default function ProjectProfile() {
           </div>
         </div>
 
+        {/* ===== QUICK ACTIONS ===== */}
         <div className={styles.buttons}>
-          <IconButton
-            icon={Checklist}
-            alt="checklist"
-            size="lg"
-            border="none"
-          />
+          <IconButton icon={Checklist} alt="checklist" size="lg" border="none" />
           <IconButton
             icon={GroupChat}
             alt="group chat"
             size="lg"
             border="none"
-            onClick={handleOpenProjectChat}
+            onClick={openProjectChat}
           />
-
           <IconButton icon={Chat} alt="chat" size="lg" border="none" />
         </div>
       </div>
 
+      {/* ===== CLIENT / GOALS ===== */}
       <div className={styles.projectDetails}>
         <div className={styles.clientCard}>
           <div className={styles.clientHeader}>
@@ -421,50 +299,36 @@ export default function ProjectProfile() {
         <div className={styles.projectFields}>
           <TextAreaField
             label="Задача проекта"
-            value={formData.goal}
+            value={form.goal}
             readOnly={!isEditing}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, goal: e.target.value }))
-            }
+            onChange={(e) => handleChange("goal", e.target.value)}
           />
           <TextAreaField
             label="Решаемые проблемы"
-            value={formData.solving_problems}
+            value={form.solving_problems}
             readOnly={!isEditing}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                solving_problems: e.target.value,
-              }))
-            }
+            onChange={(e) => handleChange("solving_problems", e.target.value)}
           />
           <TextAreaField
             label="Продукт или услуга"
-            value={formData.product_or_service}
+            value={form.product_or_service}
             readOnly={!isEditing}
             onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                product_or_service: e.target.value,
-              }))
+              handleChange("product_or_service", e.target.value)
             }
           />
           <TextAreaField
             label="Дополнительные пожелания"
-            value={formData.extra_wishes}
+            value={form.extra_wishes}
             readOnly={!isEditing}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                extra_wishes: e.target.value,
-              }))
-            }
+            onChange={(e) => handleChange("extra_wishes", e.target.value)}
           />
         </div>
       </div>
 
       <TrackerNotes />
 
+      {/* ===== TEAM ===== */}
       <div className={styles.teamProject}>
         <h1>Команда проекта</h1>
         <CustomTable
@@ -481,11 +345,9 @@ export default function ProjectProfile() {
         />
       </div>
 
+      {/* ===== FILES ===== */}
       <div className={styles.projectFiles}>
-        <ProjectFiles
-          files={project?.file || []}
-          onFileSelect={handleFileSelect}
-        />
+        <ProjectFiles files={project?.file || []} onFileSelect={handleFileSelect} />
       </div>
 
       <ToastContainer position="bottom-right" />
