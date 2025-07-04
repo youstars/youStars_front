@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { getProjectById } from "shared/store/slices/projectsSlice";
 import {
   getTasks,
-  updateTaskFields,
-  optimisticUpdateTaskStatus,
   selectTasks,
 } from "shared/store/slices/tasksSlice";
 import { AppDispatch } from "shared/store";
@@ -16,6 +14,9 @@ import { Task, TaskStatus } from "shared/types/tasks";
 import { useOutletContext } from "react-router-dom";
 import { getProjectTasks } from "shared/store/slices/projectTasksSlice";
 import SideTask from "widgets/SideBar/SideTask/SideTask";
+
+import { useResponsiveColumns } from "shared/hooks/useResponsiveColumns";
+import { useDragTask } from "shared/hooks/useDragTask";
 
 const orderedStatusKeys: TaskStatus[] = [
   "to_do",
@@ -131,16 +132,6 @@ const Kanban: React.FC = () => {
   const tasks = useSelector(selectTasks);
   const [startIndex, setStartIndex] = useState(0);
   // Сколько колонок помещается по ширине окна (динамический расчёт)
-  const [columnsCount, setColumnsCount] = useState(() => {
-    const COLUMN_WIDTH = 300; // px — ширина одной колонки (совпадает с CSS)
-    if (typeof window !== "undefined") {
-      return Math.min(
-        orderedStatusKeys.length,
-        Math.max(1, Math.floor(window.innerWidth / COLUMN_WIDTH))
-      );
-    }
-    return 1; // SSR fallback
-  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hoveredStatus, setHoveredStatus] = useState<TaskStatus | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -153,23 +144,9 @@ const Kanban: React.FC = () => {
     );
   }, [dispatch]);
 
-  // перерасчёт columnsCount при ресайзе
-  useEffect(() => {
-    const COLUMN_WIDTH_PX = 300; // px — ширина одной колонки
-    const updateCount = () => {
-      const count = Math.max(
-        1,
-        Math.floor(window.innerWidth / COLUMN_WIDTH_PX)
-      );
-      setColumnsCount(
-        count > orderedStatusKeys.length ? orderedStatusKeys.length : count
-      );
-    };
-    updateCount(); // первичный расчёт
-    window.addEventListener("resize", updateCount);
-    return () => window.removeEventListener("resize", updateCount);
-  }, []);
 
+
+  const columnsCount = useResponsiveColumns(orderedStatusKeys.length, 300);
   useEffect(() => {
     if (startIndex > orderedStatusKeys.length - columnsCount) {
       setStartIndex(Math.max(0, orderedStatusKeys.length - columnsCount));
@@ -201,45 +178,15 @@ const Kanban: React.FC = () => {
     }
   });
 
-  const handleDragOver = (
-    e: React.DragEvent<HTMLDivElement>,
-    status: TaskStatus
-  ) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    if (hoveredStatus !== status) {
-      setHoveredStatus(status);
-    }
-  };
-
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-      setHoveredStatus(null);
-    }
-  };
-
-  const handleDrop = async (
-    e: React.DragEvent<HTMLDivElement>,
-    newStatus: TaskStatus
-  ) => {
-    e.preventDefault();
-    setHoveredStatus(null);
-
-    const taskId = Number(e.dataTransfer.getData("task-id"));
-    if (!taskId) return;
-
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task || task.status === newStatus) return;
-
-    dispatch(optimisticUpdateTaskStatus({ id: taskId, status: newStatus }));
-    try {
-      await dispatch(
-        updateTaskFields({ id: taskId, changes: { status: newStatus } })
-      ).unwrap();
-    } catch (err) {
-      console.error("Ошибка при смене статуса:", err);
-    }
-  };
+  const {
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+  } = useDragTask({
+    tasks,
+    dispatch,
+    setHoveredStatus,
+  });
   useEffect(() => {
     if (currentProjectId) {
       dispatch(getProjectTasks(currentProjectId));
@@ -280,9 +227,9 @@ const Kanban: React.FC = () => {
               className={`${classes.statusColumn} ${
                 hoveredStatus === statusKey ? classes.hovered : ""
               }`}
-              onDragOver={(e) => handleDragOver(e, statusKey)}
+              onDragOver={handleDragOver(statusKey)}
               onDragLeave={handleDragLeave}
-              onDrop={(e) => handleDrop(e, statusKey)}
+              onDrop={handleDrop(statusKey)}
             >
               <div className={classes.statusHeader}>
                 <h3>
