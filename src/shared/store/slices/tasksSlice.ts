@@ -2,15 +2,18 @@ import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
 import {Task, TaskStatus} from "shared/types/tasks";
 import axiosInstance from "shared/api/api";
 
+
 export const getTasks = createAsyncThunk<
     { results: Task[] },
     void,
     { state: { tasks: TasksState } }
 >(
     "tasks/getTasks",
-    async (_, {rejectWithValue}) => {
+    async (_, {rejectWithValue, signal}) => {
         try {
-            const response = await axiosInstance.get<{ results: Task[] }>("/task_specialist/");
+            const response = await axiosInstance.get<{ results: Task[] }>("/task_specialist/", {
+                signal,
+            });
             return response.data;
         } catch (error: any) {
             console.error("Error fetching tasks:", error);
@@ -42,12 +45,13 @@ export const updateTaskFields = createAsyncThunk(
   "tasks/updateFields",
   async (
     { id, changes }: { id: number; changes: Partial<Task> },
-    { rejectWithValue }
+    { rejectWithValue, signal }
   ) => {
     try {
       const response = await axiosInstance.patch<Task>(
         `/task_specialist/${id}/`,
-        changes
+        changes,
+        { signal }
       );
       return response.data;
     } catch (error: any) {
