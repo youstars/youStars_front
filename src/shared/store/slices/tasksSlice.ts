@@ -38,77 +38,25 @@ export const createTask = createAsyncThunk(
     }
 );
 
-export const updateTaskDeadline = createAsyncThunk(
-    "tasks/updateDeadline",
-    async ({id, end_date}: { id: number; end_date: string }, {rejectWithValue}) => {
-        try {
-            const response = await axiosInstance.patch<Task>(`/task_students/${id}/`, {end_date});
-            return response.data;
-        } catch (error: any) {
-            console.error("Error updating deadline:", error);
-            return rejectWithValue(error.response?.data || "Ошибка при сохранении дедлайна");
-        }
+export const updateTaskFields = createAsyncThunk(
+  "tasks/updateFields",
+  async (
+    { id, changes }: { id: number; changes: Partial<Task> },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axiosInstance.patch<Task>(
+        `/task_specialist/${id}/`,
+        changes
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Error updating task fields:", error);
+      return rejectWithValue(
+        error.response?.data || "Ошибка при обновлении задачи"
+      );
     }
-);
-
-export const updateTaskStatus = createAsyncThunk(
-    "tasks/updateStatus",
-    async ({id, status}: { id: number; status: TaskStatus }, {rejectWithValue}) => {
-        try {
-            const response = await axiosInstance.patch<Task>(`/task_specialist/${id}/`, {status});
-            return response.data;
-        } catch (error: any) {
-            console.error("Error updating task status:", error);
-            return rejectWithValue(error.response?.data || "Ошибка при обновлении статуса");
-        }
-    }
-);
-
-export const updateTask = createAsyncThunk(
-    "tasks/updateTask",
-    async ({id, data}: { id: number; data: Partial<Task> }, {rejectWithValue}) => {
-        try {
-            const response = await axiosInstance.patch<Task>(`/task_specialist/${id}/`, data);
-            return response.data;
-        } catch (error: any) {
-            console.error("Error updating task:", error);
-            return rejectWithValue(error.response?.data || "Ошибка при обновлении задачи");
-        }
-    }
-);
-
-/** PATCH: изменить оценку времени (estimated_time) */
-export const updateTaskEstimateTime = createAsyncThunk(
-    "tasks/updateEstimateTime",
-    async (
-        {id, estimated_time}: { id: number; estimated_time: number },
-        {rejectWithValue}
-    ) => {
-        try {
-            const response = await axiosInstance.patch<Task>(`/task_specialist/${id}/`, {estimated_time});
-            return response.data;
-        } catch (error: any) {
-            console.error("Error updating estimated time:", error);
-            return rejectWithValue(error.response?.data || "Ошибка при обновлении оценки времени");
-        }
-    }
-);
-
-/** PATCH: изменить список назначенных специалистов */
-export const updateTaskSpecialists = createAsyncThunk(
-    "tasks/updateSpecialists",
-    async (
-        {id, assigned_specialists}: { id: number; assigned_specialists: number[] },
-        {rejectWithValue}
-    ) => {
-        try {
-            const response = await axiosInstance.patch<Task>(`/task_specialist/${id}/`, {assigned_specialists});
-            return response.data;
-        } catch (error: any) {
-            console.error("Error updating specialists list:", error);
-            return rejectWithValue(error.response?.data || "Ошибка при обновлении специалистов");
-        }
-    }
+  }
 );
 
 export const getTaskById = createAsyncThunk(
@@ -171,50 +119,47 @@ const tasksSlice = createSlice({
             .addCase(createTask.fulfilled, (state, action) => {
                 state.tasks.results.push(action.payload);
             })
-            .addCase(updateTaskDeadline.fulfilled, (state, action) => {
-                const updatedTask = action.payload;
-                const index = state.tasks.results.findIndex((task) => task.id === updatedTask.id);
-                if (index !== -1) {
-                    state.tasks.results[index] = {...state.tasks.results[index], ...updatedTask};
-                }
-            })
-            .addCase(updateTaskEstimateTime.fulfilled, (state, action) => {
-                const updatedTask = action.payload;
-                const index = state.tasks.results.findIndex((task) => task.id === updatedTask.id);
-                if (index !== -1) {
-                    state.tasks.results[index] = {...state.tasks.results[index], ...updatedTask};
-                }
-            })
-            .addCase(updateTaskSpecialists.fulfilled, (state, action) => {
-                const updatedTask = action.payload;
-                const index = state.tasks.results.findIndex((task) => task.id === updatedTask.id);
-                if (index !== -1) {
-                    state.tasks.results[index] = {...state.tasks.results[index], ...updatedTask};
-                }
-            })
-            .addCase(updateTaskStatus.pending, (state, action) => {
-                const id = (action.meta.arg as { id: number }).id;
-                state.updatingTaskIds.push(id);
-            })
-            .addCase(updateTaskStatus.fulfilled, (state, action) => {
-                const updatedTask = action.payload;
-                const index = state.tasks.results.findIndex((task) => task.id === updatedTask.id);
-                if (index !== -1) {
-                    state.tasks.results[index] = {...state.tasks.results[index], ...updatedTask};
-                }
-                state.updatingTaskIds = state.updatingTaskIds.filter((id) => id !== updatedTask.id);
-            })
-            .addCase(updateTaskStatus.rejected, (state, action) => {
-                const {id, status: originalStatus} = action.meta.arg as {
+            .addCase(updateTaskFields.pending, (state, action) => {
+                const { id, changes } = action.meta.arg as {
                     id: number;
-                    status: TaskStatus;
+                    changes: Partial<Task>;
                 };
-                state.updatingTaskIds = state.updatingTaskIds.filter((taskId) => taskId !== id);
+                // если меняем статус, включаем индикатор «updating»
+                if ("status" in changes) {
+                    state.updatingTaskIds.push(id);
+                }
+            })
+            .addCase(updateTaskFields.fulfilled, (state, action) => {
+                const updatedTask = action.payload;
+                const index = state.tasks.results.findIndex(
+                    (task) => task.id === updatedTask.id
+                );
+                if (index !== -1) {
+                    state.tasks.results[index] = {
+                        ...state.tasks.results[index],
+                        ...updatedTask,
+                    };
+                }
+                // убрать id из updating
+                state.updatingTaskIds = state.updatingTaskIds.filter(
+                    (taskId) => taskId !== updatedTask.id
+                );
+            })
+            .addCase(updateTaskFields.rejected, (state, action) => {
+                const { id, changes } = action.meta.arg as {
+                    id: number;
+                    changes: Partial<Task>;
+                };
                 state.error = action.payload as string;
-
-                const taskIndex = state.tasks.results.findIndex((task) => task.id === id);
-                if (taskIndex !== -1) {
-                    state.tasks.results[taskIndex].status = originalStatus;
+                state.updatingTaskIds = state.updatingTaskIds.filter(
+                    (taskId) => taskId !== id
+                );
+                // если падение было при смене статуса — откатить
+                if ("status" in changes) {
+                    const taskIndex = state.tasks.results.findIndex((task) => task.id === id);
+                    if (taskIndex !== -1) {
+                        state.tasks.results[taskIndex].status = changes.status as TaskStatus;
+                    }
                 }
             })
             .addCase(getTaskById.fulfilled, (state, action) => {

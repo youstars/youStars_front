@@ -10,7 +10,7 @@ import {useAppSelector} from "shared/hooks/useAppSelector";
 import {
     getTaskById,
     selectTaskById,
-    updateTask,
+    updateTaskFields,
 } from "shared/store/slices/tasksSlice";
 import ModalCalendar from "widgets/Modals/ModalCalendar/ModalCalendar";
 import ChatsIcon from "shared/assets/icons/ChatsY.svg";
@@ -84,9 +84,9 @@ const SideTask: React.FC<Props> = ({id, isOpen, toggleSidebar}) => {
 
     const handleSave = useCallback(() => {
         dispatch(
-            updateTask({
+            updateTaskFields({
                 id,
-                data: {
+                changes: {
                     title,
                     description,
                     notice,

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getProjectById } from "shared/store/slices/projectsSlice";
 import {
   getTasks,
-  updateTaskStatus,
+  updateTaskFields,
   optimisticUpdateTaskStatus,
 } from "shared/store/slices/tasksSlice";
 import { AppDispatch, RootState } from "shared/store";
@@ -235,7 +235,7 @@ const Kanban: React.FC = () => {
     dispatch(optimisticUpdateTaskStatus({ id: taskId, status: newStatus }));
     try {
       await dispatch(
-        updateTaskStatus({ id: taskId, status: newStatus })
+        updateTaskFields({ id: taskId, changes: { status: newStatus } })
       ).unwrap();
     } catch (err) {
       console.error("Ошибка при смене статуса:", err);
