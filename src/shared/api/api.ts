@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import type { AxiosRequestHeaders } from "axios";
 
 
 const axiosInstance = axios.create({
@@ -7,15 +8,21 @@ const axiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,  
+  withCredentials: true,
 });
 
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = Cookies.get('access_token');
+  const token = Cookies.get("access_token");
+
+  const headers: AxiosRequestHeaders = (config.headers ||
+    {}) as AxiosRequestHeaders;
+
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    headers["Authorization"] = `Bearer ${token}`;
   }
+
+  config.headers = headers;
   return config;
 });
 
