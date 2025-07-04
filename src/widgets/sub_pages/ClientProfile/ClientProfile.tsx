@@ -23,6 +23,7 @@ import ProjectFiles, {FileItem} from "shared/UI/ProjectFiles/ProjectFiles";
 import {deleteFileById, uploadClientFile} from "shared/api/files";
 import {useFileManager} from "shared/hooks/useFileManager";
 import ClientMetrics from "widgets/sub_pages/ClientProfile/components/ClientMetrics/ClientMetrics";
+import BusinessStats from "widgets/sub_pages/ClientProfile/components/BusinessStats/BusinessStats";
 
 const employeeOptions = [
     "Not on the market",
@@ -155,7 +156,8 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
         phone_number: "",
         email: "",
         tg_nickname: "",
-        full_name: "",
+        first_name: "",
+        last_name: "",
     });
 
     useEffect(() => {
@@ -175,7 +177,8 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
             phone_number: client.custom_user?.phone_number ?? "",
             email: client.custom_user?.email ?? "",
             tg_nickname: client.custom_user?.tg_nickname ?? "",
-            full_name: client.custom_user?.full_name ?? "",
+            first_name: client.custom_user?.first_name ?? "",
+            last_name: client.custom_user?.last_name ?? "",
         });
     }, [client]);
 
@@ -203,7 +206,7 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
 
             // ---------- diff generation ----------
             const userDiff: Record<string, any> = {};
-            ["phone_number", "email", "tg_nickname", "full_name"].forEach((f) => {
+            ["phone_number", "email", "tg_nickname", "first_name", "last_name"].forEach((f) => {
                 const oldVal = client.custom_user?.[f] ?? "";
                 const newVal = form[f as keyof typeof form];
                 if (newVal !== oldVal) {
@@ -315,7 +318,8 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
                     <ClientHeader
                         edit={edit}
                         form={{
-                            full_name: form.full_name,
+                            first_name: form.first_name,
+                            last_name: form.last_name,
                             position: form.position,
                             business_name: form.business_name,
                         }}
@@ -353,84 +357,27 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
                 <BusinessInfo edit={edit} form={form} onChange={onChange} client={client}/>
 
                 {/* ===== статистика-кнопки ===== */}
-                <div className={styles.businessStatistics}>
-                    {/* география */}
-                    <div className={styles.businessStatBlock}>
-                        <h4 className={styles.businessTitle}>География</h4>
-                        {edit ? (
-                            <input
-                                className={styles.inputFieldBottom}
-                                value={form.geography}
-                                onChange={onChange("geography")}
-                                placeholder="География"
-                            />
-                        ) : (
-                            <p className={styles.businessStatValue}>
-                                {client.geography || "Не указано"}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* сотрудники */}
-                    <div className={styles.businessStatBlock}>
-                        <h4 className={styles.businessTitle}>Количество сотрудников</h4>
-                        {edit ? (
-                            <select
-                                className={styles.inputFieldBottom}
-                                value={form.employee_count}
-                                onChange={onChange("employee_count")}
-                            >
-                                {employeeOptions.map((o) => (
-                                    <option key={o}>{o}</option>
-                                ))}
-                            </select>
-                        ) : (
-                            <p className={styles.businessStatValue}>
-                                {client.employee_count || "Не указано"}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* выручка */}
-                    <div className={styles.businessStatBlock}>
-                        <h4 className={styles.businessTitle}>Годовая выручка</h4>
-                        {edit ? (
-                            <select
-                                className={styles.inputFieldBottom}
-                                value={form.revenue}
-                                onChange={onChange("revenue")}
-                            >
-                                {revenueOptions.map((o) => (
-                                    <option key={o}>{o}</option>
-                                ))}
-                            </select>
-                        ) : (
-                            <p className={styles.businessStatValue}>
-                                {client.revenue || "Не указано"}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* лет на рынке */}
-                    <div className={styles.businessStatBlock}>
-                        <h4 className={styles.businessTitle}>Лет на рынке</h4>
-                        {edit ? (
-                            <select
-                                className={styles.inputFieldBottom}
-                                value={form.years_on_market}
-                                onChange={onChange("years_on_market")}
-                            >
-                                {yearsOptions.map((o) => (
-                                    <option key={o}>{o}</option>
-                                ))}
-                            </select>
-                        ) : (
-                            <p className={styles.businessStatValue}>
-                                {client.years_on_market || "Не указано"}
-                            </p>
-                        )}
-                    </div>
-                </div>
+                <BusinessStats
+                    edit={edit}
+                    form={{
+                        geography: form.geography,
+                        employee_count: form.employee_count,
+                        revenue: form.revenue,
+                        years_on_market: form.years_on_market,
+                    }}
+                    client={{
+                        geography: client.geography,
+                        employee_count: client.employee_count,
+                        revenue: client.revenue,
+                        years_on_market: client.years_on_market,
+                    }}
+                    onChange={onChange}
+                    options={{
+                        employee: employeeOptions,
+                        revenue: revenueOptions,
+                        years: yearsOptions,
+                    }}
+                />
             </div>
 
             {/* трек-заметки и проекты */}

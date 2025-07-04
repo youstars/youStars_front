@@ -6,7 +6,8 @@ import styles from "../../ClientProfile.module.scss"; // файл тот же, �
 export interface ClientHeaderProps {
     edit: boolean;
     form: {
-        full_name: string;
+        first_name: string;
+        last_name: string;
         position: string;
         business_name: string;
     };
@@ -14,7 +15,7 @@ export interface ClientHeaderProps {
     rating: number;
     saving?: boolean;
     onChange: (
-        field: "full_name" | "position" | "business_name"
+        field: "first_name" | "last_name" | "position" | "business_name"
     ) => (e: React.ChangeEvent<HTMLInputElement>) => void;
     onAvatarUpload: (file: File) => void;
     onEdit: () => void;
@@ -52,9 +53,15 @@ const ClientHeader: React.FC<ClientHeaderProps> = React.memo(
                     <>
                         <input
                             className={styles.inputField}
-                            value={form.full_name}
-                            onChange={onChange("full_name")}
-                            placeholder="ФИО"
+                            value={form.first_name}
+                            onChange={onChange("first_name")}
+                            placeholder="Имя"
+                        />
+                        <input
+                            className={styles.inputField}
+                            value={form.last_name}
+                            onChange={onChange("last_name")}
+                            placeholder="Фамилия"
                         />
                         <input
                             className={styles.inputField}
@@ -71,7 +78,9 @@ const ClientHeader: React.FC<ClientHeaderProps> = React.memo(
                     </>
                 ) : (
                     <>
-                        <h3 className={styles.clientName}>{form.full_name || "—"}</h3>
+                        <h3 className={styles.clientName}>
+                            {(form.first_name + " " + form.last_name).trim() || "—"}
+                        </h3>
                         <p className={styles.clientPosition}>{form.position || "—"}</p>
                         <p className={styles.clientCompany}>
                             {form.business_name || "Компания не указана"}

@@ -1,5 +1,6 @@
 import React from "react";
-import styles from "../ClientProfile.module.scss"; // используем общий SCSS-модуль
+import styles from "../../ClientProfile.module.scss"; // используем общий SCSS-модуль
+import {formatCurrency} from "shared/helpers/formatCurrency";
 
 export interface ClientMetricsProps {
     ordersInProgress: number;
@@ -25,7 +26,7 @@ const ClientMetrics: React.FC<ClientMetricsProps> = React.memo(
                 Всего заказов: {ordersTotal ?? 0}
             </p>
             <p className={styles.clientMetric}>
-                Средняя стоимость: {Math.round(orderCostAvg) ?? 0} ₽
+                Средняя стоимость: {formatCurrency(orderCostAvg)}
             </p>
             <p className={styles.clientMetric}>Настроение: {mood}</p>
         </div>
