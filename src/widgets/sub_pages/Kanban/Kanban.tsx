@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getProjectById } from "shared/store/slices/projectsSlice";
 import {
@@ -139,10 +139,12 @@ const Kanban: React.FC = () => {
     ? tasks.filter((task) => task.project === currentProjectId)
     : tasks;
   useEffect(() => {
-    dispatch(getTasks()).catch((err) =>
-      console.error("Ошибка при получении задач:", err)
-    );
-  }, [dispatch]);
+    if (tasks.length === 0) {
+      dispatch(getTasks()).catch((err) =>
+        console.error("Ошибка при получении задач:", err)
+      );
+    }
+  }, [dispatch, tasks.length]);
 
 
 
@@ -155,28 +157,32 @@ const Kanban: React.FC = () => {
 
   console.log(tasks);
   useEffect(() => {
-    if (currentProjectId) {
+    if (currentProjectId && projectTasks.length === 0) {
       dispatch(getProjectTasks(currentProjectId));
       dispatch(getProjectById(currentProjectId));
     }
-  }, [dispatch, currentProjectId]);
+  }, [dispatch, currentProjectId, projectTasks.length]);
 
-  const groupedTasks: Record<TaskStatus, Task[]> = {
-    to_do: [],
-    in_progress: [],
-    completed: [],
-    help: [],
-    pending: [],
-    review: [],
-    canceled: [],
-  };
+  const groupedTasks = useMemo(() => {
+    const map: Record<TaskStatus, Task[]> = {
+      to_do: [],
+      in_progress: [],
+      completed: [],
+      help: [],
+      pending: [],
+      review: [],
+      canceled: [],
+    };
 
-  projectTasks.forEach((task) => {
-    const statusKey = task.status as TaskStatus;
-    if (groupedTasks[statusKey]) {
-      groupedTasks[statusKey].push(task);
-    }
-  });
+    projectTasks.forEach((task) => {
+      const statusKey = task.status as TaskStatus;
+      if (map[statusKey]) {
+        map[statusKey].push(task);
+      }
+    });
+
+    return map;
+  }, [projectTasks]);
 
   const {
     handleDragOver,
@@ -187,11 +193,6 @@ const Kanban: React.FC = () => {
     dispatch,
     setHoveredStatus,
   });
-  useEffect(() => {
-    if (currentProjectId) {
-      dispatch(getProjectTasks(currentProjectId));
-    }
-  }, [dispatch, currentProjectId]);
 
   const canScrollLeft = startIndex > 0;
   const canScrollRight = startIndex < orderedStatusKeys.length - columnsCount;
