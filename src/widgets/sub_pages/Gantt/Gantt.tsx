@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState, useMemo} from "react";
+import React, {useEffect, useRef, useState, useMemo, useCallback} from "react";
 import {MONTHS} from "./constants";
 import {isToday, isWeekend, calculateTaskPosition} from "./utils";
 import "./Gantt.scss";
@@ -111,7 +111,7 @@ const Gantt: React.FC = () => {
         }
     };
 
-    const getDaysArray = () => {
+    const getDaysArray = useCallback(() => {
         const start = new Date(currentDate.getFullYear(), 0, 1);
         const end = new Date(currentDate.getFullYear(), 11, 31);
         const days = [];
@@ -121,7 +121,7 @@ const Gantt: React.FC = () => {
             day.setDate(day.getDate() + 1);
         }
         return days;
-    };
+    }, [currentDate]);
 
     const getStatusLabel = (status: string) => {
         return ["to_do", "in_progress", "review"].includes(status) ? "Статус открыт" : "Статус закрыт";
@@ -137,7 +137,7 @@ const Gantt: React.FC = () => {
       return (s?.name ?? s?.username ?? s?.email ?? String(s?.id ?? "")).toString();
     };
 
-    const days = useMemo(() => getDaysArray(), [currentDate]);
+    const days = useMemo(() => getDaysArray(), [getDaysArray]);
 
     const hasAutoScrolled = useRef(false);
 
@@ -171,7 +171,7 @@ const Gantt: React.FC = () => {
 
             hasAutoScrolled.current = true;
         }
-    }, [tasks, days]);
+    }, [tasks, days, currentDate]);
 
     if (!currentProjectId) return <p>Выберите проект</p>;
     if (status === "pending") return <p>Загрузка задач...</p>;
