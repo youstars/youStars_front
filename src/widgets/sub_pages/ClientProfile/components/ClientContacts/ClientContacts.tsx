@@ -1,7 +1,7 @@
 import Phone from "shared/images/clientImgs/phone.svg";
 import Mail from "shared/images/clientImgs/mail.svg";
 import Web from "shared/images/clientImgs/network.svg";
-import styles from "../ClientProfile.module.scss";
+import styles from "../../ClientProfile.module.scss";
 
 interface ClientContactsProps {
     edit: boolean;

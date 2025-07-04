@@ -1,4 +1,4 @@
-import styles from "../ClientProfile.module.scss";
+import styles from "../../ClientProfile.module.scss";
 
 interface BusinessInfoProps {
     edit: boolean;

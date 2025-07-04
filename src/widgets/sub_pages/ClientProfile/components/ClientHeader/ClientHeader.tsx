@@ -1,7 +1,7 @@
 import React from "react";
 import Avatar from "shared/UI/Avatar/Avatar";
 import EditButton from "shared/UI/EditButton/EditButtton";
-import styles from "../ClientProfile.module.scss"; // файл тот же, что и раньше
+import styles from "../../ClientProfile.module.scss"; // файл тот же, что и раньше
 
 export interface ClientHeaderProps {
     edit: boolean;

@@ -12,9 +12,9 @@ import Chat from "shared/images/clientImgs/Chat.svg";
 import Write from "shared/images/clientImgs/Write.svg";
 import {useNavigate} from "react-router-dom";
 import styles from "./ClientProfile.module.scss";
-import ClientContacts from "./components/ClientContacts"
-import BusinessInfo from "./components/BusinessInfo";
-import ClientHeader from "./components/ClientHeader";
+import ClientContacts from "widgets/sub_pages/ClientProfile/components/ClientContacts/ClientContacts"
+import BusinessInfo from "widgets/sub_pages/ClientProfile/components/BusinessNotes/BusinessInfo";
+import ClientHeader from "./components/ClientHeader/ClientHeader";
 
 import {useChatService} from "shared/hooks/useWebsocket";
 import {useClientProfileData} from "shared/hooks/useClientProfileData";
