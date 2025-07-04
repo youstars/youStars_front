@@ -1,13 +1,12 @@
 import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {toast} from "react-toastify";
-import { isEmail } from "validator";
+import {isEmail} from "validator";
 import {useParams} from "react-router-dom";
 import {useAppDispatch} from "shared/hooks/useAppDispatch";
 import {useAppSelector} from "shared/hooks/useAppSelector";
 import {getClientById, updateClient} from "shared/store/slices/clientSlice";
 import {TrackerNotes} from "./components/TrackerNotes/TrackerNotes";
 import {ProjectBlock} from "./components/ProjectBlock/ProjectBlock";
-import Avatar from "shared/UI/Avatar/Avatar";
 import Spinner from "shared/UI/Spinner/Spinner";
 import Chat from "shared/images/clientImgs/Chat.svg";
 import Write from "shared/images/clientImgs/Write.svg";
@@ -15,13 +14,14 @@ import {useNavigate} from "react-router-dom";
 import styles from "./ClientProfile.module.scss";
 import ClientContacts from "./components/ClientContacts"
 import BusinessInfo from "./components/BusinessInfo";
+import ClientHeader from "./components/ClientHeader";
+
 import {useChatService} from "shared/hooks/useWebsocket";
 import {useClientProfileData} from "shared/hooks/useClientProfileData";
 import {ProjectDetail} from "shared/types/project";
 import ProjectFiles, {FileItem} from "shared/UI/ProjectFiles/ProjectFiles";
 import {deleteFileById, uploadClientFile} from "shared/api/files";
 import {useFileManager} from "shared/hooks/useFileManager";
-import EditButton from "shared/UI/EditButton/EditButtton";
 
 const employeeOptions = [
     "Not on the market",
@@ -311,77 +311,23 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
             <div className={styles.container}>
                 {/* ===== карточка клиента ===== */}
                 <div className={styles.client}>
-                    <div className={styles.clientInfo}>
-                        <div className={styles.clientAvatar}>
-                            <Avatar
-                                src={u.avatar || ""}
-                                onUpload={handleAvatarUpload}
-                            />
-
-                            <p className={styles.clientDays}>3 дня</p>
-                        </div>
-
-                        <div className={styles.clientText}>
-                            {edit ? (
-                                <input
-                                    className={styles.inputField}
-                                    value={form.full_name}
-                                    onChange={onChange("full_name")}
-                                    placeholder="ФИО"
-                                />
-                            ) : (
-                                <h3 className={styles.clientName}>{u.full_name}</h3>
-                            )}
-
-                            {edit ? (
-                                <>
-                                    <input
-                                        className={styles.inputField}
-                                        placeholder="Должность"
-                                        value={form.position}
-                                        onChange={onChange("position")}
-                                    />
-                                    <input
-                                        className={styles.inputField}
-                                        placeholder="Название компании"
-                                        value={form.business_name}
-                                        onChange={onChange("business_name")}
-                                    />
-                                </>
-                            ) : (
-                                <>
-                                    <p className={styles.clientPosition}>
-                                        {client.position || "—"}
-                                    </p>
-                                    <p className={styles.clientCompany}>
-                                        {client.business_name || "Компания не указана"}
-                                    </p>
-                                </>
-                            )}
-
-                            <p className={styles.clientRating}>
-                                Рейтинг заказчика: {client.overall_rating ?? 0}/5
-                            </p>
-
-                            <div className={styles.editButtonBlock}>
-                                {edit ? (
-                                    <>
-                                        <EditButton onClick={handleSave}>Сохранить</EditButton>
-                                        <EditButton variant="cancel" onClick={() => setEdit(false)}>
-                                            ✖ Отменить
-                                        </EditButton>
-                                    </>
-                                ) : (
-                                    <EditButton onClick={() => setEdit(true)}>
-                                        Изменить профиль
-                                    </EditButton>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* --- контакты --- */}
-                    <ClientContacts edit={edit} form={form} onChange={onChange} user={u} />
+                    <ClientHeader
+                        edit={edit}
+                        form={{
+                            full_name: form.full_name,
+                            position: form.position,
+                            business_name: form.business_name,
+                        }}
+                        avatar={u.avatar || ""}
+                        rating={client.overall_rating ?? 0}
+                        saving={saving}
+                        onChange={onChange}
+                        onAvatarUpload={handleAvatarUpload}
+                        onEdit={() => setEdit(true)}
+                        onSave={handleSave}
+                        onCancel={() => setEdit(false)}
+                    />
+                    <ClientContacts edit={edit} form={form} onChange={onChange} user={u}/>
 
                     {/* --- метрики --- */}
                     <div className={styles.clientMetrics}>
@@ -411,7 +357,7 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
                 </div>
 
                 {/* ===== бизнес-блоки ===== */}
-                <BusinessInfo edit={edit} form={form} onChange={onChange} client={client} />
+                <BusinessInfo edit={edit} form={form} onChange={onChange} client={client}/>
 
                 {/* ===== статистика-кнопки ===== */}
                 <div className={styles.businessStatistics}>
