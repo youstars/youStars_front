@@ -1,28 +1,26 @@
-
 .viewSwitcher {
   display: flex;
+  position: relative;   // allow absolute children
   width: 97.5%;
-  gap: 186px;
+  gap: 1rem;
   background-color: var(--grey);
   border-radius: 20px;
   height: 50px;
   align-items: center;
   padding: 20px;
-  margin: 0 auto;
-  margin-top: 10px;
+  margin: 10px;
 }
 
 .select {
   height: 30px;
-  padding-left: 10px;
-  width: 200px;
-  padding: 8px 2px;
-  padding-right: 50px;
+  box-sizing: border-box;
+  padding: 8px 50px 8px 12px; // top/right/bottom/left
   font-size: 14px;
   border: none;
   border-radius: 15px;
   background: var(--dark-grey);
-  color:var( --primery-color);
+  color: var(--primary-color);
+  margin: 0;
   cursor: pointer;
   background-position: calc(100% - 40px) calc(1em + 2px), calc(100% - 35.2px) calc(1em + 2px),
   100% 0;
@@ -34,4 +32,22 @@
 
 .select:focus {
   outline: none;
+}
+
+/* ---- Individual select tweaks ---- */
+.viewSelect {
+  width: 140px;       // compact for Gantt / Kanban
+  margin: 0;   // stick to the left
+}
+
+.projectSelect {
+  width: fit-content;   // auto‑size to selected text
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;                 // no margin needed when absolute
+  overflow: visible;
+  text-align: center;  // center the selected text
+  text-indent: 0;
+
 }
